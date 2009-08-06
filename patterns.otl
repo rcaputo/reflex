@@ -1,0 +1,577 @@
+Patterns of Object Interaction
+	Abstract
+		A useful object framework must support all possible design and interaction patterns.
+			The framework must support a core suite of general-purpose design patterns.
+			The framework must provide a good foundation for external implementation of additional patterns.
+		Top-down design is impossible.
+			An object framework must support all future uses, but it cannot anticipate them.
+			People write programs, and people are unpredictable.
+		Bottom-up design tends to fail.
+			Simple conceptual models work well at small scales.
+				Growing complex systems from basic principles is difficult.
+				There is an early, seductive sense of success.
+			Simple conceptual models often fail over time.
+				Larger systems strain the requirements of simple conceptual models.
+				Prevailing best practices change over time, and new practices introduce new requirements.
+				The rules and corollaries eventually conflict.
+				It's impossible to anticipate everything.
+		A hybrid approach may succeed where the other two fail.
+			It's easier to catalog meta design and interaction patterns than use cases.
+			By cataloging basic object design and interaction patterns, certain basic requirements will emerge.
+			By satisfying these requirements, the emergent object framework will conceptually scale farther.
+	Roadmap
+		Catalog and consider as many design and interaction patterns as possible.
+		Describe the emergent meta patterns.
+		Develop and document a syntax and specification to support the meta patterns.
+		Implement the specification.
+	Call for Contribution
+		Please help.
+		This is a huge project.
+		The project leader has worked on bottom-up designs since 1998 and would like to get it right this time.
+Object Structural Patterns
+	Code Conventions
+		Functions
+		Methods
+			Class Methods
+			Object Methods
+	Parameter Conventions
+		Self and Positional Parameter List
+		Self and Parameter Hashref
+		Lexical Aliases
+			Self
+			Hashref Members
+	Return Conventions
+		Returned Data Formats
+			Returned as a List
+			Returned as a Hashref
+			Type and Hashref
+		Returned Data Mechanisms
+			Return via Return Builtin
+			Emitting via Method
+				Synchronous Emit
+					The emitted message target is called during emit().
+					Bypassing queue latency is efficient.
+					Deep recursion can occur.
+					Broad recursion cannot occur.
+					Requires deep Perl magic to work across process boundaries.
+				Asynchronous Emit
+					A message representing the emit() call is enqueued for the message target.
+					Queue latency makes this slower than synchronous emit.
+					Deep recursion cannot occur.
+					Broad recursion can occur.
+					May work locally or remotely.
+				Hybrid Emit
+					Synchronous emit is used whenever possible.
+					Asynchronous emit is used at the first sign of recursion.
+					Asynchronous emit may also be used for remote messages.
+					Deep recursion cannot occur.
+					Broad recursion is less likely.
+	Constructor Conventions
+		Direct Instantiation
+			Instantiate in Another Thread
+			Instantiate in Another Process
+				Process Already Exists
+				Process Doesn't Exist
+		Instantiation upon Request
+	Destructor Conventions
+		Destruction upon Release
+			Owner Explicitly Releases Object
+			Cascaded Owner Destruction
+			Global Destruction
+		Destruction upon Request
+			External Shutdown Request
+			Avoid Shutdown upon Destruction
+				Shutdown upon destruction tends to be too late.
+				Shutdown may take time.
+				Objects in the throes of destruction don't have time.
+		Self-Destruction upon Task Completion
+			Relies upon weak references or implicit management.
+			May be thwarted by users holding onto additional object references.
+				Accidentally, causing memory leaks.
+				Explicitly, but power users.
+		Object Never Destructs
+			Do nothing vital within object destructors.
+			Object destructor invocation is not guaranteed.
+			POSIX::_exit()
+			Signals.
+Object Composition Patterns
+	Static Class Composition
+		Inheritance
+		Interfaces and Implementations
+		Roles
+	Object Composition
+		Static Object Composition
+			Low-level objects that comprise a higher-level object are created along with the high-level object.
+			The instantiation-time configuration persists until destruction.
+		Dynamic Object Composition
+			A higher-level object creates and by default owns lower-level objects as needed.
+			The type and ordinality of lower-level objects may change over time.
+		Object Composition Roles
+			Lower-level objects fulfill roles within their higher-level objects.
+			Higher-level objects may assign role names to lower-level objects to simplify addressing and management.
+			Role Ordinalities
+				No Objects per Role
+					All objects for a role may have destructed, or no objects for a role may have been constructed yet.
+				One Object per Role
+					Each lower-level object comprising a higher-level object may have its own role, or no role at all.
+				Multiple Objects per Role
+					Multiple objects may be assigned the same role within a higher-level object.
+			Role Addressing
+				Addressing All Objects for a Role
+				Addressing One Object for a Role
+					Addressing One Object at Random
+					Round-Robin Addressing
+					Custom Addressing
+		Owner Ordinalities
+			No Owners
+				An object without an owner is usually a memory leak as a side oeffect of a circular reference.
+				If at all possible, objects should recognize and log a warning when they have been orphaned.
+				If possible, objects should recognize and throw excpetions when too many are leaking.
+			One Owner at a Time
+				Creator
+					An object's scope remains that of its creator for the object's lifetime.
+				Factory
+					One object creates new objects on behalf of another.
+				Namespace
+					An object is created within an object that allows it to be addressed by name.
+					An object is created outside a namespace and is later registered with the namespace.
+				Assembly Line
+					An object is created to represent some multi-stage task.
+					The object is passed from one worker to another.
+					Each worker performs part of a larger complex task.
+					The object represents a complete result when all stages are complete.
+			Multiple Owners
+				An object is created by one object and passed to one or more others.
+				Multiple Serial Owners
+					Each owner relinquishes ownership while passing the object to the next.
+				Multiple Parallel Owners
+					An object is created by one object and passed to one or more simultaneous users.
+					Use must be coordinated from within the object being used.
+					Users are not aware of each other.
+		Owned Ordinalities
+			Owns No Objects
+			Owns One or More Objects
+		Explicit Ownership
+			This is Perl's standard ownership mechanism.
+			Objects are stored in members of their owners.
+			Objects are destroyed when their owners release them.
+		Implicit Ownership
+			About
+				The base class tracks object ownership and parentage.
+				Dynamic composition is simplified.
+				Objects are permitted to self-destruct when they are finished.
+				Objects are identified by their roles within their owners.
+				The mechanism may be visualized as object-scoped namespaces.
+			Implicit Ownership upon Creation
+				Objects are assigned roles at construction time.
+				The base class tracks owned objects by roles.
+			Implicit Ownership upon Request
+				Objects created without roles may be assigned roles later.
+				The base class begins tracking these objects at the time of assignment.
+				Unassinging roles may trigger destruction if the base class held the sole reference to these objects.
+			Inspecting Implicitly Owned Objects
+				Addressing Owned Objects
+					Addressing owned objects by Role
+					Addressing Owned Objects by Class
+					Addressing a Single Owned Object
+					Addressing Multiple Owned Objects
+				Iterating Owned Objects
+					Iterating owned objects by Role
+					Iterating owned objects by Class
+				Counting Owned Objects
+					Counting Owned Objects by Role
+					Counting Owned Objects by Class
+		Benefits of Ownership
+			Default response target.
+			Role and type responses.
+		Transferring Ownership
+			Implicitly during storage.
+				This is Perl's referencing model.
+				Storing an object also implies sets ownership.
+				Releasing an object relinquishes ownership.
+				Easy to implement---just let Perl do it.
+				Difficult to convey benefits without ability to introspect owner relationships.
+			Explicitly via method.
+				Explicit mechanisms are easier to understand.
+				More work for users.
+				More reliable---no need for Perl magic.
+		Determining Ownership in Perl
+			Examine the call stack via caller() in package DB.
+			Have the framework call everything, all the time.
+			Decorator that injects the current $self.
+				Nick Perez suggested this.
+				Custom decorators can be defined with Devel::Declare and MooseX::Declare.
+				A simple C<< parent SomeObject->new() >> might deliver the necessary information.
+				It's a little magicky, but it might be easier (and saner) than walking the call stack.
+			MRO::Magic
+				Nick Perez suggested this.
+				Rjbs is working on it.
+			It's not necessary to track all object ownership.
+				Basic objects that don't use the framework don't need to be tracked.
+	Service Composition
+		Service Scope
+			Available to One Object
+				Generally pointless, since services are meant to be visible in wider scopes.
+			Available to Multiple Objects
+				It is ideal for a service to be available and useful for multiple objects.
+				The service must coordinate requests internally.
+					Objects cannot coordinate use of a service.
+					This is common, so it must be part of a base service class.
+			Available to No Objects
+				Invisiblity is useless.
+				A service must be visible to be used.
+		Service Ownership
+			A serice is owned by a single entity that exposes it to other objects.
+			Other objects may not assume ownership of a service.
+		Service Exposure
+			Service Exposed Within One Process
+			Service Exposed Internally and to Other Processes
+			Service Exposed Only to Other Processes
+		Service Creation
+			Service Creation by Configuration
+			Service Creation upon Request
+			Service Creation Implicitly upon Need
+		Service Destruction
+			Service Destruction upon Request
+				Graceful Shutdown
+				Immediate Shutdown
+			Service Destruction upon Container Destruction
+			Global Destruction at Program Exit
+Object Interaction Patterns
+	Synchronous
+		Call and Return
+		Request and Wait for Reply
+		Ordinalities
+			One Call and One Request
+	Asynchronous
+		Request and Asynchronous Callback
+			Callback by Function Reference
+				Supports continuations.
+				Supports quick, low-level code.
+			Callback by Object or Class and Method Name
+			Callback by Role and Response Type
+		Promises
+			Requests as Promise Factories
+			Waiting for Promises
+		Request Ordinalities
+			No Requests
+			One Request
+			Multiple Requests
+		Response Ordinalities
+			No Responses
+			One Response
+			Multiple Responses
+Task Patterns
+	Task Lifespam
+		Task Commencement
+			Task Begins with Object Instantiation
+			Task Begins upon Request Receipt
+		Task Completion
+			Task Ends upon Successful Completion
+			Task Ends upon Exception
+			Task Ends with Cancellation Request
+			Task Ends with Object Shutdown
+			Task Ends with Object Destruction
+				Objects may be destroyed before they are finished.
+				Global destruction is an extreme case.
+				There may be a race between the task completion and object destruction.
+				A user may knowingly cancel a task by destroying the object performing it.
+			Task Never Ends
+				Programs may halt without notification or opportunity to clean up.
+				There's nothing to be done in these cases.
+				If absolute reliability is required, try to minimize the amount of time when sudden halting can be catastrophic.
+	Task Ordinality
+		No Tasks Per Object
+			An object may be created for a purpose that is not needed in a partucular execution.
+			Optimally, the object would not be created until its task is required.
+		One Task Per Object
+		Multiple Tasks Per Object
+			Tasks Performed Serially
+			Tasks Performed in Limited Parallelism
+			Tasks Performed without Parallelism Limit
+Communication Patterns
+	Terms
+		Producer
+			An object that produces information.
+			Also known as a source.
+			Might be a better name than "responder".
+			POE::Wheel is a kind of producer.
+			POE::Component::IRC is both a producer and a consumer.
+		Consumer
+			An object that consumes information from a producer.
+			Also known as a sink.
+			Objects may be both producers and consumers at the same time.
+		Requester
+			An object that initiates a transaction by making a request.
+			Requests may be performed by sending messages to services.
+			Some objects imply requests when they are created.
+			Method calls are a form of request.
+			Requesters produce requests.
+			Requesters may consume responses.
+		Responder
+			An object that receives a request and performs some kind of work.
+			Called responders because they often respond to requests.
+			Some objects perform side effects without responding.
+			A universal sink (the /dev/null of objects) may neither respond nor perform a side effect.
+			Consider calling them workers.
+			Responders may consume requests.
+			Responders may produce responses.
+	To Do
+		The producer/consumer and requester/responder combinations may need to be enumerated and explained in more detail.
+	Discrete Transactions
+		Ordinalities
+			Point to Point
+				One Requester, One Responder
+			Broadcast and Gather
+				One Requester, Any Responders
+				Serial Responders
+				Parallel Responders
+			Message Channels
+				Any Requesters, Any Responders
+			Service
+				Any Requesters, One Responder
+	Multi-Transaction Sessions
+		Ordinalities
+			Point to Point
+				One Connector, One Service
+	Observation and Notification
+		Terms
+			Notifier
+				An object that advertises notifications when its data members change.
+			Observer
+				An object that observes data member changes in one or more other objects.
+				An object may observe its own data members.
+		Ordinalities
+			No Notifiers, Any Observers
+				Ideally the system will optimize this case into a no-op.
+				Runtime support for dynamic ordinalities may prevent optimization.
+			Any Notifiers, No Observers
+				Ideally the system will optimize this case into a no-op.
+				Runtime support for dynamic ordinalities may prevent optimization.
+			One Notifier, One or More Observers
+				Notofication is sent to all observers.
+			One or More Notifiers, One Observer
+				An observer may observe more than one notifier.
+				It remains to be seen whether this case is practical.
+			Multiple Notifiers, Multiple Observers
+				The observation/notification equivalent of a data bus.
+				It also remains to be seen wheter this is practical.
+		Notifications
+			Notification on Set
+				Observers are notified whenever a value is written to an observed member.
+				Obseration occurs even when the new value is identical to the old one.
+				Level-triggered notification.
+			Notification on Change
+				Observers are notified whenever a new value is written to an observed member.
+				Obseration does not occur when the new value is identical to the old one.
+				Edge-triggered notification.
+Continuation Patterns
+	About
+		Continuations are encapsulated bits of program state that can be passed around and swapped in and out as needed.
+		Each continuation includes an instruction pointer and all the program state required to resume a program from that point in its execution.
+		Perl supports coroutines by grafting its interpreter onto an event dispatcher.
+		This grafting is done deep in its implementation using sharp implements.
+		Continuations may also be implemented as explicit objects to manage execution state between callbacks.
+		Event frameworks like POE implement such coroutines, albeit at a rather low level.
+		Multiple continuations may be active at once.
+		Continuations may be nested, in which case the inner continuation should run to completion before the outer one may resume.
+		Lexical::Persistence
+			Lexical::Persistence was written to map continuation object data members into lexical pads.
+			This simplifes their use---lexical variables magically refer to the right continuation.
+			It's somewhat off-putting magic, however.
+			Perl seems to behave abnormally.
+			An alternative, explicit mechanism might feel nicer.
+	Request Based Continuations
+		About
+			Tasks require their own continuations.
+			Each task is initiated by some form of request.
+			The request may be implicit in an object's creation.
+			It may be an explicit message sent to a service.
+		Inbound Request Continuations
+			Inbound request continuations are state associated with tasks that one object or service performs on behalf of another.
+			These continuations are associated with inbound requests.
+			They are accessible within receivers of requests.
+			They are automatically made available whenever code is executed as a consequence of the initial request.
+			In other words, these continuations are in scope during the performance of a task triggered by some request.
+		Outbound Request Continuations
+			Outbout request continuations associated with tasks that are being performed by another object upon the current object's request.
+			These continuations are associated with outbound requests.
+			They are accessible within request senders, or method callers.
+			They are automatically made available whenever a response is received by the helper object or service.
+			These continuations provide continuity between asynchronous messages and the responses they generate.
+	Object Based Continuations
+		Self Continuations
+			Each object has a continuation that is in scope whenever the object is active.
+			This continuation is the object itself.
+		Parent Object Continuations
+			These continuations are special cases of Inbound Request Continuations.
+			They exist when the parent object created the current object for the purpose of performing a task.
+			Are there other useful uses of parent object continuations?
+		Child Object Continuations
+			These continuations are special cases of Outbound Request Continuations.
+			They exist when the parent object created the current object for the purpose of performing a task.
+			Are there other useful uses of parent object continuations?
+	Connection Based Continuations
+		About
+			Persistent connections or sessions between objects are useful.
+			Continuation scope and lifetime can be associated to persistent connections.
+			Management of connection state is automated as a result.
+		Connector's Continuation
+			Connector continuations are associated with the client sides of connections between objects.
+			They provide continuity over the course of the connection.
+			Additionally, outbound request continuations may be associated with individual requests that are sent down connections.
+		Service's Continuation
+			Service continuations are associated with the server sides of connections between objects.
+			They provide continuity within the service over the course of the connection.
+			Additionally, inbound request continuations may be associated with individual requests that a service may receive.
+	Lexical Aliases for Continuation Variables
+		About
+			Lexical::Persistence was written to provide easy lexical aliases for continuation variables.
+			Members of a continuation object may be aliased to lexical variables within a callback.
+			Accessing or modifying lexical variables magically does the same to members of the continuation object.
+			However, the aliasing incurs overhead and is not lazy.
+			All aliases are configured regardless whether a particular code path requires them.
+		Lexical Alias Conflicts
+			Multiple continuations may be active at once.
+			They may have identical data members.
+			Lexical variable names need to identify the continuations to which they refer.
+			POE::Stage and Lexical::Persistence use prefixes to disambiguate continuations.
+			The part of the variable name up to the first underscore identifies the continuation.
+			The remaining variable name identifies the data member within the named continuation.
+		Additional Conveniences
+			$self may automatically be aliased to $_[0], Perl's conventional method parameter identifying the object.
+			The "self" prefix may be aliased to members of $self.
+			$args may be aliased to a hashref of method parameters, possibly kept in $_[1].
+			Likewise, the "arg" prefix may be aliased to $args members.
+Miscellaneous Ideas
+	Metaphors
+		Extending the Actor Metaphor
+			Actor
+				An object that can take requests and respond with results.
+				Described as "services" elsewhere.
+				May also be helper objects.
+				POE::Session is a kind of actor, although not in the computer science sense of the word.
+				POE::Wheel objects aren't actors because they don't stand alone.
+				In this metaphor, actors don't include their own mailboxes, nor do they actively await messages.
+			Prop
+				Basic, non-actor helper objects.
+				They may interact with messages, or use basic asynchronous callback facilities like timers.
+				They generally perform very low-level work.
+				Actors use them to fulfill their roles.
+			Director
+				The event loop, message router and dispatcher.
+				May represent POE::Kernel within the metaphor.
+			Stage
+				About
+					Isolated computational units.
+					More like conventional actors.
+					Ideally, stages should behave identically no matter what.
+					In practice, each type of stage probably has its own caveats.
+				Cooperative Stages
+					Act as thin interfaces between POE::Kernel and actors.
+					Don't have their their own mailboxes.
+					Immediately and synchronously forward events to actors.
+				Threaded Stages
+					Act as bidirectional queues between POE::Kernel (which lives in the main thread) and the actors that coexist within a subthread.
+					Contain their own mailboxes.
+					Cannot directly call anything that exists in another stage.
+					Other iThreads caveats apply.
+				Forked Stages
+					Act as bidirectional queues between POE::Kernel (which lives in the main process) and the actors that coexist within a child process.
+					Contain their own mailboxes.
+					Cannot directly call anything that exists in another stage.
+					Other process-boundary caveats apply.
+			Propmaster
+				An ORM of some sort.
+	DOM Namespaces
+		XPath Object Addressing
+			About
+				Allows global addressing of objects through a DOM-like container and XPath-like queries.
+				Proof of concept exists using XML::LibXML and actual DOM and XPath queries.
+				Supports multiple-object addressing.
+				Supports identifying objects by class, role, and other attributes.
+				In a cluster, nodes may advertise their services by adding their DOMs to a directory.
+				The directory can execute XPath queries that span the entire network.
+			Caveats with XPath Object Addressing
+				Robert Grimes pointed out that there is very little actual need for finding objects globally.
+				Most objects interact locally.
+					Parent object interacts with children.
+					Children interact with parents.
+					Children interact with siblings, usually through a moderator.
+				Global addressing facilitates broken encapsulation.
+				Global addressing should only be used for services.
+			Javascript use of DOM Addressing
+				Torsten Raudssus pointed out that Javascript uses DOM for similar purposes.
+				Code may manipulate page elements gingly or in groups by addressing them with XPath.
+				It can be very convenient.
+				This seems to be a subset of Robert Grimes' earlier point.
+				Javascript is manipulating sibling objects within the same container---the page containing the code.
+				In a larger application, it seems safer to limit each object's reach.
+				What sorts of limitations are reasonable?
+	Proxy Objects
+		About
+			Proxy objects are an alternative to services and explicit messages.
+		Remote Object Type
+			Remote Helper
+			Remote Service
+		Remote Object Existence
+			Remote Object Already Exists
+				The local proxy object connects to the remote object during instantiation or first use.
+			Remote Object Created on Demand
+				Creating the local proxy triggers creation of the corresponding remote object.
+		Remote Process Existence
+			Remote Process Already Exists
+				The local proxy object connects to the remote process during instantiation or first use.
+			Remote Process Created on Demand
+				Remote processes are created as needed.
+		Remote Class Existence
+			Remote Process Has Required Class
+				Remote objects are instantiated from remote copies of the requied class.
+				Incompatible versions of the same class may cause problems.
+			Remote Process Needs Required Class
+				The local process may push a required class to the remote process.
+				Dependencies may also need to be pushed.
+				In some cases, tarballing the entire module suite may be needed.
+				The remote process must have a version of Perl capable of executing the remote object.
+				Injecting code into other processes or even other machines must be done securely.
+				The remote process should cache the code to avoid additional performance issues.
+				Alternatively, the remote process may install the required module from CPAN.
+				Compiled modules have their own set of problems.
+					Modules may need to be built on the destination machine to guarantee they work.
+		Further Considerations
+			Blocking Constructors
+				Constructors are expected to return complete, usable objects.
+				Remote procedure calls imply blocking until responses are ready.
+				Promises can alleviate this somewhat.
+					Promises are permitted to work in the background until their information is needed.
+					They therefore block less than synchronous calls.
+					However they may still block for significant amounts of time.
+			Conserving TCP Sockets
+				One implementation could use a TCP connection per remote object.
+				TCP connection building and teardown are expensive.
+				It will be more efficient to multiplex object communication between the same processes.
+				The BXXP protocol seems designed for this task.
+	Reflexive Data Members
+		POE's early object environment experiments were very MUD-like.
+		Nearly every object was required to be in a container.
+		Changing an object's container required updates to its old and new containers' contents.
+		This was a fundamental aspect of the system.
+		The system implemented basic code to handle the referential integrity.
+		Procedure
+			Ask the object whether its container may be changed.
+			Ask the old container whether the object may be removed.
+			Ask the new container whether the object may be added.
+			Move the object from its old container to its new container.
+			Notify the old container that the object was removed.
+			Notify the new container that the object was added.
+			Notify the object that its container has changed.
+Technology Questions
+	How are new Moose types defined?
+		New types may be needed for some of the container magic.
+	How may hooks be affixed to Moose members?
+		Attribute traits allow accessors and mutators to behave differently.
+		Member change advertisement may be implemented as traits.
+		Chris Williams suggested Variable::Magic as well.
+	How does Moose map to this framework's features?
+		Moose features seem to be coupled to classes rather than individual objects.
+		How can Moose implement the basic functionality necessary for the features listed in this document?

@@ -1,0 +1,68 @@
+Framework Requirements
+	About
+		This document summarizes the best ideas from the patterns document.
+		The patterns document tries to enumerate all available options.
+		The requirements document chooses which ones to actually use.
+		A later specification document will attempt to reconcile the requirements into a syntax and semantics.
+	Undesirable Qualities
+		Implicitness
+			Implicitness makes learning hard.
+			Invisible action is a mystery for the naive reader.
+		Unnecessary Magic
+			Magic is scary.
+			It also implies action at a distance.
+		Cleverness
+			Cleverness is fun, though. :(
+	Standardize Calling Convention
+		Parameters
+			my ($self, $args) = @_;
+			my $foo = $args->{foo};
+		Return Values
+	Continuations as Super Heaps
+		Continuations scoped and lifetime-tied to resources.
+		Automatic cleanup triggered by resource release.
+		Request-scoped continuations cleaned up on request cancelation.
+		Eliminates manual heap cleanup.
+		See discussions about continuations in patterns.
+	Full Object Orientation
+		Full subclass support.
+		Full composition (has-a) support.
+			Static compile-time support.
+			Dynamic runtime support.
+	Smaller Names
+		POE::Stage instead of POE::Component.
+		Flatten the hierarchy somewhat.
+	All Kinds of Callbacks
+		Coderefs
+			Anonymous
+				Support closures.
+				Support faux CPS.
+			Named subroutine references
+				Support reusable handlers.
+		Methods
+			Class
+			Object
+	Objects Handle Their Own Responses First
+		Objects have the first opportunity to handle their own events.
+		Allows subclasses to handle or alter events on their way out.
+		If unhandled, emitted events bubble up to the object's owner.
+	Typed Return Values
+	Object Roles
+	Role Based Handlers
+		The sender's role and the message type define a potential handler name.
+	Call and Return Semantics for Messages
+		Nested messages complete before outer messages.
+		Simplifies task coordination in a way that most people need.
+		Canceling an outer request triggers the cancelation of inner requests.
+Foundation Classes
+	Watchers
+		I/O
+		Time
+		Signal
+		Suggestions welcome.
+	Stages
+		Application
+		Server
+		Stream
+		Process
+		Suggestions welcome.

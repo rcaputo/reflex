@@ -1,0 +1,275 @@
+Sorry
+	This document is outdated.
+	It discusses things in POE::Stage prior to the draft specification.
+	It will be updated after the specificatin's reasonably complete.
+Title
+	POE::Stage
+	Message-Based Continuations
+	Rocco Caputo
+	http://thirdlobe.com/projects/poe-stage/
+Continuations
+	"... a sort of super-closure, one that remembers all the lexicals that were in scope when it was created, as well as remembering the call sequence you took to get there."  -- Dan Sugalski
+Continuations Encapsulate Call
+	Specify where to resume on return.
+	Remember lexical state, so it can be restored on return.
+	Are passed to subroutines as just another parameter.
+Continuations Implement Return
+	Caller's execution resumes.
+	Caller's lexical state is restored.
+	Caller may receive some result from the returning method.
+POE::Request Encapsulates Call
+	Defines where to resume on return.
+	Remembers lexical state, so it can be restored on return.
+	Is passed as a message to another object.
+POE::Response Implements Return
+	Implicitly created when an inbound POE::Request is invoked.
+		|$inbound_request->return( ... );
+	Resumes caller's execution.
+	Caller's lexical state is restored.
+	May include results of a Stage's work.
+POE::Request Example
+	|my $outbound_request = POE::Request->new(
+	|	stage      => $target_stage_object,
+	|	method     => $target_method_name,
+	|	args       => \%maybe_some_parameters,
+	|	on_success => \&resume_here_on_success,
+	|	on_failure => \&or_here_on_failure,
+	|);
+POE::Response Return
+	|$inbound_request->return(
+	|	type => "success",  # could be "failure"
+	|	args => \%maybe_some_return_values,
+	|);
+Typed Responses
+	Responses are typed.
+	Requests map response types to handlers.
+	Called Stages define an interface.
+	Callers use the interface.
+	Eliminates need for inside information.
+	Decouples Stages.
+	Permits dynamic flow control.
+Call Stacks
+	Limited to serial call/return.
+	Execution returns in order of call (LIFO).
+	one calls two
+		two calls three
+			three calls four
+				four returns to three
+			three returns to two
+		two returns to one
+
+Call Trees
+	Serial or parallel call/return.
+	Parallel returns occur in order of completion.
+	method 1 calls method 2
+	method 1 calls method 2 (again)
+		method 2a calls method 3a
+		method 2b calls method 3b
+			method 3b returns to method 2b
+		method 2b returns to method 1
+			method 3a returns to method 2a
+		method 2a returns to method 1
+Call Cancelation
+	Requests can be canceled before they return.
+	Sometimes you don't want to wait.
+		|my $outbound_request = POE::Request->new( ... );
+		|# ... later on:
+		|$outbound_request->cancel();
+Cancelation Effects
+	Prunes the call tree rooted at the canceled request.
+	Sub-requests (if any) canceled too.
+	Their remembered lexical states are destroyed.
+	Resources stored in those lexicals automatically freed.
+	Perl (not POE) GC rules apply here.
+Non-Final Returns
+	Returns don't have to be final.
+	Returns happen when a response is invoked.
+	Why can't a response be invoked more than once?
+	They can, but the name is different.
+		|# Many happy returns.
+		|$inbound_request->emit( type => "happy" );
+Final Returns
+	return() implies request is finished.
+	Implicitly triggers request destruction after delivery.
+	Calling return() twice is prohibited.
+	Also cannot emit() after return().
+Re-calling in Same Request
+	Parent can respond to emitter without a new continuation.
+	Simpler than POE::Request:
+		|$inbound_emit->recall(
+		|	method => $target_method_name,
+		|	args   => \%maybe_some_more_parameters,
+		|);
+		(No target stage.  Goes back to emitter.)
+		(No response type mapping.  Inherited from original request.)
+	emit() and recall() implement two-way dialogue.
+	Can continue until return() or cancel().
+Lexical States
+	There can't be only one.
+	Lexical pad may contain data from three or more relevant states.
+	Prefixes identify different states.
+	Also prevent identical member names from colliding in the pad.
+	Prefixes don't affect member names.
+		|$prefix_member refers to "member".
+	@ and % sigils also supported.
+Inbound Request State
+	Temporary storage scoped to the inbound request.
+	Used as scratch space for handling the request.
+	Conveniently autodestructs when request is finalized.
+	Prefixed by "req_"
+		$req_member
+		@req_member
+		%req_member
+Outbound Request State
+	Temporary storage for data scoped to an outbound request.
+	Members exposed with expose().
+	Prefixes are arbitrary (but not reserved, duh).
+		|my $outbound_request = POE::Request->new( ... );
+		|expose $outbound_request => my $prefixed_member;
+		|$prefixed_member = "spay or neuter your pets";
+Inbound Response State
+	Only available inside emit() or return() handlers.
+	Recalls and mutates previously exposed outbound request state.
+	Prefixed with "rsp_".
+	|sub on_success {
+	|	my $rsp_member; # "spay or neuter your pets"
+	|}
+Parameter State
+	IM IN UR PAD INITIALIZIN UR LEXICALS (obligatory lolcats)
+	So I can also stuff arguments into them.
+	Prefixed with "arg_"
+		$arg_thingy
+		@arg_thingy
+		%arg_thingy
+	Refer to the "thingy" argument, i.e.:
+		args => { thingy => "value" }
+Call Tree Revisited
+	Implemented by convention, not special code.
+	Sub-requests stored in the current request.
+		my $req_do_something = POE::Request->new( ... );
+	When current request finishes:
+		All $req_foo members destroyed.
+		Implicitly triggering $req_do_something cancelation.
+		Effectively pruning branch of call tree.
+Activating Lexical State
+	Only pertains to message handlers.
+	Activate with the :Handler method attribute.
+		sub resume_here_on_success :Handler { ... }
+	Also implied for methods named "on_" something.
+	Will be explained in a few slides.
+Request Roles Are Shorthand
+	Replace on_foo parameters in a request.
+	|my $req_subrequest = POE::Request->new(
+	|	stage   => "resolver",
+	|	method  => "resolve",
+	|	args    => { host => "poe.perl.org" },
+	|	on_success => \&handle_address,
+	|	on_failure => \&handle_error,
+	|	on_timeout => \&handle_timeout,
+	|);
+	Bleh.
+Request Roles Are Shorthand
+	Replace on_foo parameters in a request.
+	|my $req_subrequest = POE::Request->new(
+	|	stage   => "resolver",
+	|	method  => "resolve",
+	|	args    => { host => "poe.perl.org" },
+	|	role    => "dnslookup",
+	|);
+	And it scales, too.
+Role-Based Response Dispatch
+	Methods matching "on_" . $role . "_" . $response_type are called.
+		sub on_dnslookup_success { ... }
+		sub on_dnslookup_failure { ... }
+		sub on_dnslookup_timeout { ... }
+	TODO: on_dnslookup_autoload { ... }
+	Handler attribute implied by "on_" so not needed.
+Now About POE::Stage
+	Standard base class for POE::Stage
+	Implements about 75% of the magic
+		(Rest is in POE::Request)
+POE::Stage Standard Methods
+	new() implemented by the base class
+	on_init() initialization callback during new()
+	Tried to keep it light, so the rest can be yours.
+POE::Stage Exported Functions
+	Oh, some more pollution.
+		self() accessor to $self.  self->method()
+		req() inbound request accessor:  req->return(...)
+		rsp() inbound response accessor:  rsp->recall(...)
+		expose() seen before
+	Ok, really, that's it.
+	So far.
+	We'll try to be good.
+Standard POE::Stage Classes
+	App - The top-level application.
+	The rest have unstable interfaces.
+	We could use your help here.
+What About POE?
+	POE::Stage uses POE for lower-level services.
+	POE::Watcher classes are OO versions of POE features.
+	Design still in flux.
+	We could use your help here, too.
+POE::Watcher Classes
+	OO versions of POE things.
+	Follow Perl GC rules, not POE's.
+	Cancel by destroying the object.
+	Store in $req_ to auto-cancel if parent request finalized.
+POE::Watcher::Delay
+	OO version of POE::Kernel->delay() family.
+	|my $req_timeout = POE::Watcher::Delay->new(
+	|	seconds => 10,
+	|	on_success => "handle_timeout",
+	|	args => \%handle_timeout_parameters,
+	|);
+POE::Watcher::Input
+	OO version of POE::Kernel->select_read().
+	|my $req_input = POE::Watcher::Input->new(
+	|	handle => $io_handle,
+	|	on_input => "read_from_handle",
+	|	args => \%passed_along,
+	|);
+POE::Watcher::Wheel
+	Encapsulates POE::Wheel classes.
+	|my $req_wheel = POE::Watcher::Wheel->new(
+	|	wheel_class => "POE::Wheel::Run",
+	|	wheel_parameters => {
+	|		...,
+	|		StdoutMethod => "handle_child_stdout",
+	|	}
+	|);
+	Wheel's "Event" parameters become "Method" in POE::Stage.
+Why Doing This
+	TIMTOWTDI didn't scale.
+	Everybody did something different.
+	Interoperability suffered.
+Why Doing This
+	Design Patterns Aren't.
+	A lot of repeated work became apparent.
+	It's time to subsume them.
+Why Doing This
+	Separate project for fun.
+	Backward compatability not an issue.
+	Can use modern Perl.
+Why Doing This
+	Can involve community earlier in the development process.
+	More chance to avoid strange names for things. :)
+What You Can Do
+	Need peaple to push the design.
+	Core concepts done, barring insurmountable design problems.
+	Catch problems before things go too far.
+What You Can Do
+	Help keep things sane.
+	Single mad scientest model produces monsters.
+	Multiple mad scientists can check and balance.
+	Or at least brainstorm over insurmountable design problems.
+What You Can Do
+	Develop standard libraries.
+	Or at least guide their development.
+	It's easier to get features designed in early than wedged in later.
+What You Can Do
+	Sieze a need and run with it.
+	Unless that need is scissors.
+	Unless they're blunt.
+Questions?
+	Thank you.
