@@ -4,65 +4,130 @@ Framework Requirements
 		The patterns document tries to enumerate all available options.
 		The requirements document chooses which ones to actually use.
 		A later specification document will attempt to reconcile the requirements into a syntax and semantics.
+	Desirable Qualities
+		Best practices should be encouraged.
+			Base classes should set precedents for best practices.
+			The design should encourage continued use of best practices.
+		Substandard qualities should be possible but gently discouraged.
+			People like to have options.
+			People like to exercise those options, whether or not they're good.
+			It's not the framework's duty to prevent people from doing what they want.
 	Undesirable Qualities
-		Implicitness
-			Implicitness makes learning hard.
-			Invisible action is a mystery for the naive reader.
-		Unnecessary Magic
+		Avoid implicit constructs.
+			Implicit constructs cause action without visible indication.
+			They are disorienting.
+			They interfere with comprehension.
+		Avoid unnecessary magic.
 			Magic is scary.
 			It also implies action at a distance.
-		Cleverness
-			Cleverness is fun, though. :(
-	Standardize Calling Convention
-		Parameters
-			my ($self, $args) = @_;
-			my $foo = $args->{foo};
-		Return Values
-	Continuations as Super Heaps
-		Continuations scoped and lifetime-tied to resources.
-		Automatic cleanup triggered by resource release.
-		Request-scoped continuations cleaned up on request cancelation.
-		Eliminates manual heap cleanup.
-		See discussions about continuations in patterns.
-	Full Object Orientation
-		Full subclass support.
-		Full composition (has-a) support.
-			Static compile-time support.
-			Dynamic runtime support.
-	Smaller Names
-		POE::Stage instead of POE::Component.
-		Flatten the hierarchy somewhat.
-	All Kinds of Callbacks
-		Coderefs
-			Anonymous
-				Support closures.
-				Support faux CPS.
-			Named subroutine references
-				Support reusable handlers.
-		Methods
-			Class
-			Object
-	Objects Handle Their Own Responses First
-		Objects have the first opportunity to handle their own events.
-		Allows subclasses to handle or alter events on their way out.
-		If unhandled, emitted events bubble up to the object's owner.
-	Typed Return Values
-	Object Roles
-	Role Based Handlers
-		The sender's role and the message type define a potential handler name.
-	Call and Return Semantics for Messages
-		Nested messages complete before outer messages.
-		Simplifies task coordination in a way that most people need.
-		Canceling an outer request triggers the cancelation of inner requests.
-Foundation Classes
-	Watchers
-		I/O
-		Time
-		Signal
-		Suggestions welcome.
-	Stages
-		Application
-		Server
-		Stream
-		Process
-		Suggestions welcome.
+		Avoid cleverness.
+			Cleverness leads to brittle design.
+			It also leads to unnecessary magic.
+			It also leads to implicit constructs.
+	Namespace Requirements
+		Class names should be brief.
+			Large class names are unwieldy.
+			Objects should be under a single top-level namespace.
+				What single top-level namespace should be used?
+		Class namespaces should be relatively flat.
+			Excessive namespace nesting is unwieldy.
+			The namespace should be organized.
+			How should the namespace be organized?
+	Class and Object Structural Requirements
+		Full object orientation should be encouraged.
+			Programs should be decomposable into objects, not sessions, tasks or threads.
+				Objects promote division of responsibility.
+				Objects promote code reuse and structural decomposition.
+			Multiple forms of composition must be supported.
+				Inheritance (is-a).
+				Class roles.
+				Containership (has-a).
+					Static, compile-time relationships.
+					Dynamic, run-time relationships.
+					Object roles.
+		Method parameters should follow a single standard.
+			Methods should receive only two parameters.
+				$self - The object being called.
+				$args - A hash reference of named parameter pairs.
+				What about out-of-band information, such as other continuations?
+			Methods should standardize their return semantics.
+				What are those semantics?
+				Returned messages must be typed.
+		Function parameters should follow a single standard.
+			What should that standard be?
+		Procedural design should be supported.
+			Some people will prefer procedural design.
+	Object Containership Composition Rules
+		Containers encapsulate the objects they own.
+			Encapsulated objects should be invisible outside their containers.
+			Containers may expose encapsulated objects as needed.
+		Containers should be higher-level than the objects they own.
+			Containers should do more than the objects within them.
+		Contained objects may be assigned roles.
+			Roles identify contained objects by non-unique names.
+			Default handler method names may be derived from roles and message types.
+				Sender is a DNS resolver.
+				Sender's role is "resolver".
+				Sender emits a "success" event.
+				Container may define an on_resolver_success() method to handle the event.
+	Class Inheritance Rules
+		Class inheritance rules should be as "Perl Standard" as possible.
+		Base classes should use Moose for cleaner extensibility.
+	Messaging Requirements
+		Object command interfaces must be objects.
+			Methods on the objects themselves may pass messages into themselves.
+				Synchronous method calls are translated into asynchronous messages.
+			Methods on the objects may trigger activity that emits new events.
+				Synchronous actions may start or stop messages emitted by an object.
+			Objects may be interfaces (proxies) that pass messages to other objects.
+				Objects may act as interfaces to local or remote services.
+				Synchronous method calls are translated into asynchronous messages.
+		Local accessors and simple mutators must be synchronous.
+			Messages for local accessors and mutators is unnecessary overhead.
+		Objects must be permitted to emit messages into their containers.
+			Message emission is optional, depending on the use case.
+			Emitted messages are first handled by the object emitting them.
+				Subclasses may handle messages emitted by base classes.
+				Subclasses may emit new messages.
+			Emitted messages are next handled by explicit callbacks.
+			Emitted messages are finally handled by the emitting object's container.
+		All forms of message handler must be supported.
+			Anonymous Coderefs
+				Anonymous coderefs support closures.
+				Anonymous coderefs and closures may be used to implement faux continuation passing style.
+			Named Subroutine References
+				Named message handlers are exportable as reusable interfaces.
+			Object Methods
+				Is this not obvious?
+			Class Methods
+				Classes may be used as singletons.
+		Messages must be associated with their triggers.
+			One message may trigger another, inner message.
+				The inner message must be associated with the outer message.
+				Canceling the outer message must trigger cancelation of all associated inner messages.
+				Generally, all inner messages should complete before an outer message completes.
+					This emulates asynchronous call/return semantics for messages.
+					Task coordination is simplified.
+	Continuation Rules
+		Continuations may be associated with objects.
+			$self is such a continuation.
+			Object-scoped resources (watchers, etc) should be stored in the object's continuation.
+				Object destruction triggers associated resource cleanup.
+		Continuations may be associated with messages.
+			A message's sender and receiver have their own continuations associated with the message.
+			Data stored in the sender's continuation is not visible to the receiver.
+			Receiver data is not visible to the sender.
+			Message-scoped resources should be stored in the message's continuation.
+				Message cancelation triggers associated resource cleanup.
+	Common primitive classes must be provided.
+		Low-level event watchers.
+			I/O
+			Time
+			Signal
+			What else?
+		Primitive program pieces.
+			Application
+			Server
+			Stream
+			Process
+			What else?  Probably a lot!
