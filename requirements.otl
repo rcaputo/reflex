@@ -70,6 +70,9 @@ Framework Requirements
 				Sender's role is "resolver".
 				Sender emits a "success" event.
 				Container may define an on_resolver_success() method to handle the event.
+		Methods
+			insert
+			remove
 	Class Inheritance Rules
 		Class inheritance rules should be as "Perl Standard" as possible.
 		Base classes should use Moose for cleaner extensibility.
