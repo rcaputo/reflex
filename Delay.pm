@@ -29,7 +29,7 @@ sub repeat {
 	$self->alarm_id(
 		$POE::Kernel::poe_kernel->call(
 			$self->session_id(),
-			'set_timer',
+			'timer_set',
 			$self->interval(),
 			$self
 		)
@@ -48,7 +48,7 @@ sub DEMOLISH {
 	if ($self->alarm_id()) {
 		$POE::Kernel::poe_kernel->call(
 			$self->session_id(),
-			'clear_timer',
+			'timer_clear',
 			$self->alarm_id(),
 		);
 	}

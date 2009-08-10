@@ -1,17 +1,17 @@
 #!/usr/bin/env perl
 
-# Observe another object, already created.
+# Watch another object, already created.
 #
-# Create a Delay object that may emit events befoe it can be observed.
-# Create an observer after the fact, which then observes the Delay.
+# Create a Delay object that may emit events before it can be watched.
+# Create a watcher after the fact, which then watches the Delay.
 #
 # Warning: Events can be missed in a truly concurrent system if there
-# is time between the creation of an observed object and registering
-# its events' observers.  See eg-02-observed-new.pl for a safer
+# is time between the creation of a watched object and registering
+# its events' watchers.  See eg-02-watched-new.pl for a safer
 # alternative.
 #
 # TODO - Another option is to create an object in a stopped state,
-# then start it after observers have been registered.
+# then start it after watchers have been registered.
 
 use warnings;
 use strict;

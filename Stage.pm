@@ -5,7 +5,7 @@ use Moose;
 use Scalar::Util qw(weaken blessed);
 use Carp qw(croak);
 
-# TODO - I would like %observers and %observed to be part of each
+# TODO - I would like %watchers and %observed to be part of each
 # object, but this is currently beyond my Moose skills.
 
 my %observers;
@@ -32,13 +32,18 @@ my $singleton_session_id = POE::Session->create(
 		# Although we're using the $singleton_session_id, so why bother?
 
 		_start => sub {
-			$_[KERNEL]->alias_set(__PACKAGE__);
+			# Stayin' alive!
+			$_[KERNEL]->refcount_increment($_[SESSION]->ID, "beegees");
+		},
+
+		shutdown => sub {
+			$_[KERNEL]->refcount_decrement($_[SESSION]->ID, "beegees");
 		},
 
 		# Handle a timer.  Deliver it to its resource.
 		# $resource is an envelope around a weak POE::Watcher reference.
 
-		set_timer => sub {
+		timer_set => sub {
 			my ($kernel, $interval, $object) = @_[KERNEL, ARG0, ARG1];
 
 			# Weaken the object so it may destruct while there's a timer.
@@ -46,20 +51,61 @@ my $singleton_session_id = POE::Session->create(
 			weaken $envelope->[0];
 
 			return $kernel->delay_set(
-				'timer',
+				'timer_due',
 				$interval,
 				$envelope,
 			);
 		},
 
-		clear_timer => sub {
+		timer_clear => sub {
 			my ($kernel, $timer_id) = @_[KERNEL, ARG0];
 			$kernel->alarm_remove($timer_id);
 		},
 
-		timer => sub {
-			my $resource = $_[ARG0];
-			eval { $resource->[0]->_deliver(); };
+		timer_due => sub {
+			my $envelope = $_[ARG0];
+			eval { $envelope->[0]->_deliver(); };
+			die if $@;
+		},
+
+		select_on => sub {
+			my ($kernel, $object, @selects) = @_[KERNEL, ARG0..$#_];
+
+			my $envelope = [ $object ];
+			weaken $envelope->[0];
+
+			foreach my $select (@selects) {
+				my ($mode, $handle) = @$select;
+				my $method = "select_$mode";
+				$kernel->$method($handle, 'select_ready', $envelope, $mode);
+			}
+		},
+
+		select_off => sub {
+			my ($kernel, @selects) = @_[KERNEL, ARG0..$#_];
+
+			foreach my $select (@selects) {
+				my ($mode, $handle) = @$select;
+				my $method = "select_$mode";
+				$kernel->$method($handle, undef);
+			}
+		},
+
+		select_ready => sub {
+			my ($handle, $envelope, $mode) = @_[ARG0, ARG2, ARG3];
+			eval { $envelope->[0]->_deliver($handle, $mode) };
+			die if $@;
+		},
+
+		select_read_ready => sub {
+			my $envelope = $_[ARG2];
+			eval { $envelope->[0]->_deliver("read") };
+			die if $@;
+		},
+
+		select_read_ready => sub {
+			my $envelope = $_[ARG2];
+			eval { $envelope->[0]->_deliver("read") };
 			die if $@;
 		},
 
@@ -73,7 +119,10 @@ my $singleton_session_id = POE::Session->create(
 			$observer->$method($args);
 		},
 
-		_stop => sub { undef },
+		_stop => sub {
+			#warn "stage session stopped";
+			undef;
+		},
 	},
 )->ID();
 
@@ -213,9 +262,6 @@ sub observe_role {
 sub emit {
 	my ($self, @args) = @_;
 
-	# This object isn't observed.
-	return unless exists $observations{$self};
-
 	my $args = $self->_check_args(
 		\@args,
 		[ 'event' ],
@@ -224,6 +270,16 @@ sub emit {
 
 	my $event         = $args->{event};
 	my $callback_args = $args->{args} || {};
+
+	# Look for self-handling of the event.
+	if ($self->can("on_my_$event")) {
+		my $method = "on_my_$event";
+		$self->$method($callback_args);
+		return;
+	}
+
+	# This object isn't observed.
+	return unless exists $observations{$self};
 
 	while (my ($observer, $observations) = each %{$observations{$self}{$event}}) {
 		foreach my $observation (@$observations) {
@@ -237,10 +293,17 @@ sub emit {
 				);
 			}
 			else {
-				$poe_kernel->post(
-					$self->session_id(),
-					emit_to_method => $observation->{observer}, $callback, $callback_args,
-				);
+				if ($observation->{observer}->session_id() == $self->session_id()) {
+					# Same session.  Just call it.
+					$observation->{observer}->$callback($callback_args);
+				}
+				else {
+					# Different session.  Post it through.
+					$poe_kernel->post(
+						$self->session_id(), 'emit_to_method',
+						 $observation->{observer}, $callback, $callback_args,
+					);
+				}
 			}
 		}
 	}
@@ -299,6 +362,72 @@ sub DEMOLISH {
 
 	delete $observers{$self};
 	undef;
+}
+
+sub ignore {
+	my ($self, @args) = @_;
+
+	my $args = $self->_check_args(
+		\@args,
+		[ 'observed' ],
+		[ 'events' ],
+	);
+
+	my $observed  = $args->{observed};
+
+	# Not actually observing it.
+	return unless (
+		exists $observers{$self} and
+		exists $observers{$self}{$observed}
+	);
+
+	my @events = @{$args->{events} || []};
+	if (@events) {
+		# Clean out the explicit events.
+		# TODO - Untested.
+		my $i = @{$observers{$self}{$observed}};
+		my %events = map { $_ => 1 } @events;
+		while ($i--) {
+			next unless exists $events{$observers{$self}{$observed}{event}};
+			splice @{$observers{$self}{$observed}}, $i, 1;
+		}
+
+		delete $observers{$self}{$observed} unless @{$observers{$self}{$observed}};
+	}
+	else {
+		# Ignoring all events.
+		@events = (
+			map { $_->{event} }
+			@{$observers{$self}{$observed}}
+		);
+
+		# Quickly clean out the observer.
+		delete $observers{$self}{$observed};
+	}
+
+	delete $observers{$self} unless scalar keys %{$observers{$self}};
+
+	# Clean out specific observations.
+	if (exists $observations{$observed}) {
+		foreach my $event (@events) {
+			next unless exists $observations{$observed}{$event};
+			delete $observations{$observed}{$event}{$self};
+
+			# Automortification would rock.
+			next if scalar keys %{$observations{$observed}{$event}};
+			delete $observations{$observed}{$event};
+			next if scalar keys %{$observations{$observed}};
+			delete $observations{$observed};
+		}
+	}
+
+	# Mortify the whole observer, if needed.
+	delete $observers{$self} unless scalar keys %{$observers{$self}};
+
+	# No more objects for this session?  Time to shut down this session.
+	unless (scalar keys %observers) {
+		$POE::Kernel::poe_kernel->call($self->session_id(), "shutdown");
+	}
 }
 
 1;
