@@ -78,20 +78,20 @@ my $singleton_session_id = POE::Session->create(
 )->ID();
 
 has session_id => (
-	isa			=> 'Str',
-	is			=> 'ro',
+	isa     => 'Str',
+	is      => 'ro',
 	default => $singleton_session_id,
 );
 
 has observers => (
-	isa			=> 'ArrayRef',
-	is			=> 'rw',
-	default	=> sub { [] },
+	isa     => 'ArrayRef',
+	is      => 'rw',
+	default => sub { [] },
 );
 
 has role => (
-	isa			=> 'Str',
-	is			=> 'ro',
+	isa     => 'Str',
+	is      => 'ro',
 );
 
 # Base class.
@@ -100,23 +100,47 @@ sub BUILD {
 	my ($self, $args) = @_;
 
 	foreach my $observer (@{$self->observers()}) {
-		my @required = qw(observer event callback);
+
+		# Observing based on role.
+
+		if (exists $observer->{role}) {
+			my @required = qw(observer role);
+			$self->_check_args(
+				$observer,
+				\@required,
+				[ ],
+			);
+
+			my ($observer, $role) = @$observer{@required};
+
+			$observer->observe_role(
+				observed  => $self,
+				role      => $role,
+			);
+			next;
+		}
+
+		# Observe without a role.
+
+		my @required = qw(observer callback event);
 		$self->_check_args(
 			$observer,
 			\@required,
 			[ ],
 		);
 
-		my ($observer, $event, $callback) = @$observer{@required};
+		my ($observer, $callback, $event) = @$observer{@required};
 
 		$observer->observe(
-			observed	=> $self,
-			event			=> $event,
-			callback	=> $callback,
+			observed  => $self,
+			event     => $event,
+			callback  => $callback,
 		);
-
-		$self->observers([]);
 	}
+
+	# Clear observers; we're done with them.
+	# TODO - Moose probably has a better way.
+	$self->observers([]);
 }
 
 # TODO - Does Moose have sugar for passing named parameters?
@@ -141,10 +165,10 @@ sub observe {
 	};
 
 	my %observation = (
-		observer	=> $self,
-		observed	=> $observed,
-		event			=> $event,
-		callback	=> $callback,
+		observer  => $self,
+		observed  => $observed,
+		event     => $event,
+		callback  => $callback,
 	);
 	weaken $observation{observer};
 
@@ -178,8 +202,8 @@ sub observe_role {
 
 		$self->observe(
 			observed  => $observed,
-			event			=> $1,
-			callback	=> $callback,
+			event     => $1,
+			callback  => $callback,
 		);
 	}
 
@@ -198,7 +222,7 @@ sub emit {
 		[ 'args' ],
 	);
 
-	my $event					= $args->{event};
+	my $event         = $args->{event};
 	my $callback_args = $args->{args} || {};
 
 	while (my ($observer, $observations) = each %{$observations{$self}{$event}}) {
