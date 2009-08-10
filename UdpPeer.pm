@@ -18,7 +18,7 @@ has handle => (
 has max_datagram_size => (
 	isa     => 'Int',
 	is      => 'rw',
-	default => 1024,
+	default => 16384,
 );
 
 sub BUILD {
