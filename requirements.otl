@@ -24,6 +24,15 @@ Framework Requirements
 			Cleverness leads to brittle design.
 			It also leads to unnecessary magic.
 			It also leads to implicit constructs.
+		Avoid metaphors.
+			Metaphors are harmful when writing abstract frameworks.
+			Metaphors are useful tools for creating systems that mimic real things.
+				When designed properly, metaphors provide conceptual and contextual information about a framework.
+			Metaphors are contradictory to abstract design.
+				Metaphors provide specific conceptual frameworks.
+				System designs that fit within these frameworks are elegant.
+				Systems that wish to use other concepts are generally awkward.
+				Adapters can connect between metaphors, but they should not be needed.
 	Namespace Requirements
 		Class names should be brief.
 			Large class names are unwieldy.
