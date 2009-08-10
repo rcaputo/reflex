@@ -46,7 +46,7 @@ sub repeat {
 sub _deliver {
 	my $self = shift;
 	$self->alarm_id(0);
-	$self->emit( event => "ding" );
+	$self->emit( event => "tick" );
 	$self->repeat() if $self->auto_repeat();
 }
 
