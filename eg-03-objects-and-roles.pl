@@ -1,67 +1,24 @@
 #!/usr/bin/env perl
 
+# An observer's callbacks can be inferred by observation roles and the
+# event names that the observed object emits.  In this example, the
+# Delay object is given the role "waitron".  Its "tick" events are
+# routed to the observer's "on_waitron_dig" method.
+
 use warnings;
 use strict;
 
 use Stage;
 use Delay;
+use ExampleHelpers qw(tell);
 
-###
-# Use case: Observe another object, already created.
-
-# Create a Delay object that may emit events befoe it can be observed.
-# Create an observer, which observes it.
-# In this case, all observable objects must be explicitly observed.
-
-my $delay_racy = Delay->new( interval => 1, auto_repeat => 1 );
-
-print "race case watching at ", time(), "\n";
-
-my $watcher_racy = Stage->new();
-$watcher_racy->observe(
-	observed	=> $delay_racy,
-	event			=> "ding",
-	callback	=> sub { print "race case: ding at ", time(), "\n" },
-);
-
-###
-# Use case: Observed object is observed during construction.
-#
-# One of the new requirements is support for truly concurrent objects.
-# The previous use case allows a race condition where the Delay may
-# emit an event before an observer can observe it.
-#
-# Here the observer is created first, and the observation is made
-# during the Delay's construction.
-#
-# TODO - Investigate whether an object may be created in a "stopped"
-# state, then started once observers are in place.
-
-my $watcher_verbose = Stage->new( );
-
-print "verbose case watching at ", time(), "\n";
-
-my $delay_verbose = Delay->new(
-	interval => 1,
-	auto_repeat => 1,
-	observers => [
-		{
-			observer	=> $watcher_verbose,
-			event			=> "ding",
-			callback	=> sub { print "verbose case: ding at ", time(), "\n" },
-		},
-	],
-);
-
-###
-# Use case: Role-based observation.  Delay is created with a role, and
-# the observer's methods are chosen by "on_${role}_${event}" name.  In
-# this case, one class is waiting for delays.
+# Define the watcher class.
 
 {
 	package Watcher;
 	use Moose;
 	extends 'Stage';
+	use ExampleHelpers qw(tell);
 
 	has delay => (
 		isa => 'Delay|Int',
@@ -71,31 +28,34 @@ my $delay_verbose = Delay->new(
 	sub BUILD {
 		my $self = $_[0];
 
+		tell("watcher creates a delay with the waitron role");
 		$self->delay(
-			Delay->new( interval => 1, auto_repeat => 1 )
+			Delay->new(
+				interval => 1,
+				auto_repeat => 1,
+				observers   => [
+					{
+						observer  => $self,
+						role      => "waitron",
+					}
+				],
+			),
 		);
 
-		print "role case: watching at ", time(), "\n";
-
+		# It's possible to mix and match.
+		tell("observing waitroff role, too");
 		$self->observe_role(
-			observed	=> $self->delay(),
-			role			=> "waitron",
-		);
-
-		# Also, we can watch a thing more than once.
-
-		$self->observe_role(
-			observed	=> $self->delay(),
-			role			=> "waitroff",
+			observed  => $self->delay(),
+			role      => "waitroff",
 		);
 	}
 
-	sub on_waitron_ding {
-		print "role case: waitron dinged at ", time(), "\n";
+	sub on_waitron_tick {
+		tell("on_waitron_tick called back");
 	}
 
-	sub on_waitroff_ding {
-		print "role case: waitroff dinged at ", time(), "\n";
+	sub on_waitroff_tick {
+		tell("on_waitroff_tick called back");
 	}
 }
 
