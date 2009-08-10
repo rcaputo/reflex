@@ -1,8 +1,6 @@
 package Delay;
 
 use Moose;
-use Scalar::Util qw(weaken);
-use Stage;
 extends qw(Stage);
 
 has interval => (
@@ -12,11 +10,6 @@ has interval => (
 
 has alarm_id => (
 	isa => 'Str',
-	is => 'rw',
-);
-
-has data => (
-	isa => 'HashRef',
 	is => 'rw',
 );
 

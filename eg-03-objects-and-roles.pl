@@ -21,7 +21,7 @@ use ExampleHelpers qw(tell);
 	use ExampleHelpers qw(tell);
 
 	has delay => (
-		isa => 'Delay|Int',
+		isa => 'Delay',
 		is  => 'rw',
 	);
 
