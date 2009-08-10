@@ -29,16 +29,16 @@ POE::Response Implements Return
 	May include results of a Stage's work.
 POE::Request Example
 	|my $outbound_request = POE::Request->new(
-	|	stage      => $target_stage_object,
-	|	method     => $target_method_name,
-	|	args       => \%maybe_some_parameters,
-	|	on_success => \&resume_here_on_success,
-	|	on_failure => \&or_here_on_failure,
+	|   stage      => $target_stage_object,
+	|   method     => $target_method_name,
+	|   args       => \%maybe_some_parameters,
+	|   on_success => \&resume_here_on_success,
+	|   on_failure => \&or_here_on_failure,
 	|);
 POE::Response Return
 	|$inbound_request->return(
-	|	type => "success",  # could be "failure"
-	|	args => \%maybe_some_return_values,
+	|   type => "success",  # could be "failure"
+	|   args => \%maybe_some_return_values,
 	|);
 Typed Responses
 	Responses are typed.
@@ -97,8 +97,8 @@ Re-calling in Same Request
 	Parent can respond to emitter without a new continuation.
 	Simpler than POE::Request:
 		|$inbound_emit->recall(
-		|	method => $target_method_name,
-		|	args   => \%maybe_some_more_parameters,
+		|   method => $target_method_name,
+		|   args   => \%maybe_some_more_parameters,
 		|);
 		(No target stage.  Goes back to emitter.)
 		(No response type mapping.  Inherited from original request.)
@@ -132,7 +132,7 @@ Inbound Response State
 	Recalls and mutates previously exposed outbound request state.
 	Prefixed with "rsp_".
 	|sub on_success {
-	|	my $rsp_member; # "spay or neuter your pets"
+	|   my $rsp_member; # "spay or neuter your pets"
 	|}
 Parameter State
 	IM IN UR PAD INITIALIZIN UR LEXICALS (obligatory lolcats)
@@ -160,21 +160,21 @@ Activating Lexical State
 Request Roles Are Shorthand
 	Replace on_foo parameters in a request.
 	|my $req_subrequest = POE::Request->new(
-	|	stage   => "resolver",
-	|	method  => "resolve",
-	|	args    => { host => "poe.perl.org" },
-	|	on_success => \&handle_address,
-	|	on_failure => \&handle_error,
-	|	on_timeout => \&handle_timeout,
+	|   stage   => "resolver",
+	|   method  => "resolve",
+	|   args    => { host => "poe.perl.org" },
+	|   on_success => \&handle_address,
+	|   on_failure => \&handle_error,
+	|   on_timeout => \&handle_timeout,
 	|);
 	Bleh.
 Request Roles Are Shorthand
 	Replace on_foo parameters in a request.
 	|my $req_subrequest = POE::Request->new(
-	|	stage   => "resolver",
-	|	method  => "resolve",
-	|	args    => { host => "poe.perl.org" },
-	|	role    => "dnslookup",
+	|   stage   => "resolver",
+	|   method  => "resolve",
+	|   args    => { host => "poe.perl.org" },
+	|   role    => "dnslookup",
 	|);
 	And it scales, too.
 Role-Based Response Dispatch
@@ -218,25 +218,25 @@ POE::Watcher Classes
 POE::Watcher::Delay
 	OO version of POE::Kernel->delay() family.
 	|my $req_timeout = POE::Watcher::Delay->new(
-	|	seconds => 10,
-	|	on_success => "handle_timeout",
-	|	args => \%handle_timeout_parameters,
+	|   seconds => 10,
+	|   on_success => "handle_timeout",
+	|   args => \%handle_timeout_parameters,
 	|);
 POE::Watcher::Input
 	OO version of POE::Kernel->select_read().
 	|my $req_input = POE::Watcher::Input->new(
-	|	handle => $io_handle,
-	|	on_input => "read_from_handle",
-	|	args => \%passed_along,
+	|   handle => $io_handle,
+	|   on_input => "read_from_handle",
+	|   args => \%passed_along,
 	|);
 POE::Watcher::Wheel
 	Encapsulates POE::Wheel classes.
 	|my $req_wheel = POE::Watcher::Wheel->new(
-	|	wheel_class => "POE::Wheel::Run",
-	|	wheel_parameters => {
-	|		...,
-	|		StdoutMethod => "handle_child_stdout",
-	|	}
+	|   wheel_class => "POE::Wheel::Run",
+	|   wheel_parameters => {
+	|       ...,
+	|       StdoutMethod => "handle_child_stdout",
+	|   }
 	|);
 	Wheel's "Event" parameters become "Method" in POE::Stage.
 Why Doing This
