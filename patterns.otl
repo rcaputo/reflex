@@ -262,7 +262,7 @@ Object Interaction Patterns
 			One Response
 			Multiple Responses
 Task Patterns
-	Task Lifespam
+	Task Lifespan
 		Task Commencement
 			Task Begins with Object Instantiation
 			Task Begins upon Request Receipt
@@ -372,7 +372,7 @@ Continuation Patterns
 		Perl supports coroutines by grafting its interpreter onto an event dispatcher.
 		This grafting is done deep in its implementation using sharp implements.
 		Continuations may also be implemented as explicit objects to manage execution state between callbacks.
-		Event frameworks like POE implement such coroutines, albeit at a rather low level.
+		Event frameworks like POE implement such continuations, albeit at a rather low level.
 		Multiple continuations may be active at once.
 		Continuations may be nested, in which case the inner continuation should run to completion before the outer one may resume.
 		Lexical::Persistence
@@ -502,7 +502,7 @@ Miscellaneous Ideas
 				Global addressing should only be used for services.
 			Javascript use of DOM Addressing
 				Torsten Raudssus pointed out that Javascript uses DOM for similar purposes.
-				Code may manipulate page elements gingly or in groups by addressing them with XPath.
+				Code may manipulate page elements singly or in groups by addressing them with XPath.
 				It can be very convenient.
 				This seems to be a subset of Robert Grimes' earlier point.
 				Javascript is manipulating sibling objects within the same container---the page containing the code.
