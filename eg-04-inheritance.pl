@@ -1,8 +1,8 @@
 #!/usr/bin/env perl
 
 # An object's emitted events can also trigger methods in the subclass.
-# This example creates a UDP rot13 server using inheritance rather
-# than the composition archtectures in past examples.
+# This example creates a UDP echo server using inheritance rather than
+# the composition archtectures in past examples.
 
 {
 	package UdpEchoPeer;

@@ -344,24 +344,7 @@ sub _check_args {
 
 sub DEMOLISH {
 	my $self = shift;
-
-	# Find ever observed object, and the list of events observed.
-	# Clean them all out.
-	# Automortify would rock.
-	while (my ($observed, $observations) = each %{$observers{$self}}) {
-		foreach my $event ( map { $_->{event} } @$observations ) {
-			delete $observations{$observed}{$event}{$self};
-			unless (scalar keys %{$observations{$observed}{$event}}) {
-				delete $observations{$observed}{$event};
-				unless (scalar keys %{$observations{$observed}}) {
-					delete $observations{$observed};
-				}
-			}
-		}
-	}
-
-	delete $observers{$self};
-	undef;
+	$self->ignore(observed => $_) foreach keys %{$observers{$self}};
 }
 
 sub ignore {
