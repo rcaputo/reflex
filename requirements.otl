@@ -1,4 +1,4 @@
-[_] 32% Framework Requirements
+[_] 24% Framework Requirements
 	About
 		This document summarizes the best ideas from the patterns document.
 		The patterns document tries to enumerate all available options.
@@ -42,16 +42,16 @@
 			Excessive namespace nesting is unwieldy.
 			The namespace should be organized.
 			How should the namespace be organized?
-	[_] 12% Class and Object Structural Requirements
-		[_] 50% Support full object orientation.
+	[_] 25% Class and Object Structural Requirements
+		[X] 100% Support full object orientation.
 			[X] 100% Support composition of smaller objects into larger ones (has-a).
 			[X] 100% Support composition through direct inheritance.
-			[_] 0% Support composition through class roles.
-			[_] 0% Support composition through runtime object roles.
+			[X] 100% Support composition through class roles.
+			[X] 100% Support composition through runtime watcher roles.
 		[_] 0% Method parameters should follow a single standard.
 			[_] 0% Methods should receive only two parameters.
 				$self - The object being called.
-				$args - A hash reference of named parameter pairs.
+				$message - A Message object, or a subclass.
 				[_] 0% What about out-of-band information, such as other continuations?
 			[_] 0% Methods should standardize their return semantics.
 				What are those semantics?
@@ -60,10 +60,10 @@
 			[_] 0% What should that standard be?
 		[_] 0% Procedural design should be supported.
 			Some people will prefer procedural design.
-	[_] 66% Object Containership Composition Rules
+	[_] 33% Object Containership Composition Rules
 		[X] 100% Containership rules are delegated to the objects themselves.
-		[X] 100% Contained objects may be assigned roles.
-			Roles identify contained objects by non-unique names.
+		[_] 0% Runtime roles may be assigned as part of the observation, not the sub-object.
+			[_] % Multiple watchers may have the same runtime role.
 			Default handler method names may be derived from roles and message types.
 				Sender is a DNS resolver.
 				Sender's role is "resolver".
@@ -94,6 +94,9 @@
 				[X] 100% Subclasses may handle messages emitted by base classes.
 				[X] 100% Subclasses may emit new messages.
 				[_] 0% Subclasses may emit the same message without re-catching it.
+					Implies that events bubble out of the object.
+					Base class emits, and subclasses pass it outward.
+					[_] 0% Do we want to do bubbling like this?
 			[_] 0% Emitted messages are next handled by explicit and role-based observers.
 		[_] 75% All forms of message handler must be supported.
 			[X] 100% Anonymous Coderefs
@@ -108,18 +111,20 @@
 		[_] 0% Messages must be associated with their triggers.
 			[_] 0% One message may trigger another, inner message.
 				[_] 0% The inner message must be associated with the outer message.
+					If object represent tasks, then messages are not needed.
+					[_] 0% Do objects represent tasks?
 				[_] 0% Canceling the outer message must trigger cancelation of all associated inner messages.
 				[_] 0% Generally, all inner messages should complete before an outer message completes.
 					This emulates asynchronous call/return semantics for messages.
 					Task coordination is simplified.
-	[_] % Session Location Rules
-		[_] % Objects may be created in the same session as the creator.
-		[_] % Objects may be created in new sessions, separate from the creator.
-			[_] % New sessions may be started in the same process as the previous one.
-			[_] % New sessions may be started in new threads.
-			[_] % New sessions may be started in other processes.
-				[_] % Processes may be forked at session creation time.
-				[_] % Processes may be already established and attached to.
+	[_] 0% Session Location Rules
+		[_] 0% Objects may be created in the same session as the creator.
+		[_] 0% Objects may be created in new sessions, separate from the creator.
+			[_] 0% New sessions may be started in the same process as the previous one.
+			[_] 0% New sessions may be started in new threads.
+			[_] 0% New sessions may be started in other processes.
+				[_] 0% Processes may be forked at session creation time.
+				[_] 0% Processes may be already established and attached to.
 	[_] 0% Continuation Rules
 		[_] 0% Continuations may be associated with objects.
 			$self is such a continuation.
@@ -131,16 +136,19 @@
 			[_] 0% Receiver data is not visible to the sender.
 			[_] 0% Message-scoped resources should be stored in the message's continuation.
 				[_] 0% Message cancelation triggers associated resource cleanup.
-	[_] 33% Common primitive classes must be provided.
-		[_] 50% Low-level event watchers.
+	[_] 20% Common primitive classes must be provided.
+		[_] 25% Low-level event watchers.
 			[X] 100% I/O
 				[X] 100% Handle
-			[_] 50% Time 
+			[_] 0% Time
 				[_] 0% Alarm
-				[X] 100% Delay
+				[_] 0% Delay
+					[_] 0% Repeat with drift.
+					[_] 0% Repeat without drift.
+				[_] 0% Cron.
 			[_] 0% Signals
 				[_] 0% Signal
-			What else?
+			[_] 0% What else?
 		[_] 16% Primitive program pieces.
 			[_] 0% Application
 			[_] 0% Server
