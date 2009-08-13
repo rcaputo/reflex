@@ -1,4 +1,4 @@
-[_] 24% Framework Requirements
+[_] 31% Framework Requirements
 	About
 		This document summarizes the best ideas from the patterns document.
 		The patterns document tries to enumerate all available options.
@@ -63,7 +63,7 @@
 	[_] 33% Object Containership Composition Rules
 		[X] 100% Containership rules are delegated to the objects themselves.
 		[_] 0% Runtime roles may be assigned as part of the observation, not the sub-object.
-			[_] % Multiple watchers may have the same runtime role.
+			[_] 0% Multiple watchers may have the same runtime role.
 			Default handler method names may be derived from roles and message types.
 				Sender is a DNS resolver.
 				Sender's role is "resolver".
@@ -117,15 +117,15 @@
 				[_] 0% Generally, all inner messages should complete before an outer message completes.
 					This emulates asynchronous call/return semantics for messages.
 					Task coordination is simplified.
-	[_] 0% Session Location Rules
-		[_] 0% Objects may be created in the same session as the creator.
+	[_] 50% Session Location Rules
+		[X] 100% Objects may be created in the same session as the creator.
 		[_] 0% Objects may be created in new sessions, separate from the creator.
 			[_] 0% New sessions may be started in the same process as the previous one.
 			[_] 0% New sessions may be started in new threads.
 			[_] 0% New sessions may be started in other processes.
 				[_] 0% Processes may be forked at session creation time.
 				[_] 0% Processes may be already established and attached to.
-			[_] % Consider POE::Component::IRC for the backbone between processes.
+			[_] 0% Consider POE::Component::IRC for the backbone between processes.
 	[_] 0% Continuation Rules
 		[_] 0% Continuations may be associated with objects.
 			$self is such a continuation.
@@ -137,14 +137,14 @@
 			[_] 0% Receiver data is not visible to the sender.
 			[_] 0% Message-scoped resources should be stored in the message's continuation.
 				[_] 0% Message cancelation triggers associated resource cleanup.
-	[_] 20% Common primitive classes must be provided.
-		[_] 25% Low-level event watchers.
+	[_] 22% Common primitive classes must be provided.
+		[_] 29% Low-level event watchers.
 			[X] 100% I/O
 				[X] 100% Handle
-			[_] 0% Time
+			[_] 16% Time
 				[_] 0% Alarm
-				[_] 0% Delay
-					[_] 0% Repeat with drift.
+				[_] 50% Delay
+					[X] 100% Repeat with drift.
 					[_] 0% Repeat without drift.
 				[_] 0% Cron.
 			[_] 0% Signals
