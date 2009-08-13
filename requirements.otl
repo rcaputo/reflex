@@ -125,6 +125,7 @@
 			[_] 0% New sessions may be started in other processes.
 				[_] 0% Processes may be forked at session creation time.
 				[_] 0% Processes may be already established and attached to.
+			[_] % Consider POE::Component::IRC for the backbone between processes.
 	[_] 0% Continuation Rules
 		[_] 0% Continuations may be associated with objects.
 			$self is such a continuation.
