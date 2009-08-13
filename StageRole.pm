@@ -5,12 +5,6 @@ use Moose::Role;
 use Scalar::Util qw(weaken blessed);
 use Carp qw(croak);
 
-# TODO - I would like %watchers and %observed to be part of each
-# object, but this is currently beyond my Moose skills.
-
-my %observers;
-my %observations;
-
 END {
 	#warn join "; ", keys %observers;
 	#warn join "; ", keys %observations;
@@ -26,18 +20,15 @@ use POE;
 # Disable a warning.
 POE::Kernel->run();
 
+my %session_object_count;
+
 my $singleton_session_id = POE::Session->create(
 	inline_states => {
 		# Make the session conveniently accessible.
 		# Although we're using the $singleton_session_id, so why bother?
 
 		_start => sub {
-			# Stayin' alive!
-			$_[KERNEL]->refcount_increment($_[SESSION]->ID, "beegees");
-		},
-
-		shutdown => sub {
-			$_[KERNEL]->refcount_decrement($_[SESSION]->ID, "beegees");
+			# No-op.
 		},
 
 		# Handle a timer.  Deliver it to its resource.
@@ -132,15 +123,45 @@ has session_id => (
 	default => $singleton_session_id,
 );
 
-has observers => (
-	isa     => 'ArrayRef',
+# What's watching me.
+# watchers()->{$observer} = \@callbacks
+has watchers => (
+	isa     => 'HashRef',
 	is      => 'rw',
-	default => sub { [] },
+	default => sub { {} },
+);
+
+# What's watching me.
+# watchers_by_event()->{$event}->{$observer} = \@callbacks
+has watchers_by_event => (
+	isa     => 'HashRef',
+	is      => 'rw',
+	default => sub { {} },
+);
+
+# What I'm watching.
+# watched_objects()->{$observed}->{$event} = \@observations
+has watched_object_events => (
+	isa     => 'HashRef',
+	is      => 'rw',
+	default => sub { {} },
+);
+
+has watched_objects => (
+	isa     => 'HashRef',
+	is      => 'rw',
+	default => sub { {} },
 );
 
 has role => (
 	isa     => 'Str',
 	is      => 'ro',
+);
+
+has observers => (
+	isa     => 'ArrayRef',
+	is      => 'rw',
+	default => sub { [] },
 );
 
 # Base class.
@@ -190,10 +211,14 @@ sub BUILD {
 	# Clear observers; we're done with them.
 	# TODO - Moose probably has a better way.
 	$self->observers([]);
+
+	# The session has an object.
+	$session_object_count{$self->session_id()}++;
 }
 
 # TODO - Does Moose have sugar for passing named parameters?
 
+# Self is being observed.  Register the observation with self.
 sub observe {
 	my ($self, @args) = @_;
 
@@ -206,24 +231,72 @@ sub observe {
 
 	my ($observed, $event, $callback) = @$args{@required};
 
-	# TODO - Callback magic?
+	# Register what I'm watching.
 
-	push @{$observers{$self}{$observed}}, {
-		event    => $event,
-		callback => $callback,
-	};
-
-	my %observation = (
-		observer  => $self,
-		observed  => $observed,
-		event     => $event,
+	my $observation = {
 		callback  => $callback,
-	);
-	weaken $observation{observer};
+		event     => $event,
+		observed  => $observed,
+	};
+	weaken $observation->{observed};
 
-	push @{$observations{$observed}{$event}{$self}}, \%observation;
+	unless (exists $self->watched_objects()->{$observed}) {
+		$self->watched_objects()->{$observed} = $observed;
+		weaken $self->watched_objects()->{$observed};
+
+		# Keep this object's session alive.
+		$POE::Kernel::poe_kernel->refcount_increment($self->session_id, "in_use");
+	}
+
+	push @{$self->watched_object_events()->{$observed}->{$event}}, $observation;
+
+	# Tell what I'm watching that it's being observed.
+
+	$observed->is_observed($self, $event, $callback);
 
 	undef;
+}
+
+# Self is no longer being observed.  Remove observations from self.
+sub isnt_observed {
+	my ($self, $observer, $events) = @_;
+
+	my @events = @{$events || []};
+
+	unless (@events) {
+		my %events = (
+			map { $_->{event} => $_->{event} }
+			map { @$_ }
+			values %{$self->watchers()}
+		);
+		@events = keys %events;
+	}
+
+	foreach my $event (@events) {
+		delete $self->watchers_by_event()->{$event}->{$observer};
+		delete $self->watchers_by_event()->{$event} unless (
+			scalar keys %{$self->watchers_by_event()->{$event}}
+		);
+		pop @{$self->watchers()->{$observer}};
+	}
+
+	delete $self->watchers()->{$observer} unless (
+		@{$self->watchers()->{$observer}}
+	);
+}
+
+sub is_observed {
+	my ($self, $observer, $event, $callback) = @_;
+
+	my $observation = {
+		callback  => $callback,
+		event     => $event,
+		observer  => $observer,
+	};
+	weaken $observation->{observer};
+
+	push @{$self->watchers_by_event()->{$event}->{$observer}}, $observation;
+	push @{$self->watchers()->{$observer}}, $observation;
 }
 
 sub observe_role {
@@ -272,38 +345,60 @@ sub emit {
 	my $callback_args = $args->{args} || {};
 
 	# Look for self-handling of the event.
+
 	if ($self->can("on_my_$event")) {
 		my $method = "on_my_$event";
 		$self->$method($callback_args);
 		return;
 	}
 
-	# This object isn't observed.
-	return unless exists $observations{$self};
+	# This event isn't observed.
 
-	while (my ($observer, $observations) = each %{$observations{$self}{$event}}) {
-		foreach my $observation (@$observations) {
-			my $callback = $observation->{callback};
+	return unless (
+		exists $self->watchers_by_event()->{$event}
+	);
+
+	# This event is observed.  Broadcast it to observers.
+
+	while (
+		my ($observer, $callbacks) = each %{$self->watchers_by_event()->{$event}}
+	) {
+		CALLBACK: foreach my $callback_rec (@$callbacks) {
+			my $callback = $callback_rec->{callback};
+
+			# Coderef callback.
 
 			if (ref($callback) eq 'CODE') {
+				# Same session.  Just call it.
+				if ($callback_rec->{observer}->session_id() == $self->session_id()) {
+					$callback->($callback_args);
+					next CALLBACK;
+				}
+
+				# Different session.  Post it through.
+				# TODO - Multisession is not tested yet.
 				$poe_kernel->post(
-					$self->session_id(),
-					emit_to_coderef => $callback, $callback_args,
-					$observation->{observer}, $observation->{observed},
+					$callback_rec->{observer}->session_id(), 'emit_to_coderef',
+					$callback, $callback_args,
+					$callback_rec->{observer}, $self, # keep objects alive a bit
 				);
+				next CALLBACK;
+			}
+
+			# Method callback.
+
+			if ($callback_rec->{observer}->session_id() == $self->session_id()) {
+				# Same session.  Just call it.
+				$callback_rec->{observer}->$callback($callback_args);
 			}
 			else {
-				if ($observation->{observer}->session_id() == $self->session_id()) {
-					# Same session.  Just call it.
-					$observation->{observer}->$callback($callback_args);
-				}
-				else {
-					# Different session.  Post it through.
-					$poe_kernel->post(
-						$self->session_id(), 'emit_to_method',
-						 $observation->{observer}, $callback, $callback_args,
-					);
-				}
+				# Different session.  Post it through.
+				# TODO - Multisession is not tested yet.
+				$poe_kernel->post(
+					$callback_rec->{observer}->session_id(), 'emit_to_method',
+					$callback_rec->{observer}, $callback, $callback_args,
+					$self, # keep object alive a bit
+				);
 			}
 		}
 	}
@@ -344,7 +439,24 @@ sub _check_args {
 
 sub DEMOLISH {
 	my $self = shift;
-	$self->ignore(observed => $_) foreach keys %{$observers{$self}};
+
+	# Anything that was watching us, no longer is.
+
+	my %observers = (
+		map { $_->{observer} => $_->{observer} }
+		map { @$_ }
+		values %{$self->watchers()}
+	);
+
+	foreach my $observer (values %observers) {
+		$observer->ignore(observed => $self);
+	}
+
+	# Anything we were observing, no longer is being.
+
+	foreach my $observed (values %{$self->watched_objects()}) {
+		$self->ignore(observed => $observed);
+	}
 }
 
 sub ignore {
@@ -356,60 +468,27 @@ sub ignore {
 		[ 'events' ],
 	);
 
-	my $observed  = $args->{observed};
+	my $observed = $args->{observed};
+	my @events   = @{$args->{events} || []};
 
-	# Not actually observing it.
-	return unless (
-		exists $observers{$self} and
-		exists $observers{$self}{$observed}
-	);
-
-	my @events = @{$args->{events} || []};
 	if (@events) {
-		# Clean out the explicit events.
-		# TODO - Untested.
-		my $i = @{$observers{$self}{$observed}};
-		my %events = map { $_ => 1 } @events;
-		while ($i--) {
-			next unless exists $events{$observers{$self}{$observed}{event}};
-			splice @{$observers{$self}{$observed}}, $i, 1;
-		}
+		delete @{$self->watched_object_events()->{$observed}}{@events};
+		unless (scalar keys %{$self->watched_object_events()->{$observed}}) {
+			delete $self->watched_object_events()->{$observed};
+			delete $self->watched_objects()->{$observed};
 
-		delete $observers{$self}{$observed} unless @{$observers{$self}{$observed}};
+			# Decrement the session's use count.
+			$POE::Kernel::poe_kernel->refcount_decrement($self->session_id, "in_use");
+		}
+		$observed->isnt_observed($self, \@events);
 	}
 	else {
-		# Ignoring all events.
-		@events = (
-			map { $_->{event} }
-			@{$observers{$self}{$observed}}
-		);
+		delete $self->watched_object_events()->{$observed};
+		delete $self->watched_objects()->{$observed};
+		$observed->isnt_observed($self);
 
-		# Quickly clean out the observer.
-		delete $observers{$self}{$observed};
-	}
-
-	delete $observers{$self} unless scalar keys %{$observers{$self}};
-
-	# Clean out specific observations.
-	if (exists $observations{$observed}) {
-		foreach my $event (@events) {
-			next unless exists $observations{$observed}{$event};
-			delete $observations{$observed}{$event}{$self};
-
-			# Automortification would rock.
-			next if scalar keys %{$observations{$observed}{$event}};
-			delete $observations{$observed}{$event};
-			next if scalar keys %{$observations{$observed}};
-			delete $observations{$observed};
-		}
-	}
-
-	# Mortify the whole observer, if needed.
-	delete $observers{$self} unless scalar keys %{$observers{$self}};
-
-	# No more objects for this session?  Time to shut down this session.
-	unless (scalar keys %observers) {
-		$POE::Kernel::poe_kernel->call($self->session_id(), "shutdown");
+		# Decrement the session's use count.
+		$POE::Kernel::poe_kernel->refcount_decrement($self->session_id, "in_use");
 	}
 }
 

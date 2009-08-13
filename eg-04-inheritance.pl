@@ -31,6 +31,8 @@
 	}
 }
 
-my $peer = UdpEchoPeer->new( port => 12345 );
+my $port = 12345;
+my $peer = UdpEchoPeer->new( port => $port );
+print "UDP echo service is listening on port $port.\n";
 POE::Kernel->run();
 exit;

@@ -89,8 +89,6 @@ sub send {
 
 sub destruct {
 	my $self = shift;
-	# TODO - Syntactic sugar? This will be common.
-	$self->ignore(observed => $self->handle());
 	$self->handle(undef);
 }
 

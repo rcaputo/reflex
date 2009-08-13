@@ -35,7 +35,6 @@
 		my $data = $args->{datagram};
 
 		if ($data =~ /^\s*shutdown\s*$/) {
-			$self->ignore(observed => $self->peer());
 			$self->peer(undef);
 			return;
 		}
@@ -49,11 +48,12 @@
 	sub on_peer_error {
 		my ($self, $args) = @_;
 		warn "$args->{op} error $args->{errnum}: $args->{errstr}";
-		$self->ignore(observed => $self->peer());
 		$self->peer(undef);
 	}
 }
 
-my $peer = UdpEchoPeer->new( port => 12345 );
+my $port = 12345;
+my $peer = UdpEchoPeer->new( port => $port );
+print "UDP echo service is listening on port $port.\n";
 POE::Kernel->run();
 exit;
