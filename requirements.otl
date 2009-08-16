@@ -1,4 +1,4 @@
-[_] 30% Framework Requirements
+[_] 33% Framework Requirements
 	About
 		This document summarizes the best ideas from the patterns document.
 		The patterns document tries to enumerate all available options.
@@ -137,8 +137,8 @@
 			[_] 0% Receiver data is not visible to the sender.
 			[_] 0% Message-scoped resources should be stored in the message's continuation.
 				[_] 0% Message cancelation triggers associated resource cleanup.
-	[_] 20% Common primitive classes must be provided.
-		[_] 29% Low-level event watchers.
+	[_] 42% Common primitive classes must be provided.
+		[_] 54% Low-level event watchers.
 			[X] 100% I/O
 				[X] 100% Handle
 			[_] 16% Time
@@ -147,19 +147,22 @@
 					[X] 100% Repeat with drift.
 					[_] 0% Repeat without drift.
 				[_] 0% Cron.
-			[_] 0% Signals
-				[_] 0% Signal
+			[X] 100% Signals
+				[X] 100% Signal
 			[_] 0% What else?
-		[_] 11% Primitive program pieces.
+		[_] 22% Primitive program pieces.
 			[_] 0% Application
 			[_] 0% Server
 			[_] 0% Stream
-			[_] 0% Process
+			[X] 100% Process
 			[_] 0% Resolver
 			[_] 0% TcpClient
 			[_] 0% TcpServer
 			[X] 100% UdpPeer
 			[_] 0% What else?  Probably a lot!
-		[_] % POE Interfaces
-			[_] % Wheel event to callback.
-			[_] % Postback to callback.
+		[_] 50% POE Interfaces
+			[X] 100% Wheel wrappers.
+			[_] 0% Generic Component shims.
+				[_] % Create a postback analog for components that expect postbacks.
+				[_] % Create an event analog for components that expect events.
+				[_] % Components that emit specific events require Wheel-like wrappers.
