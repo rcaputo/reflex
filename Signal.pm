@@ -57,6 +57,7 @@ sub _deliver {
 	# If nobody's watching us, then why did we do it in the road?
 	return unless exists $session_watchers{$signal_name};
 
+	# Calculate the event arguments based on the signal name.
 	my %event_args = ( name => $signal_name );
 	if (exists $signal_param_names{$signal_name}) {
 		my $i = 0;
@@ -65,9 +66,6 @@ sub _deliver {
 			@{$signal_param_names{$signal_name}}
 		);
 	}
-
-	# TODO - Ideally, %event_args would be calculated here based on
-	# $signal_name.
 
 	# Deliver the signal.
 
