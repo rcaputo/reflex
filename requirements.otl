@@ -1,4 +1,4 @@
-[_] 31% Framework Requirements
+[_] 30% Framework Requirements
 	About
 		This document summarizes the best ideas from the patterns document.
 		The patterns document tries to enumerate all available options.
@@ -137,7 +137,7 @@
 			[_] 0% Receiver data is not visible to the sender.
 			[_] 0% Message-scoped resources should be stored in the message's continuation.
 				[_] 0% Message cancelation triggers associated resource cleanup.
-	[_] 22% Common primitive classes must be provided.
+	[_] 20% Common primitive classes must be provided.
 		[_] 29% Low-level event watchers.
 			[X] 100% I/O
 				[X] 100% Handle
@@ -150,10 +150,16 @@
 			[_] 0% Signals
 				[_] 0% Signal
 			[_] 0% What else?
-		[_] 16% Primitive program pieces.
+		[_] 11% Primitive program pieces.
 			[_] 0% Application
 			[_] 0% Server
 			[_] 0% Stream
 			[_] 0% Process
+			[_] 0% Resolver
+			[_] 0% TcpClient
+			[_] 0% TcpServer
 			[X] 100% UdpPeer
 			[_] 0% What else?  Probably a lot!
+		[_] % POE Interfaces
+			[_] % Wheel event to callback.
+			[_] % Postback to callback.

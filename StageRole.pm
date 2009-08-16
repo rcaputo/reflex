@@ -14,7 +14,7 @@ our @CARP_NOT = (__PACKAGE__);
 
 # Singleton POE::Session.
 
-sub POE::Kernel::ASSERT_DEFAULT () { 1 }
+#sub POE::Kernel::ASSERT_DEFAULT () { 1 }
 use POE;
 
 # Disable a warning.
@@ -28,11 +28,15 @@ my $singleton_session_id = POE::Session->create(
 		# Although we're using the $singleton_session_id, so why bother?
 
 		_start => sub {
-			# No-op.
+			# No-op to satisfy assertions.
+			undef;
+		},
+		_stop => sub {
+			# No-op to satisfy assertions.
+			undef;
 		},
 
-		# Handle a timer.  Deliver it to its resource.
-		# $resource is an envelope around a weak POE::Watcher reference.
+		### Timer manipulators and callbacks.
 
 		timer_set => sub {
 			my ($kernel, $interval, $object) = @_[KERNEL, ARG0, ARG1];
@@ -58,6 +62,8 @@ my $singleton_session_id = POE::Session->create(
 			eval { $envelope->[0]->_deliver(); };
 			die if $@;
 		},
+
+		### I/O manipulators and callbacks.
 
 		select_on => sub {
 			my ($kernel, $object, @selects) = @_[KERNEL, ARG0..$#_];
@@ -100,19 +106,71 @@ my $singleton_session_id = POE::Session->create(
 			die if $@;
 		},
 
+		### Signals.
+
+		signal_happened => sub {
+			Signal->_deliver(@_[ARG0..$#_]);
+		},
+
+		signal_child_watch => sub {
+			my ($kernel, $stage, $pid) = @_;
+			$kernel->sig_child($pid => $stage->poe_event_name());
+		},
+
+		### Cross-session emit() is converted into these events.
+
 		emit_to_coderef => sub {
 			my ($callback, $args) = @_[ARG0, ARG1];
 			$callback->($args);
 		},
 
 		emit_to_method => sub {
-			my ($observer, $method, $args) = @_[ARG0..ARG2];
+			my ($observer, $method, $args) = @_[ARG0..$#_];
 			$observer->$method($args);
 		},
 
-		_stop => sub {
-			#warn "stage session stopped";
-			undef;
+		# Used to call a stage's method in the appropriate session.
+		call_gate => sub {
+			my ($stage, $method, @args) = @_[ARG0..$#_];
+			$stage->$method(@args);
+		},
+
+		### Support POE::Wheel classes.
+
+		# Deliver to wheels based on the wheel ID.  Different wheels pass
+		# their IDs in different ARGn offsets, so we need a few of these.
+		wheel_setup => sub {
+			my ($wheel_class, $args, $stage) = @_[ARG0, ARG1, ARG2];
+			$stage->create_wheel($wheel_class, $args);
+		},
+		wheel_shutodnw => sub {
+			my $stage = $_[ARG0];
+			$stage->demolish_wheel();
+		},
+		wheel_event_0 => sub {
+			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
+			eval { "Wheel$1"->deliver(0, @_[ARG0..$#_]); };
+			die if $@;
+		},
+		wheel_event_1 => sub {
+			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
+			eval { "Wheel$1"->deliver(1, @_[ARG0..$#_]); };
+			die if $@;
+		},
+		wheel_event_2 => sub {
+			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
+			eval { "Wheel$1"->deliver(2, @_[ARG0..$#_]); };
+			die if $@;
+		},
+		wheel_event_3 => sub {
+			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
+			eval { "Wheel$1"->deliver(3, @_[ARG0..$#_]); };
+			die if $@;
+		},
+		wheel_event_4 => sub {
+			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
+			eval { "Wheel$1"->deliver(4, @_[ARG0..$#_]); };
+			die if $@;
 		},
 	},
 )->ID();
@@ -370,7 +428,10 @@ sub emit {
 
 			if (ref($callback) eq 'CODE') {
 				# Same session.  Just call it.
-				if ($callback_rec->{observer}->session_id() == $self->session_id()) {
+				if (
+					$callback_rec->{observer}->session_id() eq
+					$POE::Kernel::poe_kernel->get_active_session()->ID
+				) {
 					$callback->($callback_args);
 					next CALLBACK;
 				}
@@ -387,7 +448,10 @@ sub emit {
 
 			# Method callback.
 
-			if ($callback_rec->{observer}->session_id() == $self->session_id()) {
+			if (
+					$callback_rec->{observer}->session_id() eq
+					$POE::Kernel::poe_kernel->get_active_session()->ID
+			) {
 				# Same session.  Just call it.
 				$callback_rec->{observer}->$callback($callback_args);
 			}
