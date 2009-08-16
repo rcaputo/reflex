@@ -1,4 +1,4 @@
-[_] 33% Framework Requirements
+[_] 35% Framework Requirements
 	About
 		This document summarizes the best ideas from the patterns document.
 		The patterns document tries to enumerate all available options.
@@ -163,6 +163,9 @@
 		[_] 50% POE Interfaces
 			[X] 100% Wheel wrappers.
 			[_] 0% Generic Component shims.
-				[_] % Create a postback analog for components that expect postbacks.
-				[_] % Create an event analog for components that expect events.
-				[_] % Components that emit specific events require Wheel-like wrappers.
+				[_] 0% Create a postback analog for components that expect postbacks.
+				[_] 0% Create an event analog for components that expect events.
+				[_] 0% Components that emit specific events require Wheel-like wrappers.
+	[_] 50% Optimizations.
+		[X] 100% Only $kernel->call() when we need to switch sessions.
+		[_] 0% Consolidate POE-specific code out into a single role.

@@ -8,6 +8,7 @@ use Scalar::Util qw(weaken);
 # So we must map each distinct signal to all the interested objects.
 
 my %session_watchers;
+my %signal_param_names;
 
 has name => (
 	isa     => 'Str|Undef',
@@ -15,8 +16,9 @@ has name => (
 	default => 'TERM',
 );
 
-sub event_param_names {
-	return [ ];
+sub _register_signal_params {
+	my ($class, @names) = @_;
+	$signal_param_names{$class->meta->get_attribute("name")->default()} = \@names;
 }
 
 sub BUILD {
@@ -36,8 +38,55 @@ sub BUILD {
 	}
 }
 
-sub DESTROY {
+sub start_watching {
 	my $self = shift;
+	return unless $self->call_gate("start_watching");
+	$POE::Kernel::poe_kernel->sig($self->name(), "signal_happened");
+}
+
+sub stop_watching {
+	my $self = shift;
+	return unless $self->call_gate("stop_watching");
+	$POE::Kernel::poe_kernel->sig($self->name(), undef);
+	$self->name(undef);
+}
+
+sub _deliver {
+	my ($class, $signal_name, @signal_args) = @_;
+
+	# If nobody's watching us, then why did we do it in the road?
+	return unless exists $session_watchers{$signal_name};
+
+	my %event_args = ( name => $signal_name );
+	if (exists $signal_param_names{$signal_name}) {
+		my $i = 0;
+		%event_args = (
+			map { $_ => $signal_args[$i++] }
+			@{$signal_param_names{$signal_name}}
+		);
+	}
+
+	# TODO - Ideally, %event_args would be calculated here based on
+	# $signal_name.
+
+	# Deliver the signal.
+
+	while (
+		my ($session_id, $stage_rec) = each %{$session_watchers{$signal_name}}
+	) {
+		foreach my $stage (values %$stage_rec) {
+			$stage->emit(
+				event => 'signal',
+				args  => \%event_args,
+			);
+		}
+	}
+}
+
+sub DEMOLISH {
+	my $self = shift;
+
+	return unless defined $self->name();
 
 	my $sw = $session_watchers{$self->name()}->{$self->session_id()};
 	delete $sw->{$self};
@@ -53,62 +102,7 @@ sub DESTROY {
 	}
 }
 
-sub start_watching {
-	my $self = shift;
-
-	return $POE::Kernel::poe_kernel->call(
-		$self->session_id(), "call_gate", $self, "start_watching", @_
-	) if (
-		$self->session_id() ne $POE::Kernel::poe_kernel->get_active_session()->ID()
-	);
-
-	$POE::Kernel::poe_kernel->sig($self->name(), "signal_happened");
-}
-
-sub stop_watching {
-	my $self = shift;
-
-	return $POE::Kernel::poe_kernel->call(
-		$self->session_id(), "call_gate", $self, "stop_watching", @_
-	) if (
-		$self->session_id() ne $POE::Kernel::poe_kernel->get_active_session()->ID()
-	);
-
-	$POE::Kernel::poe_kernel->sig($self->name(), undef);
-	$self->name(undef);
-}
-
-sub _deliver {
-	my ($class, $signal_name, @signal_args) = @_;
-
-	# If nobody's watching us, then why did we do it in the road?
-	return unless exists $session_watchers{$signal_name};
-
-	# Deliver the signal.
-
-	while (
-		my ($session_id, $stage_rec) = each %{$session_watchers{$signal_name}}
-	) {
-		foreach my $stage (values %$stage_rec) {
-
-			# TODO - All stages here theoretically have the same class, and
-			# therefore the same parameters.  Don't recalculate %args.
-			my $i = 0;
-			my $param_names = $stage->event_param_names();
-			my %event_args  = map { $_ => $signal_args[$i++] } @$param_names;
-			$event_args{name} = $signal_name;
-
-			$stage->emit(
-				event => 'signal',
-				args  => \%event_args,
-			);
-		}
-	}
-}
-
-sub DEMOLISH {
-	my $self = shift;
-	$self->stop_watching() if defined $self->name();
-}
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
 1;

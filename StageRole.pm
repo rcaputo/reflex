@@ -13,8 +13,11 @@ END {
 our @CARP_NOT = (__PACKAGE__);
 
 # Singleton POE::Session.
+# TODO - Extract the POE bits into another role.
 
+# TODO - How to prevent this from being redefined?
 #sub POE::Kernel::ASSERT_DEFAULT () { 1 }
+
 use POE;
 
 # Disable a warning.
@@ -38,83 +41,22 @@ my $singleton_session_id = POE::Session->create(
 
 		### Timer manipulators and callbacks.
 
-		timer_set => sub {
-			my ($kernel, $interval, $object) = @_[KERNEL, ARG0, ARG1];
-
-			# Weaken the object so it may destruct while there's a timer.
-			my $envelope = [ $object ];
-			weaken $envelope->[0];
-
-			return $kernel->delay_set(
-				'timer_due',
-				$interval,
-				$envelope,
-			);
-		},
-
-		timer_clear => sub {
-			my ($kernel, $timer_id) = @_[KERNEL, ARG0];
-			$kernel->alarm_remove($timer_id);
-		},
-
 		timer_due => sub {
 			my $envelope = $_[ARG0];
-			eval { $envelope->[0]->_deliver(); };
-			die if $@;
+			$envelope->[0]->_deliver();
 		},
 
 		### I/O manipulators and callbacks.
 
-		select_on => sub {
-			my ($kernel, $object, @selects) = @_[KERNEL, ARG0..$#_];
-
-			my $envelope = [ $object ];
-			weaken $envelope->[0];
-
-			foreach my $select (@selects) {
-				my ($mode, $handle) = @$select;
-				my $method = "select_$mode";
-				$kernel->$method($handle, 'select_ready', $envelope, $mode);
-			}
-		},
-
-		select_off => sub {
-			my ($kernel, @selects) = @_[KERNEL, ARG0..$#_];
-
-			foreach my $select (@selects) {
-				my ($mode, $handle) = @$select;
-				my $method = "select_$mode";
-				$kernel->$method($handle, undef);
-			}
-		},
-
 		select_ready => sub {
 			my ($handle, $envelope, $mode) = @_[ARG0, ARG2, ARG3];
-			eval { $envelope->[0]->_deliver($handle, $mode) };
-			die if $@;
-		},
-
-		select_read_ready => sub {
-			my $envelope = $_[ARG2];
-			eval { $envelope->[0]->_deliver("read") };
-			die if $@;
-		},
-
-		select_read_ready => sub {
-			my $envelope = $_[ARG2];
-			eval { $envelope->[0]->_deliver("read") };
-			die if $@;
+			$envelope->[0]->_deliver($handle, $mode);
 		},
 
 		### Signals.
 
 		signal_happened => sub {
 			Signal->_deliver(@_[ARG0..$#_]);
-		},
-
-		signal_child_watch => sub {
-			my ($kernel, $stage, $pid) = @_;
-			$kernel->sig_child($pid => $stage->poe_event_name());
 		},
 
 		### Cross-session emit() is converted into these events.
@@ -129,7 +71,8 @@ my $singleton_session_id = POE::Session->create(
 			$observer->$method($args);
 		},
 
-		# Used to call a stage's method in the appropriate session.
+		# call_gate() uses this to call methods in the right session.
+
 		call_gate => sub {
 			my ($stage, $method, @args) = @_[ARG0..$#_];
 			$stage->$method(@args);
@@ -139,38 +82,25 @@ my $singleton_session_id = POE::Session->create(
 
 		# Deliver to wheels based on the wheel ID.  Different wheels pass
 		# their IDs in different ARGn offsets, so we need a few of these.
-		wheel_setup => sub {
-			my ($wheel_class, $args, $stage) = @_[ARG0, ARG1, ARG2];
-			$stage->create_wheel($wheel_class, $args);
-		},
-		wheel_shutodnw => sub {
-			my $stage = $_[ARG0];
-			$stage->demolish_wheel();
-		},
 		wheel_event_0 => sub {
 			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
-			eval { "Wheel$1"->deliver(0, @_[ARG0..$#_]); };
-			die if $@;
+			"Wheel$1"->_deliver(0, @_[ARG0..$#_]);
 		},
 		wheel_event_1 => sub {
 			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
-			eval { "Wheel$1"->deliver(1, @_[ARG0..$#_]); };
-			die if $@;
+			"Wheel$1"->_deliver(1, @_[ARG0..$#_]);
 		},
 		wheel_event_2 => sub {
 			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
-			eval { "Wheel$1"->deliver(2, @_[ARG0..$#_]); };
-			die if $@;
+			"Wheel$1"->_deliver(2, @_[ARG0..$#_]);
 		},
 		wheel_event_3 => sub {
 			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
-			eval { "Wheel$1"->deliver(3, @_[ARG0..$#_]); };
-			die if $@;
+			"Wheel$1"->_deliver(3, @_[ARG0..$#_]);
 		},
 		wheel_event_4 => sub {
 			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
-			eval { "Wheel$1"->deliver(4, @_[ARG0..$#_]); };
-			die if $@;
+			"Wheel$1"->_deliver(4, @_[ARG0..$#_]);
 		},
 	},
 )->ID();
@@ -267,7 +197,7 @@ sub BUILD {
 	}
 
 	# Clear observers; we're done with them.
-	# TODO - Moose probably has a better way.
+	# TODO - Moose probably has a better way of validating parameters.
 	$self->observers([]);
 
 	# The session has an object.
@@ -555,5 +485,23 @@ sub ignore {
 		$POE::Kernel::poe_kernel->refcount_decrement($self->session_id, "in_use");
 	}
 }
+
+# http://en.wikipedia.org/wiki/Call_gate
+
+sub call_gate {
+	my ($self, $method) = @_;
+
+	return 1 if (
+		$self->session_id() eq $POE::Kernel::poe_kernel->get_active_session()->ID()
+	);
+
+	$POE::Kernel::poe_kernel->call(
+		$self->session_id(), "call_gate", $self, $method, @_[2..$#_]
+	);
+	return 0;
+}
+
+no Moose;
+#__PACKAGE__->meta()->make_immutable();
 
 1;

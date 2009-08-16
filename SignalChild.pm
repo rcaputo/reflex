@@ -14,34 +14,22 @@ has 'pid' => (
 	default   => sub { die "required" },
 );
 
-sub event_param_names {
-	return [qw(pid exit)];
-}
+__PACKAGE__->_register_signal_params(qw(pid exit));
 
 sub start_watching {
 	my $self = shift;
-
-	return $POE::Kernel::poe_kernel->call(
-		$self->session_id(), "call_gate", $self, "start_watching", @_
-	) if (
-		$self->session_id() ne $POE::Kernel::poe_kernel->get_active_session()->ID()
-	);
-
+	return unless $self->call_gate("start_watching");
 	$POE::Kernel::poe_kernel->sig_child($self->pid(), "signal_happened");
 }
 
 sub stop_watching {
 	my $self = shift;
-
-	return $POE::Kernel::poe_kernel->call(
-		$self->session_id(), "call_gate", $self, "stop_watching", @_
-	) if (
-		$self->session_id() ne $POE::Kernel::poe_kernel->get_active_session()->ID()
-	);
-
+	return unless $self->call_gate("stop_watching");
 	$POE::Kernel::poe_kernel->sig_child($self->pid(), undef);
 	$self->name(undef);
 }
 
-1;
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
+1;

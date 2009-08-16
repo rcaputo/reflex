@@ -4,36 +4,6 @@ extends 'Stage';
 use Scalar::Util qw(weaken);
 use POE::Wheel;
 
-#has event_to_index => (
-#	isa     => 'HashRef',
-#	is      => 'ro',
-#	default => sub { die "override" },
-#);
-#
-#has event_emit_names => (
-#	isa     => 'ArrayRef[Str]',
-#	is      => 'ro',
-#	default => sub { die "override" },
-#);
-#
-#has event_param_names => (
-#	isa     => 'ArrayRef[ArrayRef]',
-#	is      => 'ro',
-#	default => sub { die "override" },
-#);
-#
-#has wheel_class => (
-#	isa     => 'Str',
-#	is      => 'ro',
-#	default => sub { die "override" },
-#);
-#
-#has 'valid_params' => (
-#	isa     => 'HashRef',
-#	is      => 'ro',
-#	default => sub { die "override" },
-#);
-
 has wheel => (
 	isa     => 'Object|Undef',
 	is      => 'rw',
@@ -57,21 +27,14 @@ sub BUILD {
 		$args->{$wheel_param} = "wheel_event_$event_idx";
 	}
 
-	if (
-		$self->session_id() eq $POE::Kernel::poe_kernel->get_active_session()->ID()
-	) {
-		$self->create_wheel($wheel_class, $args);
-	}
-	else {
-		$POE::Kernel::poe_kernel->call(
-			$self->session_id(), "wheel_setup",
-			$wheel_class, $args, $self
-		);
-	}
+	$self->create_wheel($wheel_class, $args);
 }
 
 sub create_wheel {
 	my ($self, $wheel_class, $args) = @_;
+
+	return unless $self->call_gate("create_wheel", $wheel_class, $args);
+
 	my $wheel = $wheel_class->new( %$args );
 	$self->wheel($wheel);
 
@@ -86,28 +49,17 @@ sub wheel_id {
 
 sub DEMOLISH {
 	my $self = shift;
-	if (
-		$self->session_id() eq $POE::Kernel::poe_kernel->get_active_session()->ID()
-	) {
-		$self->demolish_wheel($self);
-	}
-	else {
-		$POE::Kernel::poe_kernel->call(
-			$self->session_id(), "wheel_shutdown",
-			$$self
-		);
-	}
+	$self->demolish_wheel();
 }
 
 sub demolish_wheel {
 	my $self = shift;
-	if (defined $self->wheel()) {
-		delete $wheel_id_to_object{ $self->wheel_id() };
-		$self->wheel(undef);
-	}
+	return unless defined($self->wheel()) and $self->call_gate("demolish_wheel");
+	delete $wheel_id_to_object{ $self->wheel_id() };
+	$self->wheel(undef);
 }
 
-sub deliver {
+sub _deliver {
 	my ($class, $event_idx, @event_args) = @_;
 
 	# Map parameter offsets to named parameters.
@@ -134,5 +86,8 @@ sub deliver {
 		args  => \%event_args,
 	);
 }
+
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
 1;
