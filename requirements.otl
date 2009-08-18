@@ -64,7 +64,7 @@
 		[X] 100% Containership rules are delegated to the objects themselves.
 		[_] 0% Runtime roles may be assigned as part of the observation, not the sub-object.
 			[_] 0% Multiple watchers may have the same runtime role.
-			Default handler method names may be derived from roles and message types.
+			[_] 0% Default handler method names may be derived from roles and message types.
 				Sender is a DNS resolver.
 				Sender's role is "resolver".
 				Sender emits a "success" event.
