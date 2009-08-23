@@ -8,7 +8,6 @@
 	use Moose;
 	extends 'Stage';
 	use WheelRun;
-
 	use ObserverTrait;
 
 	has child => (
