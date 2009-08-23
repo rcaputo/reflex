@@ -1,9 +1,18 @@
 package ObserverTrait;
 use Moose::Role;
+use Scalar::Util qw(weaken);
 
 has trigger => (
 	is => 'ro',
 	default => sub {
+		my $meta_self = shift;
+
+		# $meta_self->name() is not set yet.
+		# Weaken $meta_self so that the closure isn't fatal.
+		# TODO - If we can get the name out here, then we save a name()
+		# method call every trigger.
+		weaken $meta_self;
+
 		sub {
 			my ($self, $value) = @_;
 
@@ -12,9 +21,10 @@ has trigger => (
 			# destructing on clear, which also triggers ignore().
 
 			return unless defined $value;
+
 			$self->observe_role(
 				observed  => $value,
-				role      => $self->meta->get_attribute('child')->role(),
+				role      => $self->meta->get_attribute($meta_self->name())->role(),
 			);
 		}
 	}
