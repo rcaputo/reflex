@@ -501,6 +501,10 @@ sub call_gate {
 	return 0;
 }
 
+sub run_all {
+	POE::Kernel->run();
+}
+
 no Moose;
 #__PACKAGE__->meta()->make_immutable();
 
