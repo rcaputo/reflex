@@ -8,17 +8,35 @@ has trigger => (
 		my $meta_self = shift;
 
 		# $meta_self->name() is not set yet.
-		# Weaken $meta_self so that the closure isn't fatal.
-		weaken $meta_self;
+		# Weaken $meta_self so that the closure isn't permanent.
+
+		my $event;
+		#my $last_value;
 
 		sub {
 			my ($self, $value) = @_;
+
+			# Edge-detection.  Only emit when a value has changed.
+			# TODO - Make this logic optional.  Sometimes an application
+			# needs level logic rather than edge logic.
+
+			#return if (
+			#	(!defined($value) and !defined($last_value))
+			#		or
+			#	(defined($value) and defined($last_value) and $value eq $last_value)
+			#);
+			#
+			#$last_value = $value;
+			#weaken $last_value if defined($last_value) and ref($last_value);
 
 			$self->emit(
 				args => {
 					value => $value,
 				},
-				event => $self->meta->get_attribute($meta_self->name())->event(),
+				event => (
+					$event ||=
+					$self->meta->find_attribute_by_name($meta_self->name())->event()
+				),
 			);
 		}
 	}
@@ -27,7 +45,6 @@ has trigger => (
 has event => (
 	isa     => 'Str',
 	is      => 'ro',
-	lazy    => 1,
 	default => sub {
 		my $self = shift;
 		return $self->name();

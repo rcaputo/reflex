@@ -12,6 +12,7 @@ has trigger => (
 		# TODO - If we can get the name out here, then we save a name()
 		# method call every trigger.
 		weaken $meta_self;
+		my $role;
 
 		sub {
 			my ($self, $value) = @_;
@@ -24,7 +25,10 @@ has trigger => (
 
 			$self->observe_role(
 				observed  => $value,
-				role      => $self->meta->get_attribute($meta_self->name())->role(),
+				role      => (
+					$role ||=
+					$self->meta->find_attribute_by_name($meta_self->name())->role()
+				),
 			);
 		}
 	}
