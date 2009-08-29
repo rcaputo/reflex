@@ -157,6 +157,17 @@ has observers => (
 sub BUILD {
 	my ($self, $args) = @_;
 
+	foreach my $setup (
+		(grep { $_->does('Emitter') } $self->meta()->get_all_attributes()),
+		(grep { $_->does('Observer') } $self->meta()->get_all_attributes())
+	) {
+		my $callback = $setup->setup();
+		if (defined $callback) {
+			my $member = $setup->name();
+			$self->$member( $callback->() ); # TODO - Proper parameters!
+		}
+	}
+
 	foreach my $observer (@{$self->observers()}) {
 
 		# Observing based on role.
@@ -431,7 +442,7 @@ sub _check_args {
 # The filehash should destroy everything it observes.
 # All observations of this object must be manually demolished.
 
-sub DEMOLISH {
+sub shutdown {
 	my $self = shift;
 
 	# Anything that was watching us, no longer is.
@@ -451,6 +462,11 @@ sub DEMOLISH {
 	foreach my $observed (values %{$self->watched_objects()}) {
 		$self->ignore(observed => $observed);
 	}
+}
+
+sub DEMOLISH {
+	my $self = shift;
+	$self->shutdown();
 }
 
 sub ignore {

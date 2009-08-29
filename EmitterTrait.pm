@@ -42,6 +42,28 @@ has trigger => (
 	}
 );
 
+has initializer => (
+	is => 'ro',
+	default => sub {
+		my $role;
+		return sub {
+			my ($self, $value, $callback, $attr) = @_;
+			my $event;
+			$self->emit(
+				args => {
+					value => $value,
+				},
+				event => (
+					$event ||=
+					$self->meta->find_attribute_by_name($attr->name())->event()
+				),
+			);
+
+			$callback->($value);
+		}
+	},
+);
+
 has event => (
 	isa     => 'Str',
 	is      => 'ro',
@@ -49,6 +71,11 @@ has event => (
 		my $self = shift;
 		return $self->name();
 	},
+);
+
+has setup => (
+	isa     => 'CodeRef',
+	is      => 'ro',
 );
 
 package Moose::Meta::Attribute::Custom::Trait::Emitter;
