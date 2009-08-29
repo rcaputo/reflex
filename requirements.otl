@@ -1,4 +1,4 @@
-[_] 35% Framework Requirements
+[_] 41% Framework Requirements
 	About
 		This document summarizes the best ideas from the patterns document.
 		The patterns document tries to enumerate all available options.
@@ -60,22 +60,23 @@
 			[_] 0% What should that standard be?
 		[_] 0% Procedural design should be supported.
 			Some people will prefer procedural design.
-	[_] 33% Object Containership Composition Rules
+	[_] 83% Object Containership Composition Rules
 		[X] 100% Containership rules are delegated to the objects themselves.
-		[_] 0% Runtime roles may be assigned as part of the observation, not the sub-object.
+		[_] 50% Runtime roles may be assigned as part of the observation, not the sub-object.
 			[_] 0% Multiple watchers may have the same runtime role.
-			[_] 0% Default handler method names may be derived from roles and message types.
+			[X] 100% Default handler method names may be derived from roles and message types.
 				Sender is a DNS resolver.
 				Sender's role is "resolver".
 				Sender emits a "success" event.
 				Container may define an on_resolver_success() method to handle the event.
-		[_] 0% Methods
-			[_] 0% insert
-			[_] 0% remove
-			[_] 0% find
+		[X] 100% Methods
+			[X] 100% Containership methods are defined by Moose traits.
+				[X] 100% Moose Observer trait implies that the stored object will be observed by the owner.
+				[X] 100% Moose Emitter trait implies that changing the attribute emits an event to observers.
+				[X] 100% Moose introspection allows objects to find their contents.
 	[X] 100% Class Inheritance Rules
 		[X] 100% Class inheritance rules are delegated to Moose.
-	[_] 19% Messaging Requirements
+	[_] 22% Messaging Requirements
 		[_] 0% Object command interfaces must be objects.
 			[_] 0% Methods on the objects themselves may pass messages into themselves.
 				Synchronous method calls are translated into asynchronous messages.
@@ -86,7 +87,7 @@
 				Synchronous method calls are translated into asynchronous messages.
 		[_] 0% Local accessors and simple mutators must be synchronous.
 			Messages for local accessors and mutators is unnecessary overhead.
-		[_] 22% Objects must be permitted to emit messages into their containers.
+		[_] 38% Objects must be permitted to emit messages into their containers.
 			[_] 0% Message emission is optional, depending on the use case.
 				[_] 0% Define a use case where message emission is required.
 				[_] 0% Define a use case where it's not.
@@ -97,7 +98,9 @@
 					Implies that events bubble out of the object.
 					Base class emits, and subclasses pass it outward.
 					[_] 0% Do we want to do bubbling like this?
-			[_] 0% Emitted messages are next handled by explicit and role-based observers.
+			[_] 50% Emitted messages are next handled by explicit and role-based observers.
+				[_] 0% Explicit observers.
+				[X] 100% Role-based observers.
 		[_] 75% All forms of message handler must be supported.
 			[X] 100% Anonymous Coderefs
 				Anonymous coderefs support closures.
