@@ -1,4 +1,6 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
+
+# Exercise the new "setup" option for Emitter and Observer traits.
 
 {
 	package Counter;
@@ -47,6 +49,9 @@
 		$self->counter(undef) if $args->{value} >= 5;
 	}
 }
+
+use warnings;
+use strict;
 
 my $w = Watcher->new();
 Stage->run_all();
