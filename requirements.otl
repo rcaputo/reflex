@@ -38,6 +38,8 @@
 			Large class names are unwieldy.
 			Objects should be under a single top-level namespace.
 				What single top-level namespace should be used?
+				Bacon - Basic Asynchronous Cooperative Object Networks?
+				???
 		[_] 0% Choose a relatively flat namespace for the framework.
 			Excessive namespace nesting is unwieldy.
 			The namespace should be organized.
@@ -125,8 +127,12 @@
 		[_] 0% Objects may be created in new sessions, separate from the creator.
 			[_] 0% New sessions may be started in the same process as the previous one.
 			[_] 0% New sessions may be started in new threads.
+				[_] 0% Investigate whether we want to support threads.
+					Threads support may be more efficient on Windows.
+					Perhaps transparently thread/fork depending on $^O.
 			[_] 0% New sessions may be started in other processes.
 				[_] 0% Processes may be forked at session creation time.
+					Caveat: The new session is executed in isolation.
 				[_] 0% Processes may be already established and attached to.
 			[_] 0% Consider POE::Component::IKC for the backbone between processes.
 			[_] 0% Consider MDNS for finding objects.
