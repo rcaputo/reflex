@@ -174,7 +174,62 @@
 			[X] 100% Wheel wrappers.
 			[_] 0% Generic Component shims.
 				[_] 0% Create a postback analog for components that expect postbacks.
+					About
+						Creates a coderef that, when called, posts a message to the object's session, with routing information back to the object.
+						Postbacks use closures to pass @passthru_params to the callback.
+						Closures can also handle routing information.
+						Usage syntax must be identical to POE::Stage postbacks.
+						Creation syntax may differ from POE::Stage postbacks.
+							Identical creation syntax would be to allow others to create them for us.
+							However, most eternal postback creators use $_[SENDER]->postback().
+							$_[SENDER] is POE::Stage's session, not an individual object.
+							Therefore, components that call $_[SENDER]->postback() will not work.
+							Therefore, $_[SENDER]->postback() syntax is not needed.
+						To support identical creation syntax.
+							$_[SENDER] must be a session that maps directly to a single object.
+							It could be a dynamically created session for the purpose of interfacing.
+							Indirection would be heavy.
+							Consider it for a future revision.
+					Syntax
+						my $pb = $self->postback($method_name, @passthru_params);
+						$pb->(@callback_params);
+					Dispatch Mechanism
+						[_] 0% TODO
 				[_] 0% Create an event analog for components that expect events.
+					About
+						Many components allow callers to specify return events.
+						We create a unique, anonymous event that calls a specific object and method upon dispatch.
+						We can pass this event to components that expect them.
+					Syntax if anonymous events may be blessed objects
+						my $event = $self->anon_event($method_name, @passthru_params);
+						$_[KERNEL]->post($event, @callback_params);
+					Syntax if events may not be blessed
+						[_] 0% TODO
+							Some explicit cleanup must be provided and adhered to.
+							Cannot rely on object DESTROY or DEMOLISH to automatically clean up for us.
+					Dispatch Mechanism
+						_default
+							Unknown events are passed through a lookup table.
+							If they exist in the table, they are dispatched to the appropriate $object->$method().
+							Dispatch goes through an additional table.
+						state()
+							POE::Kernel->state() is used to register handlers for each anonymous event.
+							Failure to clean up will result in memory leaks.
+							There is less runtime indirection.
+				[_] 0% POE::Component::IRC
+					About
+						A client session creates the component, to be used as a service.
+						The client session registers interest in one or more predefined events.
+						The evens are posted to the session of interest.
+					Syntax
+						[_] 0% TODO
+					Dispatch Mechanism
+						Sender Interest
+							The object creates the component.
+							The object registers interest in all events from the component.
+							The object registers session-interest in one or more events from the component.
+						Others?
+							[_] 0% TODO
 				[_] 0% Components that emit specific events require Wheel-like wrappers.
 	[_] 50% Optimizations.
 		[X] 100% Only $kernel->call() when we need to switch sessions.
