@@ -147,7 +147,7 @@
 			[_] 0% Receiver data is not visible to the sender.
 			[_] 0% Message-scoped resources should be stored in the message's continuation.
 				[_] 0% Message cancelation triggers associated resource cleanup.
-	[_] 42% Common primitive classes must be provided.
+	[_] 46% Common primitive classes must be provided.
 		[_] 54% Low-level event watchers.
 			[X] 100% I/O
 				[X] 100% Handle
@@ -170,10 +170,10 @@
 			[_] 0% TcpServer
 			[X] 100% UdpPeer
 			[_] 0% What else?  Probably a lot!
-		[_] 50% POE Interfaces
+		[_] 62% POE Interfaces
 			[X] 100% Wheel wrappers.
-			[_] 0% Generic Component shims.
-				[_] 0% Create a postback analog for components that expect postbacks.
+			[_] 25% Generic Component shims.
+				[X] 100% Create a postback analog for components that expect postbacks.
 					About
 						Creates a coderef that, when called, posts a message to the object's session, with routing information back to the object.
 						Postbacks use closures to pass @passthru_params to the callback.
@@ -190,11 +190,6 @@
 							It could be a dynamically created session for the purpose of interfacing.
 							Indirection would be heavy.
 							Consider it for a future revision.
-					Syntax
-						my $pb = $self->postback($method_name, @passthru_params);
-						$pb->(@callback_params);
-					Dispatch Mechanism
-						[_] 0% TODO
 				[_] 0% Create an event analog for components that expect events.
 					About
 						Many components allow callers to specify return events.
@@ -216,11 +211,12 @@
 							POE::Kernel->state() is used to register handlers for each anonymous event.
 							Failure to clean up will result in memory leaks.
 							There is less runtime indirection.
-				[_] 0% POE::Component::IRC
+				[_] 0% Session and optional event subscription.
 					About
 						A client session creates the component, to be used as a service.
 						The client session registers interest in one or more predefined events.
 						The evens are posted to the session of interest.
+						POE::Component::IRC will be a good example component.
 					Syntax
 						[_] 0% TODO
 					Dispatch Mechanism
