@@ -16,7 +16,7 @@ sub new {
 
 	my $self = bless sub {
 		$POE::Kernel::poe_kernel->post(
-			$object->session_id(), "call_gate", $object, $method, {
+			$object->session_id(), "call_gate_method", $object, $method, {
 				passthrough => $passthrough_args,
 				callback => [ @_ ],
 			},

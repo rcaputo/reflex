@@ -1,4 +1,4 @@
-[_] 41% Framework Requirements
+[_] 42% Framework Requirements
 	About
 		This document summarizes the best ideas from the patterns document.
 		The patterns document tries to enumerate all available options.
@@ -147,7 +147,7 @@
 			[_] 0% Receiver data is not visible to the sender.
 			[_] 0% Message-scoped resources should be stored in the message's continuation.
 				[_] 0% Message cancelation triggers associated resource cleanup.
-	[_] 46% Common primitive classes must be provided.
+	[_] 54% Common primitive classes must be provided.
 		[_] 54% Low-level event watchers.
 			[X] 100% I/O
 				[X] 100% Handle
@@ -170,9 +170,9 @@
 			[_] 0% TcpServer
 			[X] 100% UdpPeer
 			[_] 0% What else?  Probably a lot!
-		[_] 62% POE Interfaces
+		[_] 87% POE Interfaces
 			[X] 100% Wheel wrappers.
-			[_] 25% Generic Component shims.
+			[_] 75% Generic Component shims.
 				[X] 100% Create a postback analog for components that expect postbacks.
 					About
 						Creates a coderef that, when called, posts a message to the object's session, with routing information back to the object.
@@ -190,7 +190,7 @@
 							It could be a dynamically created session for the purpose of interfacing.
 							Indirection would be heavy.
 							Consider it for a future revision.
-				[_] 0% Create an event analog for components that expect events.
+				[X] 100% Create an event analog for components that expect events.
 					About
 						Many components allow callers to specify return events.
 						We create a unique, anonymous event that calls a specific object and method upon dispatch.
@@ -199,34 +199,27 @@
 						my $event = $self->anon_event($method_name, @passthru_params);
 						$_[KERNEL]->post($event, @callback_params);
 					Syntax if events may not be blessed
-						[_] 0% TODO
+						[X] 100% TODO
 							Some explicit cleanup must be provided and adhered to.
-							Cannot rely on object DESTROY or DEMOLISH to automatically clean up for us.
+							Rely on object DEMOLISH to automatically clean up for us.
+							CAVEAT: Components that stringify event names will fail.
 					Dispatch Mechanism
 						_default
-							Unknown events are passed through a lookup table.
-							If they exist in the table, they are dispatched to the appropriate $object->$method().
-							Dispatch goes through an additional table.
-						state()
-							POE::Kernel->state() is used to register handlers for each anonymous event.
-							Failure to clean up will result in memory leaks.
-							There is less runtime indirection.
-				[_] 0% Session and optional event subscription.
+							Events that are objects in the PoeEvent class are invoked to deliver themselves.
+				[X] 100% Session and optional event subscription.
 					About
-						A client session creates the component, to be used as a service.
-						The client session registers interest in one or more predefined events.
-						The evens are posted to the session of interest.
+						A client stage creates the component, to be used as a service.
+						The client stage registers interest in the service's events.
+						The service's events are posted to all interested stages.
 						POE::Component::IRC will be a good example component.
 					Syntax
-						[_] 0% TODO
+						PoeSession watcher.
 					Dispatch Mechanism
 						Sender Interest
 							The object creates the component.
 							The object registers interest in all events from the component.
-							The object registers session-interest in one or more events from the component.
-						Others?
-							[_] 0% TODO
 				[_] 0% Components that emit specific events require Wheel-like wrappers.
+					[_] 0% Is this worth supporting?
 	[_] 50% Optimizations.
 		[X] 100% Only $kernel->call() when we need to switch sessions.
 		[_] 0% Consolidate POE-specific code out into a single role.

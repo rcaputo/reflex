@@ -73,9 +73,27 @@ my $singleton_session_id = POE::Session->create(
 
 		# call_gate() uses this to call methods in the right session.
 
-		call_gate => sub {
+		call_gate_method => sub {
 			my ($stage, $method, @args) = @_[ARG0..$#_];
-			$stage->$method(@args);
+			return $stage->$method(@args);
+		},
+
+		call_gate_coderef => sub {
+			my ($coderef, @args) = @_[ARG0..$#_];
+			return $coderef->(@args);
+		},
+
+		# Catch dynamic events.
+
+		_default => sub {
+			my ($event, $args) = @_[ARG0, ARG1];
+
+			return $event->deliver($args) if "$event" =~ /^PoeEvent(?:::|=)/;
+
+			return if PoeSession->deliver($_[SENDER]->ID, $event, $args);
+
+			# Unhandled event.
+			# TODO - Anything special?
 		},
 
 		### Support POE::Wheel classes.
@@ -512,9 +530,32 @@ sub call_gate {
 	);
 
 	$POE::Kernel::poe_kernel->call(
-		$self->session_id(), "call_gate", $self, $method, @_[2..$#_]
+		$self->session_id(), "call_gate_method", $self, $method, @_[2..$#_]
 	);
 	return 0;
+}
+
+sub run_within_session {
+	my ($self, $method) = @_;
+
+	if (
+		$self->session_id() eq $POE::Kernel::poe_kernel->get_active_session()->ID()
+	) {
+		if (ref($method) =~ /^CODE/) {
+			return $method->(@_[2..$#_]);
+		}
+		return $self->$method(@_[2..$#_]);
+	}
+
+	if (ref($method) =~ /^CODE/) {
+		return $POE::Kernel::poe_kernel->call(
+			$self->session_id(), "call_gate_coderef", $method, @_[2..$#_]
+		);
+	}
+
+	return $POE::Kernel::poe_kernel->call(
+		$self->session_id(), "call_gate_method", $self, $method, @_[2..$#_]
+	);
 }
 
 sub run_all {
