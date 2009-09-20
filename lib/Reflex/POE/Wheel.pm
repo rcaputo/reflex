@@ -1,6 +1,6 @@
-package Wheel;
+package Reflex::POE::Wheel;
 use Moose;
-extends 'Stage';
+extends 'Reflex::Object';
 use Scalar::Util qw(weaken);
 use POE::Wheel;
 

@@ -1,13 +1,17 @@
 #!/usr/bin/env perl
 
+use warnings;
+use strict;
+use lib qw(lib);
+
 {
 	package Counter;
 	use Moose;
-	extends 'Stage';
+	extends 'Reflex::Object';
 	use Ttl::FlipFlop::T;
 	use Ttl::HexDecoder;
-	use EmitterTrait;
-	use ObserverTrait;
+	use Reflex::Trait::Emitter;
+	use Reflex::Trait::Observer;
 
 	# Create a four-bit counter using T flip-flops.
 	# The counter schematic comes from Don Lancaster's _TTL Cookbook_.
@@ -16,38 +20,38 @@
 	has t1 => (
 		isa     => 'Ttl::FlipFlop::T',
 		is      => 'rw',
-		traits  => ['Observer'],
+		traits  => ['Reflex::Trait::Observer'],
 		handles => ['clock'],
 	);
 
 	has t2 => (
 		isa     => 'Ttl::FlipFlop::T',
 		is      => 'rw',
-		traits  => ['Observer'],
+		traits  => ['Reflex::Trait::Observer'],
 	);
 
 	has t4 => (
 		isa     => 'Ttl::FlipFlop::T',
 		is      => 'rw',
-		traits  => ['Observer'],
+		traits  => ['Reflex::Trait::Observer'],
 	);
 
 	has t8 => (
 		isa     => 'Ttl::FlipFlop::T',
 		is      => 'rw',
-		traits  => ['Observer'],
+		traits  => ['Reflex::Trait::Observer'],
 	);
 
 	has decoder => (
 		isa     => 'Ttl::HexDecoder',
 		is      => 'rw',
-		traits  => ['Observer'],
+		traits  => ['Reflex::Trait::Observer'],
 	);
 
 	has out => (
 		isa     => 'Str',
 		is      => 'rw',
-		traits  => ['Emitter'],
+		traits  => ['Reflex::Trait::Emitter'],
 	);
 
 	sub on_t1_q {
@@ -100,25 +104,25 @@
 {
 	package Driver;
 	use Moose;
-	extends 'Stage';
-	use Delay;
+	extends 'Reflex::Object';
+	use Reflex::Timer;
 
 	has counter => (
 		isa     => 'Counter',
 		is      => 'rw',
-		traits  => ['Observer'],
+		traits  => ['Reflex::Trait::Observer'],
 	);
 
 	has clock => (
-		isa     => 'Delay',
+		isa     => 'Reflex::Timer',
 		is      => 'rw',
-		traits  => ['Observer'],
+		traits  => ['Reflex::Trait::Observer'],
 	);
 
 	sub BUILD {
 		my $self = shift;
 		$self->counter( Counter->new() );
-		$self->clock( Delay->new( interval => 1, auto_repeat => 1 ) );
+		$self->clock( Reflex::Timer->new( interval => 1, auto_repeat => 1 ) );
 	}
 
 	sub on_clock_tick {
@@ -136,5 +140,5 @@
 ### Main.
 
 my $counter = Driver->new();
-Stage->run_all();
+Reflex::Object->run_all();
 exit;

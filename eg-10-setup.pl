@@ -1,27 +1,33 @@
 #!/usr/bin/env perl
 
+use warnings;
+use strict;
+use lib qw(lib);
+
 # Exercise the new "setup" option for Emitter and Observer traits.
 
 {
 	package Counter;
 	use Moose;
-	extends 'Stage';
-	use Delay;
-	use ObserverTrait;
-	use EmitterTrait;
+	extends 'Reflex::Object';
+	use Reflex::Timer;
+	use Reflex::Trait::Observer;
+	use Reflex::Trait::Emitter;
 
 	has count   => (
-		traits    => ['Emitter'],
+		traits    => ['Reflex::Trait::Emitter'],
 		isa       => 'Int',
 		is        => 'rw',
 		default   => 0,
 	);
 
 	has ticker  => (
-		traits    => ['Observer'],
-		isa       => 'Delay',
+		traits    => ['Reflex::Trait::Observer'],
+		isa       => 'Reflex::Timer',
 		is        => 'rw',
-		setup     => sub { Delay->new( interval => 1, auto_repeat => 1 ) },
+		setup     => sub {
+			Reflex::Timer->new( interval => 1, auto_repeat => 1 )
+		},
 	);
 
 	sub on_ticker_tick {
@@ -33,10 +39,10 @@
 {
 	package Watcher;
 	use Moose;
-	extends 'Stage';
+	extends 'Reflex::Object';
 
 	has counter => (
-		traits  => ['Observer'],
+		traits  => ['Reflex::Trait::Observer'],
 		isa     => 'Counter|Undef',
 		is      => 'rw',
 		setup   => sub { Counter->new() },
@@ -50,9 +56,8 @@
 	}
 }
 
-use warnings;
-use strict;
+# Main.
 
 my $w = Watcher->new();
-Stage->run_all();
+Reflex::Object->run_all();
 exit;

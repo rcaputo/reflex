@@ -1,4 +1,4 @@
-package Postback;
+package Reflex::POE::Postback;
 
 # TODO - Not Moose, unless Moose allows us to create blessed coderefs.
 
@@ -9,7 +9,7 @@ use Scalar::Util qw(weaken);
 my %owner_session_ids;
 
 sub new {
-	my ($class, $object, $method, $passthrough_args) = @_;
+	my ($class, $object, $method, $context) = @_;
 
 	# TODO - Object owns component, which owns object?
 	weaken $object;
@@ -17,15 +17,15 @@ sub new {
 	my $self = bless sub {
 		$POE::Kernel::poe_kernel->post(
 			$object->session_id(), "call_gate_method", $object, $method, {
-				passthrough => $passthrough_args,
-				callback => [ @_ ],
+				context   => $context,
+				response  => [ @_ ],
 			},
 		);
 	}, $class;
 
 	$owner_session_ids{$self} = $object->session_id();
 	$POE::Kernel::poe_kernel->refcount_increment(
-		$object->session_id(), "stage_postback"
+		$object->session_id(), "reflex_postback"
 	);
 
 	# Double indirection sucks, but some libraries (like Tk) bless their
@@ -45,7 +45,7 @@ sub DESTROY {
 	my $session_id = delete $owner_session_ids{$self};
 	return unless defined $session_id;
 	$POE::Kernel::poe_kernel->refcount_decrement(
-		$session_id, "stage_postback"
+		$session_id, "reflex_postback"
 	);
 
 	undef;

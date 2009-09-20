@@ -1,11 +1,11 @@
-package PoeEvent;
+package Reflex::POE::Event;
 
 use Moose;
 use Carp qw(croak);
 
-has stage => (
+has object => (
 	is => 'ro',
-	isa => 'Stage',
+	isa => 'Reflex::Object',
 );
 
 has method => (
@@ -24,12 +24,12 @@ sub BUILD {
 	if (
 		$POE::Kernel::poe_kernel->get_active_session()->ID()
 		ne
-		$self->stage()->session_id()
+		$self->object()->session_id()
 	) {
 		croak(
 			"When interfacing with POE at large, ", __PACKAGE__, " must\n",
-			"be created within a Stage's session.  Perhaps invoke it within\n",
-			"the stage's run_within_session() method",
+			"be created within a Reflex::Object's session.  Perhaps invoke it\n",
+			"within the object's run_within_session() method",
 		);
 	}
 }
@@ -38,10 +38,10 @@ sub deliver {
 	my ($self, $args) = @_;
 
 	$POE::Kernel::poe_kernel->post(
-		$self->stage()->session_id(), "call_gate_method",
-		$self->stage(), $self->method(), {
-			passthrough => $self->context(),
-			callback    => [ @$args ],
+		$self->object()->session_id(), "call_gate_method",
+		$self->object(), $self->method(), {
+			context   => $self->context(),
+			response  => [ @$args ],
 		}
 	);
 }

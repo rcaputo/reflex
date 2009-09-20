@@ -1,6 +1,6 @@
-package WheelRun;
+package Reflex::POE::Wheel::Run;
 use Moose;
-extends 'Wheel';
+extends 'Reflex::POE::Wheel';
 use POE::Wheel::Run;
 
 # These are class methods, returning static class data.
@@ -82,9 +82,9 @@ sub valid_params {
 
 # Also handle signals.
 
-use SignalChild;
+use Reflex::PID;
 has sigchild_watcher => (
-	isa => 'SignalChild|Undef',
+	isa => 'Reflex::PID|Undef',
 	is  => 'rw',
 );
 
@@ -92,7 +92,7 @@ sub BUILD {
 	my $self = shift;
 
 	$self->sigchild_watcher(
-		SignalChild->new(
+		Reflex::PID->new(
 			pid => $self->wheel()->PID(),
 			observers => [
 				{

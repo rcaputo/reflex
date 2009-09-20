@@ -1,25 +1,29 @@
 #!/usr/bin/perl
 
+use warnings;
+use strict;
+use lib qw(lib);
+
 # Objects may emit events when their members are changed.
 
 {
 	package Counter;
 	use Moose;
-	extends 'Stage';
-	use Delay;
-	use ObserverTrait;
-	use EmitterTrait;
+	extends 'Reflex::Object';
+	use Reflex::Timer;
+	use Reflex::Trait::Observer;
+	use Reflex::Trait::Emitter;
 
 	has count   => (
-		traits    => ['Emitter'],
+		traits    => ['Reflex::Trait::Emitter'],
 		isa       => 'Int',
 		is        => 'rw',
 		default   => 0,
 	);
 
 	has ticker  => (
-		traits    => ['Observer'],
-		isa       => 'Delay|Undef',
+		traits    => ['Reflex::Trait::Observer'],
+		isa       => 'Reflex::Timer|Undef',
 		is        => 'rw',
 	);
 
@@ -27,7 +31,7 @@
 		my $self = shift;
 
 		$self->ticker(
-			Delay->new(
+			Reflex::Timer->new(
 				interval    => 1,
 				auto_repeat => 1,
 			)
@@ -43,10 +47,10 @@
 {
 	package Watcher;
 	use Moose;
-	extends 'Stage';
+	extends 'Reflex::Object';
 
 	has counter => (
-		traits  => ['Observer'],
+		traits  => ['Reflex::Trait::Observer'],
 		isa     => 'Counter',
 		is      => 'rw',
 	);
@@ -62,6 +66,8 @@
 	}
 }
 
+# Main.
+
 my $w = Watcher->new();
-Stage->run_all();
+Reflex::Object->run_all();
 exit;

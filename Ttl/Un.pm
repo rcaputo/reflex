@@ -4,20 +4,20 @@
 
 package Ttl::Un;
 use Moose;
-extends 'Stage';
-use EmitterTrait;
+extends 'Reflex::Object';
+use Reflex::Trait::Emitter;
 
 has in => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 	event   => 'change',
 );
 
 has out => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 1;

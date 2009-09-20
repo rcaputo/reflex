@@ -1,10 +1,10 @@
 # A UDP peer.
 
-package UdpPeer;
+package Reflex::UdpPeer;
 use Moose;
-with 'UdpPeerRole';
+with 'Reflex::Role::UdpPeer';
 
-# Composes the UdpPeerRole role into a class.
+# Composes Reflex::Role::udpPeer into a class.
 # Does nothing of its own.
 
 no Moose;

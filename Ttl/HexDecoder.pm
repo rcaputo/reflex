@@ -3,40 +3,40 @@
 
 package Ttl::HexDecoder;
 use Moose;
-extends 'Stage';
+extends 'Reflex::Object';
 
 has ones => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 	event   => 'change',
 );
 
 has twos => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 	event   => 'change',
 );
 
 has fours => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 	event   => 'change',
 );
 
 has eights => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 	event   => 'change',
 );
 
 has out => (
 	isa     => 'Str',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 sub on_my_change {

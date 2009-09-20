@@ -1,13 +1,17 @@
 #!/usr/bin/env perl
 
-# Exercise the Postback class, for passing postbacks into POE space.
+use warnings;
+use strict;
+use lib qw(lib);
+
+# Exercise Reflex::POE::Postback, for passing postbacks into POE space.
 
 {
 	package App;
 
 	use Moose;
-	extends 'Stage';
-	use Postback;
+	extends 'Reflex::Object';
+	use Reflex::POE::Postback;
 	use PoCoPostback;
 
 	has component => (
@@ -20,7 +24,9 @@
 		$self->component( PoCoPostback->new() );
 
 		$self->component->request(
-			Postback->new($self, "on_component_result", { cookie => 123 }),
+			Reflex::POE::Postback->new(
+				$self, "on_component_result", { cookie => 123 }
+			),
 		);
 	}
 
@@ -28,14 +34,16 @@
 		my ($self, $args) = @_;
 		print(
 			"Got component response:\n",
-			"  pass-through cookie: $args->{passthrough}{cookie}\n",
-			"  call-back result   : $args->{callback}[0]\n",
+			"  postback context: $args->{context}{cookie}\n",
+			"  call-back result: $args->{response}[0]\n",
 		);
 
 		# Ok, we're done.
 		$self->component(undef);
 	}
 }
+
+# Main.
 
 my $app = App->new();
 $app->run_all();

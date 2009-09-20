@@ -1,9 +1,9 @@
 # Generic filehandle watcher.
 
-package Handle;
+package Reflex::Handle;
 
 use Moose;
-extends 'Stage';
+extends 'Reflex::Object';
 use Scalar::Util qw(weaken);
 
 has handle => (

@@ -1,13 +1,17 @@
 #!/usr/bin/env perl
 
+use warnings;
+use strict;
+use lib qw(lib);
+
 # An object's emitted events can also trigger methods in the subclass.
 # This example creates a UDP echo server using inheritance rather than
 # the composition archtectures in past examples.
 
 {
-	package UdpEchoPeer;
+	package Reflex::UdpPeer::Echo;
 	use Moose;
-	extends 'UdpPeer';
+	extends 'Reflex::UdpPeer';
 
 	sub on_my_datagram {
 		my ($self, $args) = @_;
@@ -31,8 +35,10 @@
 	}
 }
 
+# Main.
+
 my $port = 12345;
-my $peer = UdpEchoPeer->new( port => $port );
+my $peer = Reflex::UdpPeer::Echo->new( port => $port );
 print "UDP echo service is listening on port $port.\n";
-POE::Kernel->run();
+Reflex::Object->run_all();
 exit;

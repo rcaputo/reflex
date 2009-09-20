@@ -1,13 +1,17 @@
 #!/usr/bin/env perl
 
-# Exercise the PoeEvent class, for passing events into POE space.
+use warnings;
+use strict;
+use lib qw(lib);
+
+# Exercise Reflex::POE::Event, for passing events into POE space.
 
 {
 	package App;
 
 	use Moose;
-	extends 'Stage';
-	use PoeEvent;
+	extends 'Reflex::Object';
+	use Reflex::POE::Event;
 	use PoCoEvent;
 
 	has component => (
@@ -19,11 +23,12 @@
 		my $self = shift;
 		$self->component( PoCoEvent->new() );
 
+		# TODO - Make this more convenient.
 		$self->run_within_session(
 			sub {
 				$self->component->request(
-					PoeEvent->new(
-						stage   => $self,
+					Reflex::POE::Event->new(
+						object  => $self,
 						method  => "on_component_result",
 						context => { cookie => 123 },
 					),
@@ -36,14 +41,16 @@
 		my ($self, $args) = @_;
 		print(
 			"Got component response:\n",
-			"  pass-through cookie: $args->{passthrough}{cookie}\n",
-			"  call-back result   : $args->{callback}[1][0]\n",
+			"  event context    : $args->{context}{cookie}\n",
+			"  call-back result : $args->{response}[1][0]\n",
 		);
 
 		# Ok, we're done.
 		$self->component(undef);
 	}
 }
+
+# Main.
 
 my $app = App->new();
 $app->run_all();

@@ -1,9 +1,9 @@
 # A UDP peer implemented as a role.
 
-package UdpPeerRole;
+package Reflex::Role::UdpPeer;
 use Moose::Role;
-with 'StageRole';
-use Handle;
+with 'Reflex::Role::Object';
+use Reflex::Handle;
 
 has port => (
 	isa => 'Int',
@@ -11,7 +11,7 @@ has port => (
 );
 
 has handle => (
-	isa => 'Handle|Undef',
+	isa => 'Reflex::Handle|Undef',
 	is  => 'rw',
 );
 
@@ -25,7 +25,7 @@ after 'BUILD' => sub {
 	my $self = shift;
 
 	$self->handle(
-		Handle->new(
+		Reflex::Handle->new(
 			handle => IO::Socket::INET->new(
 				Proto     => 'udp',
 				LocalPort => $self->port(),

@@ -18,29 +18,29 @@
 
 package Ttl::TriAnd;
 use Moose;
-extends 'Stage';
+extends 'Reflex::Object';
 use Ttl::And;
-use ObserverTrait;
-use EmitterTrait;
+use Reflex::Trait::Observer;
+use Reflex::Trait::Emitter;
 
 has and_ab => (
   isa     => 'Ttl::And',
   is      => 'rw',
-  traits  => ['Observer'],
+  traits  => ['Reflex::Trait::Observer'],
   handles => [qw(a b)],
 );
 
 has and_c => (
   isa     => 'Ttl::And',
   is      => 'rw',
-  traits  => ['Observer'],
+  traits  => ['Reflex::Trait::Observer'],
   handles => { c => 'b' },
 );
 
 has out => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 sub BUILD {

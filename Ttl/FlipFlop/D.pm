@@ -7,45 +7,45 @@
 
 package Ttl::FlipFlop::D;
 use Moose;
-extends 'Stage';
+extends 'Reflex::Object';
 use Ttl::TriNand;
-use ObserverTrait;
-use EmitterTrait;
+use Reflex::Trait::Observer;
+use Reflex::Trait::Emitter;
 
 has clear => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 has clock => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 has d => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 has preset => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 has q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 has not_q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 sub BUILD {
@@ -132,37 +132,37 @@ sub on_tri6_out {
 has tri1 => (
   isa     => 'Ttl::TriNand',
   is      => 'rw',
-  traits  => ['Observer'],
+  traits  => ['Reflex::Trait::Observer'],
 );
 
 has tri2 => (
   isa     => 'Ttl::TriNand',
   is      => 'rw',
-  traits  => ['Observer'],
+  traits  => ['Reflex::Trait::Observer'],
 );
 
 has tri3 => (
   isa     => 'Ttl::TriNand',
   is      => 'rw',
-  traits  => ['Observer'],
+  traits  => ['Reflex::Trait::Observer'],
 );
 
 has tri4 => (
   isa     => 'Ttl::TriNand',
   is      => 'rw',
-  traits  => ['Observer'],
+  traits  => ['Reflex::Trait::Observer'],
 );
 
 has tri5 => (
   isa     => 'Ttl::TriNand',
   is      => 'rw',
-  traits  => ['Observer'],
+  traits  => ['Reflex::Trait::Observer'],
 );
 
 has tri6 => (
   isa     => 'Ttl::TriNand',
   is      => 'rw',
-  traits  => ['Observer'],
+  traits  => ['Reflex::Trait::Observer'],
 );
 
 1;

@@ -1,17 +1,21 @@
 #!/usr/bin/perl
 
+use warnings;
+use strict;
+use lib qw(lib);
+
 {
 	package Breadboard;
 	use Moose;
-	extends 'Stage';
-	use ObserverTrait;
+	extends 'Reflex::Object';
+	use Reflex::Trait::Observer;
 
 	use Ttl::And;
 
 	has ander => (
 		isa => 'Ttl::And',
 		is  => 'rw',
-		traits => ['Observer'],
+		traits => ['Reflex::Trait::Observer'],
 	);
 
 	sub BUILD {
@@ -28,5 +32,5 @@
 }
 
 my $b = Breadboard->new();
-Stage->run_all();
+Reflex::Object->run_all();
 exit;

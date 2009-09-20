@@ -26,7 +26,7 @@
 
 package Ttl::Adder;
 use Moose;
-extends 'Stage';
+extends 'Reflex::Object';
 use Ttl::Xor;
 use Ttl::And;
 use Ttl::Or;
@@ -34,61 +34,61 @@ use Ttl::Or;
 has a => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 has b => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 has cin => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 has xor_ab => (
   isa     => 'Ttl::Xor',
   is      => 'rw',
-  traits  => ['Observer'],
+  traits  => ['Reflex::Trait::Observer'],
 );
 
 has xor_cin => (
   isa     => 'Ttl::Xor',
   is      => 'rw',
-  traits  => ['Observer'],
+  traits  => ['Reflex::Trait::Observer'],
 );
 
 has and_ab => (
   isa     => 'Ttl::And',
   is      => 'rw',
-  traits  => ['Observer'],
+  traits  => ['Reflex::Trait::Observer'],
 );
 
 has and_cin => (
   isa     => 'Ttl::And',
   is      => 'rw',
-  traits  => ['Observer'],
+  traits  => ['Reflex::Trait::Observer'],
 );
 
 has or_cout => (
   isa     => 'Ttl::Or',
   is      => 'rw',
-  traits  => ['Observer'],
+  traits  => ['Reflex::Trait::Observer'],
 );
 
 has sum => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 has cout => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 sub on_my_a {

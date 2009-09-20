@@ -1,24 +1,28 @@
 #!/usr/bin/env perl
 
+use warnings;
+use strict;
+use lib qw(lib);
+
 # An object's emitted events can also trigger methods in the subclass.
 # This example is a direct port of eg-04-inheritance.pl, but it uses a
-# UdpPeer object rather than inheriting from the UdpPeer class.
+# Reflex::UdpPeer object rather than inheriting from that class.
 
 {
-	package UdpEchoPeer;
+	package Reflex::UdpPeer::Echo;
 	use Moose;
-	extends 'Stage';
-	use UdpPeer;
+	extends 'Reflex::Object';
+	use Reflex::UdpPeer;
 
 	has peer => (
-		isa => 'UdpPeer|Undef',
+		isa => 'Reflex::UdpPeer|Undef',
 		is  => 'rw',
 	);
 
 	sub BUILD {
 		my ($self, $args) = @_;
 		$self->peer(
-			UdpPeer->new(
+			Reflex::UdpPeer->new(
 				port => $args->{port},
 				observers => [
 					{
@@ -52,8 +56,10 @@
 	}
 }
 
+# Main.
+
 my $port = 12345;
-my $peer = UdpEchoPeer->new( port => $port );
+my $peer = Reflex::UdpPeer::Echo->new( port => $port );
 print "UDP echo service is listening on port $port.\n";
-POE::Kernel->run();
+Reflex::Object->run_all();
 exit;

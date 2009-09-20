@@ -1,4 +1,4 @@
-package StageRole;
+package Reflex::Role::Object;
 
 use Moose::Role;
 
@@ -19,6 +19,7 @@ our @CARP_NOT = (__PACKAGE__);
 #sub POE::Kernel::ASSERT_DEFAULT () { 1 }
 
 use POE;
+use Reflex::POE::Session;
 
 # Disable a warning.
 POE::Kernel->run();
@@ -56,7 +57,7 @@ my $singleton_session_id = POE::Session->create(
 		### Signals.
 
 		signal_happened => sub {
-			Signal->_deliver(@_[ARG0..$#_]);
+			Reflex::Signal->_deliver(@_[ARG0..$#_]);
 		},
 
 		### Cross-session emit() is converted into these events.
@@ -88,9 +89,11 @@ my $singleton_session_id = POE::Session->create(
 		_default => sub {
 			my ($event, $args) = @_[ARG0, ARG1];
 
-			return $event->deliver($args) if "$event" =~ /^PoeEvent(?:::|=)/;
+			return $event->deliver($args) if (
+				"$event" =~ /^Reflex::POE::Event(?:::|=)/
+			);
 
-			return if PoeSession->deliver($_[SENDER]->ID, $event, $args);
+			return if Reflex::POE::Session->deliver($_[SENDER]->ID, $event, $args);
 
 			# Unhandled event.
 			# TODO - Anything special?
@@ -102,23 +105,23 @@ my $singleton_session_id = POE::Session->create(
 		# their IDs in different ARGn offsets, so we need a few of these.
 		wheel_event_0 => sub {
 			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
-			"Wheel$1"->_deliver(0, @_[ARG0..$#_]);
+			"Reflex::POE::Wheel:\:$1"->_deliver(0, @_[ARG0..$#_]);
 		},
 		wheel_event_1 => sub {
 			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
-			"Wheel$1"->_deliver(1, @_[ARG0..$#_]);
+			"Reflex::POE::Wheel:\:$1"->_deliver(1, @_[ARG0..$#_]);
 		},
 		wheel_event_2 => sub {
 			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
-			"Wheel$1"->_deliver(2, @_[ARG0..$#_]);
+			"Reflex::POE::Wheel:\:$1"->_deliver(2, @_[ARG0..$#_]);
 		},
 		wheel_event_3 => sub {
 			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
-			"Wheel$1"->_deliver(3, @_[ARG0..$#_]);
+			"Reflex::POE::Wheel:\:$1"->_deliver(3, @_[ARG0..$#_]);
 		},
 		wheel_event_4 => sub {
 			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
-			"Wheel$1"->_deliver(4, @_[ARG0..$#_]);
+			"Reflex::POE::Wheel:\:$1"->_deliver(4, @_[ARG0..$#_]);
 		},
 	},
 )->ID();
@@ -176,8 +179,14 @@ sub BUILD {
 	my ($self, $args) = @_;
 
 	foreach my $setup (
-		(grep { $_->does('Emitter') } $self->meta()->get_all_attributes()),
-		(grep { $_->does('Observer') } $self->meta()->get_all_attributes())
+		(
+			grep { $_->does('Reflex::Trait::Emitter') }
+			$self->meta()->get_all_attributes()
+		),
+		(
+			grep { $_->does('Reflex::Trait::Observer') }
+			$self->meta()->get_all_attributes()
+		)
 	) {
 		my $callback = $setup->setup();
 		if (defined $callback) {

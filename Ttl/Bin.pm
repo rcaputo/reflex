@@ -4,27 +4,27 @@
 
 package Ttl::Bin;
 use Moose;
-extends 'Stage';
-use EmitterTrait;
+extends 'Reflex::Object';
+use Reflex::Trait::Emitter;
 
 has a => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 	event   => 'change',
 );
 
 has b => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 	event   => 'change',
 );
 
 has out => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 1;

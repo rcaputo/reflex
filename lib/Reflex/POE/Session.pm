@@ -1,7 +1,7 @@
-package PoeSession;
+package Reflex::POE::Session;
 
 use Moose;
-extends 'Stage';
+extends 'Reflex::Object';
 use Scalar::Util qw(weaken);
 use POE::Session; # for ARG0
 

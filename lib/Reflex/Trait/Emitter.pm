@@ -1,4 +1,4 @@
-package EmitterTrait;
+package Reflex::Trait::Emitter;
 use Moose::Role;
 use Scalar::Util qw(weaken);
 
@@ -78,7 +78,7 @@ has setup => (
 	is      => 'ro',
 );
 
-package Moose::Meta::Attribute::Custom::Trait::Emitter;
-sub register_implementation { 'EmitterTrait' }
+package Moose::Meta::Attribute::Custom::Trait::Reflex::Trait::Emitter;
+sub register_implementation { 'Reflex::Trait::Emitter' }
 
 1;

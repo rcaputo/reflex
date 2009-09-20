@@ -1,18 +1,19 @@
 #!/usr/bin/env perl
 
 # Using POE::Component::IRC.  That component requires the user to
-# register for events.  The new PoeSession watcher is used to receive
-# all events from the component.
+# register for events.  The new Reflex::POE::Session watcher is used
+# to receive all events from the component.
 
 use strict;
 use warnings;
+use lib qw(lib);
 
 {
 	package Bot;
 	use Moose;
-	extends 'Stage';
-	use ObserverTrait;
-	use PoeSession;
+	extends 'Reflex::Object';
+	use Reflex::Trait::Observer;
+	use Reflex::POE::Session;
 
 	use POE qw(Component::IRC);
 
@@ -22,9 +23,9 @@ use warnings;
 	);
 
 	has poco_watcher => (
-		isa     => 'PoeSession',
+		isa     => 'Reflex::POE::Session',
 		is      => 'rw',
-		traits  => ['Observer'],
+		traits  => ['Reflex::Trait::Observer'],
 		role    => 'poco',
 	);
 
@@ -33,14 +34,14 @@ use warnings;
 
 		$self->component(
 			POE::Component::IRC->spawn(
-				nick    => "stage$$",
-				ircname => "POE::Stage Test Bot",
+				nick    => "reflex_$$",
+				ircname => "Reflex Test Bot",
 				server  => "10.0.0.25",
 			) || die "Drat: $!"
 		);
 
 		$self->poco_watcher(
-			PoeSession->new(
+			Reflex::POE::Session->new(
 				sid => $self->component()->session_id(),
 			)
 		);

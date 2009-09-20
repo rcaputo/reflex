@@ -16,35 +16,35 @@
 
 package Ttl::Latch::NandRS;
 use Moose;
-extends 'Stage';
+extends 'Reflex::Object';
 use Ttl::Nand;
-use ObserverTrait;
-use EmitterTrait;
+use Reflex::Trait::Observer;
+use Reflex::Trait::Emitter;
 
 has nand_r => (
 	isa     => 'Ttl::Nand',
 	is      => 'rw',
-	traits  => ['Observer'],
+	traits  => ['Reflex::Trait::Observer'],
 	handles => { r => 'b' },
 );
 
 has nand_s => (
 	isa     => 'Ttl::Nand',
 	is      => 'rw',
-	traits  => ['Observer'],
+	traits  => ['Reflex::Trait::Observer'],
 	handles => { s => 'a' },
 );
 
 has q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 has not_q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 sub on_nand_s_out {

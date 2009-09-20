@@ -4,28 +4,28 @@
 
 package Ttl::FlipFlop::T;
 use Moose;
-extends 'Stage';
+extends 'Reflex::Object';
 use Ttl::FlipFlop::D;
-use ObserverTrait;
-use EmitterTrait;
+use Reflex::Trait::Observer;
+use Reflex::Trait::Emitter;
 
 has dff => (
 	isa     => 'Ttl::FlipFlop::D',
 	is      => 'rw',
-	traits  => ['Observer'],
+	traits  => ['Reflex::Trait::Observer'],
 	handles => ['preset','clear','clock'],
 );
 
 has q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 has not_q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 sub on_dff_q {

@@ -1,7 +1,7 @@
-package Delay;
+package Reflex::Timer;
 
 use Moose;
-extends qw(Stage);
+extends qw(Reflex::Object);
 use Scalar::Util qw(weaken);
 
 has interval => (

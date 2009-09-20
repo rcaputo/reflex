@@ -20,55 +20,55 @@
 
 package Ttl::FlipFlop::JK;
 use Moose;
-extends 'Stage';
+extends 'Reflex::Object';
 use Ttl::Latch::ClockedNandRS;
-use ObserverTrait;
-use EmitterTrait;
+use Reflex::Trait::Observer;
+use Reflex::Trait::Emitter;
 
 has nand_j => (
 	isa     => 'Ttl::Nand',
 	is      => 'rw',
-	traits  => ['Observer'],
+	traits  => ['Reflex::Trait::Observer'],
 	handles => { j => 'a' },
 );
 
 has nand_k => (
 	isa     => 'Ttl::Nand',
 	is      => 'rw',
-	traits  => ['Observer'],
+	traits  => ['Reflex::Trait::Observer'],
 	handles => { k => 'b' },
 );
 
 has trinand_preset => (
 	isa     => 'Ttl::TriNand',
 	is      => 'rw',
-	traits  => ['Observer'],
+	traits  => ['Reflex::Trait::Observer'],
 	handles => { preset => 'a' },
 );
 
 has trinand_clear => (
 	isa     => 'Ttl::TriNand',
 	is      => 'rw',
-	traits  => ['Observer'],
+	traits  => ['Reflex::Trait::Observer'],
 	handles => { clear => 'c' },
 );
 
 has q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 has not_q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 has clock => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 sub BUILD {

@@ -14,30 +14,30 @@
 
 package Ttl::Latch::ClockedNandRS;
 use Moose;
-extends 'Stage';
+extends 'Reflex::Object';
 use Ttl::Nand;
 use Ttl::Latch::NandRS;
-use ObserverTrait;
-use EmitterTrait;
+use Reflex::Trait::Observer;
+use Reflex::Trait::Emitter;
 
 has nand_not_r => (
 	isa     => 'Ttl::Nand',
 	is      => 'rw',
-	traits  => ['Observer'],
+	traits  => ['Reflex::Trait::Observer'],
 	handles => { not_r => 'b' },
 );
 
 has nand_s => (
 	isa     => 'Ttl::Nand',
 	is      => 'rw',
-	traits  => ['Observer'],
+	traits  => ['Reflex::Trait::Observer'],
 	handles => { s => 'a' },
 );
 
 has clk => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 sub on_my_clk {
@@ -49,7 +49,7 @@ sub on_my_clk {
 has latch => (
 	isa     => 'Ttl::Latch::NandRS',
 	is      => 'rw',
-	traits  => ['Observer'],
+	traits  => ['Reflex::Trait::Observer'],
 );
 
 sub BUILD {
@@ -72,13 +72,13 @@ sub on_nand_not_r_out {
 has q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 has not_q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 sub on_latch_q {

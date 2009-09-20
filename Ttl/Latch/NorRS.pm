@@ -16,35 +16,35 @@
 
 package Ttl::Latch::NorRS;
 use Moose;
-extends 'Stage';
+extends 'Reflex::Object';
 use Ttl::Nor;
-use ObserverTrait;
-use EmitterTrait;
+use Reflex::Trait::Observer;
+use Reflex::Trait::Emitter;
 
 has nor_r => (
 	isa     => 'Ttl::Nor',
 	is      => 'rw',
-	traits  => ['Observer'],
+	traits  => ['Reflex::Trait::Observer'],
 	handles => { r => 'a' },
 );
 
 has nor_s => (
 	isa     => 'Ttl::Nor',
 	is      => 'rw',
-	traits  => ['Observer'],
+	traits  => ['Reflex::Trait::Observer'],
 	handles => { s => 'b' },
 );
 
 has q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 has not_q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 sub on_nor_s_out {

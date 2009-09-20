@@ -12,31 +12,22 @@ use Moose;
 extends 'Ttl::Bin';
 use Ttl::Not;
 use Ttl::And;
-use ObserverTrait;
+use Reflex::Trait::Observer;
 
 has and => (
   isa     => 'Ttl::And',
   is      => 'rw',
-  traits  => ['Observer'],
+  traits  => ['Reflex::Trait::Observer'],
   handles => [qw(a b)],
+	setup   => sub { Ttl::And->new() },
 );
 
 has not => (
   isa     => 'Ttl::Not',
   is      => 'rw',
-  traits  => ['Observer'],
+  traits  => ['Reflex::Trait::Observer'],
+	setup   => sub { Ttl::Not->new() },
 );
-
-sub BUILD {
-  my $self = shift;
-
-  # TODO - I would love to set these from the attributes' "default",
-  # but Observer traits won't kick in because Moose doesn't invoke
-  # "trigger" on defaults.
-
-  $self->and( Ttl::And->new() );
-  $self->not( Ttl::Not->new() );
-}
 
 sub on_and_out {
   my ($self, $args) = @_;

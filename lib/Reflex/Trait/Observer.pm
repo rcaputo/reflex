@@ -1,4 +1,4 @@
-package ObserverTrait;
+package Reflex::Trait::Observer;
 use Moose::Role;
 use Scalar::Util qw(weaken);
 
@@ -90,7 +90,7 @@ has setup => (
 #	},
 #);
 
-package Moose::Meta::Attribute::Custom::Trait::Observer;
-sub register_implementation { 'ObserverTrait' }
+package Moose::Meta::Attribute::Custom::Trait::Reflex::Trait::Observer;
+sub register_implementation { 'Reflex::Trait::Observer' }
 
 1;

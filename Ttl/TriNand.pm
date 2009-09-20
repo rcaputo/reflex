@@ -17,29 +17,29 @@
 
 package Ttl::TriNand;
 use Moose;
-extends 'Stage';
+extends 'Reflex::Object';
 use Ttl::TriAnd;
 use Ttl::Not;
-use ObserverTrait;
-use EmitterTrait;
+use Reflex::Trait::Observer;
+use Reflex::Trait::Emitter;
 
 has tri_and => (
 	isa     => 'Ttl::TriAnd',
 	is      => 'rw',
-	traits  => ['Observer'],
+	traits  => ['Reflex::Trait::Observer'],
 	handles => [qw(a b c)],
 );
 
 has not => (
   isa     => 'Ttl::Not',
   is      => 'rw',
-  traits  => ['Observer'],
+  traits  => ['Reflex::Trait::Observer'],
 );
 
 has out => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 sub BUILD {

@@ -2,35 +2,36 @@
 
 # An observer's callbacks can be inferred by observation roles and the
 # event names that the observed object emits.  In this example, the
-# Delay object is given the role "waitron".  Its "tick" events are
-# routed to the observer's "on_waitron_dig" method.
+# Reflex::Timer object is given the role "waitron".  Its "tick" events
+# are routed to the observer's "on_waitron_dig" method.
+#
+# In addition, the timer is also observed in the waitroff role.  One
+# timer may trigger multiple callbacks.
 
 use warnings;
 use strict;
-
-use Stage;
-use Delay;
-use ExampleHelpers qw(tell);
+use lib qw(lib);
 
 # Define the watcher class.
 
 {
 	package Watcher;
 	use Moose;
-	extends 'Stage';
+	extends 'Reflex::Object';
+	use Reflex::Timer;
 	use ExampleHelpers qw(tell);
 
-	has delay => (
-		isa => 'Delay',
+	has timer => (
+		isa => 'Reflex::Timer',
 		is  => 'rw',
 	);
 
 	sub BUILD {
 		my $self = $_[0];
 
-		tell("watcher creates a delay with the waitron role");
-		$self->delay(
-			Delay->new(
+		tell("watcher creates a timer with the waitron role");
+		$self->timer(
+			Reflex::Timer->new(
 				interval => 1,
 				auto_repeat => 1,
 				observers   => [
@@ -43,9 +44,9 @@ use ExampleHelpers qw(tell);
 		);
 
 		# It's possible to mix and match.
-		tell("observing waitroff role, too");
+		tell("observing timer as the waitroff role, too");
 		$self->observe_role(
-			observed  => $self->delay(),
+			observed  => $self->timer(),
 			role      => "waitroff",
 		);
 	}
@@ -59,11 +60,10 @@ use ExampleHelpers qw(tell);
 	}
 }
 
-# Must not go out of scope.
-# If the watcher goes out of scope, so does the Delay it's watching.
-# If the Delay goes out of scope, its timers are cleared too.
+# Main.
 
-my $watcher_role = Watcher->new();
+# Watchers must not go out of scope.  They stop watching if they do.
+my $watcher = Watcher->new();
 
-POE::Kernel->run();
+Reflex::Object->run_all();
 exit;

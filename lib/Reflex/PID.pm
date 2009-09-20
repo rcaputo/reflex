@@ -1,7 +1,7 @@
-package SignalChild;
+package Reflex::PID;
 
 use Moose;
-extends qw(Signal);
+extends qw(Reflex::Signal);
 
 has '+name' => (
 	default => 'CHLD',

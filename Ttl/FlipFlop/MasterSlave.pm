@@ -14,29 +14,29 @@
 
 package Ttl::FlipFlop::MasterSlave;
 use Moose;
-extends 'Stage';
+extends 'Reflex::Object';
 use Ttl::Latch::ClockedNandRS;
 use Ttl::Not;
-use ObserverTrait;
-use EmitterTrait;
+use Reflex::Trait::Observer;
+use Reflex::Trait::Emitter;
 
 has cnrs1 => (
 	isa     => 'Ttl::Latch::ClockedNandRS',
 	is      => 'rw',
-	traits  => ['Observer'],
+	traits  => ['Reflex::Trait::Observer'],
 	handles => ['r', 's'],
 );
 
 has cnrs2 => (
 	isa     => 'Ttl::Latch::ClockedNandRS',
 	is      => 'rw',
-	traits  => ['Observer'],
+	traits  => ['Reflex::Trait::Observer'],
 );
 
 has not => (
 	isa     => 'Ttl::Not',
 	is      => 'rw',
-	traits  => ['Observer'],
+	traits  => ['Reflex::Trait::Observer'],
 );
 
 sub BUILD {
@@ -54,19 +54,19 @@ sub BUILD {
 has clock => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 has q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 has not_q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Emitter'],
+	traits  => ['Reflex::Trait::Emitter'],
 );
 
 sub on_my_clock {

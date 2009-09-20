@@ -1,16 +1,20 @@
 #!/usr/bin/perl
 
+use warnings;
+use strict;
+use lib qw(lib);
+
 # Demonstrate how wheels may be encapsulated in thin,
 # configuration-only subclasses.
 
 {
 	package Runner;
 	use Moose;
-	extends 'Stage';
-	use WheelRun;
+	extends 'Reflex::Object';
+	use Reflex::POE::Wheel::Run;
 
 	has wheel => (
-		isa => 'WheelRun|Undef',
+		isa => 'Reflex::POE::Wheel::Run|Undef',
 		is  => 'rw',
 	);
 
@@ -18,7 +22,7 @@
 		my $self = shift;
 
 		$self->wheel(
-			WheelRun->new(
+			Reflex::POE::Wheel::Run->new(
 				Program => "$^X -wle 'print qq[pid(\$\$) moo(\$_)] for 1..10; exit'",
 				observers => [
 					{
@@ -62,6 +66,8 @@
 	}
 }
 
+# Main.
+
 my $runner = Runner->new();
-POE::Kernel->run();
+Reflex::Object->run_all();
 exit;
