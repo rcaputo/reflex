@@ -1,4 +1,4 @@
-[_] 54% Framework Requirements
+[_] 51% Framework Requirements
 	About
 		This document summarizes the best ideas from the patterns document.
 		The patterns document tries to enumerate all available options.
@@ -114,6 +114,7 @@
 				Is this not obvious?
 			[_] 0% Class Methods
 				Classes may be used as singletons.
+				[_] 0% Do we want to support this?
 		[_] 0% Messages must be associated with their triggers.
 			[_] 0% One message may trigger another, inner message.
 				[_] 0% The inner message must be associated with the outer message.
@@ -148,10 +149,12 @@
 			[_] 0% Receiver data is not visible to the sender.
 			[_] 0% Message-scoped resources should be stored in the message's continuation.
 				[_] 0% Message cancelation triggers associated resource cleanup.
-	[_] 56% Common primitive classes must be provided.
-		[_] 54% Low-level event watchers.
-			[X] 100% Reflex::Handle
-			[_] 25% Reflex::Timer
+	[_] 34% Common primitive classes must be provided.
+		[_] 2% Low-level event watchers.
+			[_] 0% Reflex::Handle
+				[_] 0% Determine API.
+			[_] 16% Reflex::Timer
+				[_] 0% Determine full API.
 				[_] 50% Delay a number of seconds.
 					[X] 100% Repeat with drift.
 					[_] 0% Repeat without drift.
@@ -160,21 +163,44 @@
 					[_] 0% Use DateTime for interval math.
 			[_] 0% Reflex::Cron
 				Wait for repeating times.
-			[X] 100% Reflex::Signal
-			[X] 100% Reflex::PID (SIGCHLD)
+				[_] 0% Determine API.
+					See POE::Component::Cron for clues.
+					Would Chris Fedde like to work on this?
+			[_] 0% Reflex::Signal
+				[_] 0% Determine API.
+			[_] 0% Reflex::PID (SIGCHLD)
+				[_] 0% Determine API.
 			[_] 0% What else?
-		[_] 16% Primitive program pieces.
+		[_] 0% Primitive program pieces.
 			[_] 0% Reflex::App
+				[_] 0% Determine API.
 			[_] 0% Reflex::Client::HTTP
 				[_] 0% Reflex::Connector::Keepalive
 					[_] 0% Reflex::Connector
+						[_] 0% Determine API.
 				[_] 0% Reflex::Resolver
+					[_] 0% Determine API.
+					[_] 0% Determine how to make asynchronous.
+						Forked?
+						Coro?
+						Threads?
+					[_] 0% IPV4
+					[_] 0% IPv6
 				[_] 0% Reflex::Socket
+					[_] 0% Determine API.
 				[_] 0% Reflex::Stream
 					Use Data::Transform internally to parse & marshall data.
 			[_] 0% Reflex::Listener
+				[_] 0% Determine API.
+					See POE::Wheel::ListenAccept for clues.
 			[_] 0% Reflex::Process
-			[X] 100% Reflex::UdpPeer
+				[_] 0% Determine API.
+					See POE::Wheel::Run for clues.
+			[_] 0% Reflex::UdpPeer
+				[_] 0% Determine API.
+			[_] 0% Reflex::Tail
+				[_] 0% Determine API.
+					See POE::Wheel::FollowTail for clues.
 			[_] 0% What else?  Probably a lot!
 		[X] 100% POE Interfaces
 			[X] 100% Wheel wrappers.
@@ -210,10 +236,13 @@
 						my $event = Reflex::POE::Event->new(...);
 						$_[KERNEL]->post($event, @callback_params);
 					Syntax if events may not be blessed
-						[X] 100% TODO
+						About
 							Some explicit cleanup must be provided and adhered to.
 							Rely on object DEMOLISH to automatically clean up for us.
 							CAVEAT: Components that stringify event names will fail.
+						Sorry, but they must be blessed for now.
+							The bless and DEMOLISH tracking is very convenient.
+							I haven't found a good, reliable way to avoid it.
 					Dispatch Mechanism
 						_default
 							Events that are objects in the Reflex::POE::Event class are invoked to deliver themselves.
