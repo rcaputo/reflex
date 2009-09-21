@@ -1,4 +1,4 @@
-[_] 53% Framework Requirements
+[_] 54% Framework Requirements
 	About
 		This document summarizes the best ideas from the patterns document.
 		The patterns document tries to enumerate all available options.
@@ -148,43 +148,52 @@
 			[_] 0% Receiver data is not visible to the sender.
 			[_] 0% Message-scoped resources should be stored in the message's continuation.
 				[_] 0% Message cancelation triggers associated resource cleanup.
-	[_] 54% Common primitive classes must be provided.
-		[_] 41% Low-level event watchers.
-			[X] 100% I/O
-				[X] 100% Handle
-			[_] 16% Time
-				[_] 0% Alarm
-				[_] 50% Delay
+	[_] 56% Common primitive classes must be provided.
+		[_] 54% Low-level event watchers.
+			[X] 100% Reflex::Handle
+			[_] 25% Reflex::Timer
+				[_] 50% Delay a number of seconds.
 					[X] 100% Repeat with drift.
 					[_] 0% Repeat without drift.
-				[_] 0% Cron.
-			[_] 50% Signals
-				[X] 100% Signal
-				[_] 0% PID (SIGCHLD)
+				[_] 0% Wait for a specific time.
+					[_] 0% Repeat without drift.
+					[_] 0% Use DateTime for interval math.
+			[_] 0% Reflex::Cron
+				Wait for repeating times.
+			[X] 100% Reflex::Signal
+			[X] 100% Reflex::PID (SIGCHLD)
 			[_] 0% What else?
-		[_] 22% Primitive program pieces.
-			[_] 0% Application
-			[_] 0% Server
-			[_] 0% Stream
-			[X] 100% Process
-			[_] 0% Resolver
-			[_] 0% TcpClient
-			[_] 0% TcpServer
-			[X] 100% UdpPeer
+		[_] 16% Primitive program pieces.
+			[_] 0% Reflex::App
+			[_] 0% Reflex::Client::HTTP
+				[_] 0% Reflex::Connector::Keepalive
+					[_] 0% Reflex::Connector
+				[_] 0% Reflex::Resolver
+				[_] 0% Reflex::Socket
+				[_] 0% Reflex::Stream
+					Use Data::Transform internally to parse & marshall data.
+			[_] 0% Reflex::Listener
+			[_] 0% Reflex::Process
+			[X] 100% Reflex::UdpPeer
 			[_] 0% What else?  Probably a lot!
 		[X] 100% POE Interfaces
 			[X] 100% Wheel wrappers.
+				[X] 100% Reflex::POE::Wheel
+					Generic base class for POE::Wheel watchers.
+				[X] 100% Reflex::POE::Wheel::Run
+					Specific subclass for proving the concept.
 			[X] 100% Generic Component shims.
 				[X] 100% Create a postback analog for components that expect postbacks.
+					Reflex::POE::Postback
 					About
 						Creates a coderef that, when called, posts a message to the object's session, with routing information back to the object.
 						Postbacks use closures to pass @passthru_params to the callback.
 						Closures can also handle routing information.
-						Usage syntax must be identical to POE::Stage postbacks.
-						Creation syntax may differ from POE::Stage postbacks.
+						Usage syntax must be identical to Reflex postbacks.
+						Creation syntax may differ from Reflex postbacks.
 							Identical creation syntax would be to allow others to create them for us.
 							However, most eternal postback creators use $_[SENDER]->postback().
-							$_[SENDER] is POE::Stage's session, not an individual object.
+							$_[SENDER] is the Reflex object's session, not an individual object.
 							Therefore, components that call $_[SENDER]->postback() will not work.
 							Therefore, $_[SENDER]->postback() syntax is not needed.
 						To support identical creation syntax.
@@ -198,7 +207,7 @@
 						We create a unique, anonymous event that calls a specific object and method upon dispatch.
 						We can pass this event to components that expect them.
 					Syntax if anonymous events may be blessed objects
-						my $event = $self->anon_event($method_name, @passthru_params);
+						my $event = Reflex::POE::Event->new(...);
 						$_[KERNEL]->post($event, @callback_params);
 					Syntax if events may not be blessed
 						[X] 100% TODO
@@ -207,15 +216,15 @@
 							CAVEAT: Components that stringify event names will fail.
 					Dispatch Mechanism
 						_default
-							Events that are objects in the PoeEvent class are invoked to deliver themselves.
+							Events that are objects in the Reflex::POE::Event class are invoked to deliver themselves.
 				[X] 100% Session subscription.
 					About
-						A client stage creates the component, to be used as a service.
-						The client stage registers interest in the service's events.
-						The service's events are posted to all interested stages.
+						A client Reflex object creates the component, to be used as a service.
+						The client Reflex object registers interest in the service's events.
+						The service's events are posted to all interested Reflex objects.
 						POE::Component::IRC will be a good example component.
 					Syntax
-						PoeSession watcher.
+						Reflex::POE::Session watcher.
 					Dispatch Mechanism
 						Sender Interest
 							The object creates the component.
@@ -226,3 +235,4 @@
 	[_] 50% Optimizations.
 		[X] 100% Only $kernel->call() when we need to switch sessions.
 		[_] 0% Consolidate POE-specific code out into a single role.
+			Allows other event loops to be supported directly rather than through POE.
