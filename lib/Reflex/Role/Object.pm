@@ -179,20 +179,45 @@ sub BUILD {
 	my ($self, $args) = @_;
 
 	foreach my $setup (
-		(
-			grep { $_->does('Reflex::Trait::Emitter') }
-			$self->meta()->get_all_attributes()
-		),
-		(
-			grep { $_->does('Reflex::Trait::Observer') }
-			$self->meta()->get_all_attributes()
-		)
+		grep {
+			$_->does('Reflex::Trait::Emitter') || $_->does('Reflex::Trait::Observer')
+		}
+		$self->meta()->get_all_attributes()
 	) {
 		my $callback = $setup->setup();
-		if (defined $callback) {
+		next unless defined $callback;
+
+		# TODO - Better way to detect CodeRef?
+		if (ref($callback) eq "CODE") {
 			my $member = $setup->name();
 			$self->$member( $callback->() ); # TODO - Proper parameters!
+			next;
 		}
+
+		# TODO - Better way to detect HashRef?
+		if (ref($callback) eq "HASH") {
+			my $member = $setup->name();
+
+			my @types = (
+				grep { $_ ne "Undef" }
+				split /\s*\|\s*/,
+				$setup->type_constraint()
+			);
+
+			croak "Hashref 'setup' can't determine the class from 'isa'" if (
+				@types < 1
+			);
+
+			croak "Hashref 'setup' can't set up more than one class from 'isa'" if (
+				@types > 1
+			);
+
+			my $type = $types[0];
+			$self->$member( $type->new($callback) );
+			next;
+		}
+
+		croak "Unknown 'setup' value: $callback";
 	}
 
 	foreach my $observer (@{$self->observers()}) {

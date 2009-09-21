@@ -74,7 +74,7 @@ has event => (
 );
 
 has setup => (
-	isa     => 'CodeRef',
+	isa     => 'CodeRef|HashRef',
 	is      => 'ro',
 );
 
