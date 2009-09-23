@@ -3,6 +3,7 @@ use ExtUtils::MakeMaker;
 # Touch auto-generated files so we don't see warnings.
 open(CHANGES, ">>CHANGES") and close CHANGES;
 open(README, ">>README")   and close README;
+open(META, ">>META.yml")   and close META;
 
 WriteMakefile(
   NAME         => 'Reflex',
