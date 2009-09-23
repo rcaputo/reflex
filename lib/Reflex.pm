@@ -5,7 +5,7 @@ use strict;
 
 use Carp qw(croak);
 
-our $VERSION = '0.002';
+our $VERSION = '0.003';
 
 sub import {
 	my $class = shift;
