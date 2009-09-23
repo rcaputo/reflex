@@ -82,3 +82,71 @@ package Moose::Meta::Attribute::Custom::Trait::Reflex::Trait::Emitter;
 sub register_implementation { 'Reflex::Trait::Emitter' }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Reflex::Trait::Emitter - Automatically emit events when values change.
+
+=head1 SYNOPSIS
+
+# Not a complete program.  See examples eg-09-emitter-trait.pl and
+# eg-10-setup.pl for working examples.
+
+	{
+		package Counter;
+		use Moose;
+		extends 'Reflex::Object';
+		use Reflex::Trait::Emitter;
+
+		has count   => (
+			traits    => ['Reflex::Trait::Emitter'],
+			isa       => 'Int',
+			is        => 'rw',
+			default   => 0,
+		);
+	}
+
+=head1 DESCRIPTION
+
+Reflex::Trait::Emitter allows an object to automatically emit an event
+when the value of its attribute changes.  In the SYNOPSIS, changing
+the value of count() will cause the Counter object to emit a "count"
+event with the new count's value.
+
+Custom mutators may also use Reflex::Object's emit() method to
+announce changes.  Reflex::Trait::Emitter is expected to handle many
+common scenarios.
+
+TODO - Complete the documentation.
+
+=head1 GETTING HELP
+
+L<Reflex/GETTING HELP>
+
+=head1 ACKNOWLEDGEMENTS
+
+L<Reflex/ACKNOWLEDGEMENTS>
+
+=head1 SEE ALSO
+
+L<Reflex> and L<Reflex/SEE ALSO>
+
+=head1 BUGS
+
+L<Reflex/BUGS>
+
+=head1 CORE AUTHORS
+
+L<Reflex/CORE AUTHORS>
+
+=head1 OTHER CONTRIBUTORS
+
+L<Reflex/OTHER CONTRIBUTORS>
+
+=head1 COPYRIGHT AND LICENSE
+
+L<Reflex/COPYRIGHT AND LICENSE>
+
+=cut

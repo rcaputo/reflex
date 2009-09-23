@@ -72,3 +72,65 @@ no Moose;
 __PACKAGE__->meta()->make_immutable();
 
 1;
+
+__END__
+
+=head1 NAME
+
+Reflex::Timer - Observe the passage of time.
+
+=head1 SYNOPSIS
+
+# Not a complete program.  Many of the examples use Reflex::Timer.
+# You can't throw a stone without hitting one.
+
+	sub object_method {
+		my ($self, $args) = @_;
+
+		$self->timer(
+			Reflex::Timer->new(
+				interval => 1,
+				auto_repeat => 1,
+			)
+		);
+	);
+
+=head1 DESCRIPTION
+
+Reflex::Timer emits events to mark the passage of time.
+
+TODO - Complete the API.  It's currently very incomplete.  It only
+handles relative delays via its "interval" constructor parameter, and
+automatic repeat via "auto_repeat".
+
+TODO - Complete the documentation.
+
+=head1 GETTING HELP
+
+L<Reflex/GETTING HELP>
+
+=head1 ACKNOWLEDGEMENTS
+
+L<Reflex/ACKNOWLEDGEMENTS>
+
+=head1 SEE ALSO
+
+L<Reflex> and L<Reflex/SEE ALSO>
+
+=head1 BUGS
+
+L<Reflex/BUGS>
+
+=head1 CORE AUTHORS
+
+L<Reflex/CORE AUTHORS>
+
+=head1 OTHER CONTRIBUTORS
+
+L<Reflex/OTHER CONTRIBUTORS>
+
+=head1 COPYRIGHT AND LICENSE
+
+L<Reflex/COPYRIGHT AND LICENSE>
+
+=cut

@@ -14,25 +14,20 @@ use lib qw(lib);
 	extends 'Reflex::Object';
 	use Reflex::UdpPeer;
 
-	has peer => (
-		isa => 'Reflex::UdpPeer|Undef',
-		is  => 'rw',
+	has port => (
+		isa     => 'Int',
+		is      => 'ro',
 	);
 
-	sub BUILD {
-		my ($self, $args) = @_;
-		$self->peer(
-			Reflex::UdpPeer->new(
-				port => $args->{port},
-				observers => [
-					{
-						observer => $self,
-						role     => 'peer',
-					}
-				]
-			)
-		);
-	}
+	has peer => (
+		isa     => 'Reflex::UdpPeer|Undef',
+		is      => 'rw',
+		traits  => ['Reflex::Trait::Observer'],
+		setup   => sub {
+			my $self = shift;
+			Reflex::UdpPeer->new(port => $self->port());
+		},
+	);
 
 	sub on_peer_datagram {
 		my ($self, $args) = @_;

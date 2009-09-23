@@ -94,3 +94,71 @@ package Moose::Meta::Attribute::Custom::Trait::Reflex::Trait::Observer;
 sub register_implementation { 'Reflex::Trait::Observer' }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Reflex::Trait::Observer - Automatically observe Reflex objects.
+
+=head1 SYNOPSIS
+
+# Not a complete program.  This example comes from Reflex's main
+# L<synopsis|Reflex/SYNOPSIS>.
+
+	has clock => (
+		isa     => 'Reflex::Timer',
+		is      => 'rw',
+		traits  => [ 'Reflex::Trait::Observer' ],
+		setup   => { interval => 1, auto_repeat => 1 },
+	);
+
+=head1 DESCRIPTION
+
+Reflex::Trait::Observer allows an object to automatically observe
+other objects it owns.  In the SYNOPSIS, storing a Reflex::Timer in
+clock() allows the owner to observe the timer's events.
+
+Reflex::Object has explicit methods to do this, namely observe() and
+observe_role(), but they are more verbose.
+
+The "setup" attribute option provides default constructor parameters
+for the attribute.  In the above example, clock() will by default
+contain
+
+	Reflex::Timer->new(interval => 1, auto_repeat => 1);
+
+In other words, it will emit an event ("tick") once per second until
+destroyed.
+
+TODO - Complete the documentation.
+
+=head1 GETTING HELP
+
+L<Reflex/GETTING HELP>
+
+=head1 ACKNOWLEDGEMENTS
+
+L<Reflex/ACKNOWLEDGEMENTS>
+
+=head1 SEE ALSO
+
+L<Reflex> and L<Reflex/SEE ALSO>
+
+=head1 BUGS
+
+L<Reflex/BUGS>
+
+=head1 CORE AUTHORS
+
+L<Reflex/CORE AUTHORS>
+
+=head1 OTHER CONTRIBUTORS
+
+L<Reflex/OTHER CONTRIBUTORS>
+
+=head1 COPYRIGHT AND LICENSE
+
+L<Reflex/COPYRIGHT AND LICENSE>
+
+=cut

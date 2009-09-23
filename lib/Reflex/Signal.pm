@@ -104,3 +104,54 @@ no Moose;
 __PACKAGE__->meta()->make_immutable();
 
 1;
+
+__END__
+
+=head1 NAME
+
+Reflex::Signal - Generic signal observer and base class for specific ones.
+
+=head1 SYNOPSIS
+
+TODO - Sorry, not yet.  This class works (see the source for
+Reflex::PID, which extends it), but the API is not firm.
+
+=head1 DESCRIPTION
+
+Reflex::Signal is a generig signal observer.  Objects may use it to be
+notified when the OS sends signals.  It may also be extended to handle
+nuanced semantics of more specific signals.
+
+TODO - Complete the API.
+
+TODO - Complete the documentation.
+
+=head1 GETTING HELP
+
+L<Reflex/GETTING HELP>
+
+=head1 ACKNOWLEDGEMENTS
+
+L<Reflex/ACKNOWLEDGEMENTS>
+
+=head1 SEE ALSO
+
+L<Reflex> and L<Reflex/SEE ALSO>
+
+=head1 BUGS
+
+L<Reflex/BUGS>
+
+=head1 CORE AUTHORS
+
+L<Reflex/CORE AUTHORS>
+
+=head1 OTHER CONTRIBUTORS
+
+L<Reflex/OTHER CONTRIBUTORS>
+
+=head1 COPYRIGHT AND LICENSE
+
+L<Reflex/COPYRIGHT AND LICENSE>
+
+=cut

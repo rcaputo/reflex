@@ -190,7 +190,7 @@ sub BUILD {
 		# TODO - Better way to detect CodeRef?
 		if (ref($callback) eq "CODE") {
 			my $member = $setup->name();
-			$self->$member( $callback->() ); # TODO - Proper parameters!
+			$self->$member( $callback->($self) ); # TODO - Proper parameters!
 			next;
 		}
 
@@ -600,3 +600,108 @@ no Moose;
 #__PACKAGE__->meta()->make_immutable();
 
 1;
+
+__END__
+
+=head1 NAME
+
+Reflex::Object - Give an object reflexes.
+
+=head1 SYNOPSIS
+
+	{
+		package Object;
+		use Moose;
+		with 'Reflex::Role::Object';
+		...;
+	}
+
+=head1 DESCRIPTION
+
+Reflex::Role::Object provides the implementation of Reflex::Object as
+a role.
+
+TODO - Complete the documentation, including examples for all methods.
+
+=head2 observe
+
+Observe events emitted by another object.  See L</emit>.
+
+=head2 observe_role
+
+Observe events emitted by another object, and call this object's
+methods based on the other object's role or purpose within the owner.
+
+TODO - The name "role" conflicts with Moose concepts, and so it may be
+renamed.  Alternative names are welcome.
+
+=head2 isnt_observed
+
+Stop observing this object.  Used during shutdown and destruction to
+end all observers watching the object.
+
+=head2 is_observed
+
+The object is being observed.  A helper method for observe().
+
+TODO - Consider making private?
+
+=head2 emit
+
+The object emits an event, and all observers will be notified.
+
+=head2 shutdown
+
+The object is being shut down.  It will ignore() all objects that it
+is observing, and all objects observing it will ignore() it as well.
+
+=head2 ignore
+
+Stop watching an object, or specific events emitted by the object.
+
+=head2 call_gate
+
+POE helper method that ensures a method is called within the object's
+associated POE session context.  Returns 1 if the method is already
+being executed in the proper context.  Returns 0 if it's not, and
+re-invokes the method within the proper session.
+
+=head2 run_within_session
+
+POE helper method that invokes a method or coderef within the Reflex
+object's associated POE session context.  Primarily used during BUILD
+methods for event watchers, which are invoked in the caller's context.
+
+=head2 run_all
+
+Run all Reflex objects until they destruct.
+
+=head1 GETTING HELP
+
+L<Reflex/GETTING HELP>
+
+=head1 ACKNOWLEDGEMENTS
+
+L<Reflex/ACKNOWLEDGEMENTS>
+
+=head1 SEE ALSO
+
+L<Reflex> and L<Reflex/SEE ALSO>
+
+=head1 BUGS
+
+L<Reflex/BUGS>
+
+=head1 CORE AUTHORS
+
+L<Reflex/CORE AUTHORS>
+
+=head1 OTHER CONTRIBUTORS
+
+L<Reflex/OTHER CONTRIBUTORS>
+
+=head1 COPYRIGHT AND LICENSE
+
+L<Reflex/COPYRIGHT AND LICENSE>
+
+=cut

@@ -91,3 +91,69 @@ no Moose;
 __PACKAGE__->meta()->make_immutable();
 
 1;
+
+__END__
+
+=head1 NAME
+
+Reflex::POE::Wheel - Base class for POE::Wheel wrappers.
+
+=head1 SYNOPSIS
+
+# Not a complete example.  Consider looking at the source for
+# Reflex::POE::Wheel::Run, which subclasses Reflex::POE::Wheel.
+
+TODO - Need an example.
+
+=head1 DESCRIPTION
+
+Reflex::POE::Wheel is a base class for POE::Wheel wrappers.
+Subclasses configure Reflex::POE::Wheel to provide the proper
+POE::Wheel constructor parameters.  Additional configuration converts
+the POE::Wheel events into Reflex::Object events.
+
+Methods are not yet converted automatically.  It seems more sensible
+to provide a native Reflex::Object interface, although one could
+certainly use Moose's "handles" attribute optioni to pass the wheel's
+methods through the wrapper.
+
+TODO - Complete the documentation.
+
+=head2 wheel_id
+
+Return the internal wheel's ID.
+
+=head2 demolish_wheel
+
+Cause the internal wheel to be demolished.  Provided as a method since
+some wheels may require special handling.
+
+=head1 GETTING HELP
+
+L<Reflex/GETTING HELP>
+
+=head1 ACKNOWLEDGEMENTS
+
+L<Reflex/ACKNOWLEDGEMENTS>
+
+=head1 SEE ALSO
+
+L<Reflex> and L<Reflex/SEE ALSO>
+
+=head1 BUGS
+
+L<Reflex/BUGS>
+
+=head1 CORE AUTHORS
+
+L<Reflex/CORE AUTHORS>
+
+=head1 OTHER CONTRIBUTORS
+
+L<Reflex/OTHER CONTRIBUTORS>
+
+=head1 COPYRIGHT AND LICENSE
+
+L<Reflex/COPYRIGHT AND LICENSE>
+
+=cut
