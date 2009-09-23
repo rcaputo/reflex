@@ -75,8 +75,8 @@ my $singleton_session_id = POE::Session->create(
 		# call_gate() uses this to call methods in the right session.
 
 		call_gate_method => sub {
-			my ($stage, $method, @args) = @_[ARG0..$#_];
-			return $stage->$method(@args);
+			my ($object, $method, @args) = @_[ARG0..$#_];
+			return $object->$method(@args);
 		},
 
 		call_gate_coderef => sub {

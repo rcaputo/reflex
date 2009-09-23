@@ -136,7 +136,16 @@ involvement.
 
 =head2 OTHER CONTRIBUTORS
 
-Nobody yet.  As of this writing, Reflex has not yet been released.
+Nobody yet.  As of this writing, Reflex has only just been released.
+The repository is publicly available for your hacking pleasure:
+
+=over 2
+
+=item * L<https://github.com/rcaputo/reflex>
+
+=item * L<http://gitorious.org/reflex>
+
+=back
 
 =head1 TODO
 

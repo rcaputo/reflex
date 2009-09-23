@@ -20,7 +20,7 @@ WriteMakefile(
   META_ADD     => {
     resources  => {
       license    => 'http://dev.perl.org/licenses/',
-      repository => 'http://github.com/rcaputo/poe-stage/',
+      repository => 'http://github.com/rcaputo/reflex',
     },
   },
   dist         => {

@@ -72,7 +72,7 @@ sub _deliver {
 
 	my $wheel_id = $event_args{wheel_id};
 
-	# Get the Stage object that owns this wheel.
+	# Get the Reflex::Object that owns this wheel.
 
 	my $self = $wheel_id_to_object{$wheel_id};
 	die unless $self;

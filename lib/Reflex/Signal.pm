@@ -70,10 +70,10 @@ sub _deliver {
 	# Deliver the signal.
 
 	while (
-		my ($session_id, $stage_rec) = each %{$session_watchers{$signal_name}}
+		my ($session_id, $object_rec) = each %{$session_watchers{$signal_name}}
 	) {
-		foreach my $stage (values %$stage_rec) {
-			$stage->emit(
+		foreach my $object (values %$object_rec) {
+			$object->emit(
 				event => 'signal',
 				args  => \%event_args,
 			);
