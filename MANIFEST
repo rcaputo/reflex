@@ -1,4 +1,3 @@
-
 CHANGES
 MANIFEST
 META.yml
@@ -22,6 +21,9 @@ eg/eg-12-poco-event.pl
 eg/eg-13-irc-bot.pl
 eg/eg-14-synopsis.pl
 eg/eg-15-handle.pl
+eg/eg-16-timer-inheritance.pl
+eg/eg-17-inheritance-no-moose.pl
+eg/eg-18-synopsis-no-moose.pl
 lib/Reflex.pm
 lib/Reflex/Handle.pm
 lib/Reflex/Object.pm

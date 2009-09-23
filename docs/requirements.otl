@@ -67,6 +67,10 @@
 		[X] 100% Containership rules are delegated to the objects themselves.
 		[_] 50% Runtime roles may be assigned as part of the observation, not the sub-object.
 			[_] 0% Multiple watchers may have the same runtime role.
+				This is already possible.
+				Currently roles address watchers.
+				Multiple watchers for a role requires additional addressing.
+				Possibly passing the watcher object into the callback.
 			[X] 100% Default handler method names may be derived from roles and message types.
 				Sender is a DNS resolver.
 				Sender's role is "resolver".
@@ -80,7 +84,7 @@
 	[X] 100% Class Inheritance Rules
 		[X] 100% Class inheritance rules are delegated to Moose.
 	[_] 22% Messaging Requirements
-		[_] 0% Object command interfaces must be objects.
+		[_] 0% Object command interfaces must be methods.
 			[_] 0% Methods on the objects themselves may pass messages into themselves.
 				Synchronous method calls are translated into asynchronous messages.
 			[_] 0% Methods on the objects may trigger activity that emits new events.
