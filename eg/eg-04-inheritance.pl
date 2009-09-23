@@ -2,7 +2,7 @@
 
 use warnings;
 use strict;
-use lib qw(lib);
+use lib qw(../lib);
 
 # An object's emitted events can also trigger methods in the subclass.
 # This example creates a UDP echo server using inheritance rather than

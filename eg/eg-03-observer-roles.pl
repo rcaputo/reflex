@@ -10,7 +10,7 @@
 
 use warnings;
 use strict;
-use lib qw(lib);
+use lib qw(../lib);
 
 # Define the watcher class.
 

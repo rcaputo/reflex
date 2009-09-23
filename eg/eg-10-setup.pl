@@ -2,7 +2,7 @@
 
 use warnings;
 use strict;
-use lib qw(lib);
+use lib qw(../lib);
 
 # Exercise the new "setup" option for Emitter and Observer traits.
 

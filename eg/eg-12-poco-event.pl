@@ -2,7 +2,7 @@
 
 use warnings;
 use strict;
-use lib qw(lib);
+use lib qw(../lib);
 
 # Exercise Reflex::POE::Event, for passing events into POE space.
 

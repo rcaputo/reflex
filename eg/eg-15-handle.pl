@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-use lib qw(lib);
+use lib qw(../lib);
 
 {
 	package UdpPeer;

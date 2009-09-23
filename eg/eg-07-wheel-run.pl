@@ -2,7 +2,7 @@
 
 use warnings;
 use strict;
-use lib qw(lib);
+use lib qw(../lib);
 
 # Demonstrate how wheels may be encapsulated in thin,
 # configuration-only subclasses.

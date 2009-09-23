@@ -18,7 +18,7 @@
 
 use warnings;
 use strict;
-use lib qw(lib);
+use lib qw(../lib);
 
 use Reflex::Object;
 use Reflex::Timer;
