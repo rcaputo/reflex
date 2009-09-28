@@ -365,6 +365,10 @@ sub observe_role {
 	# Find all relevant methods in the obsever, and explicitly observe
 	# the corresponding events.  Heavy at setup, but light while
 	# running.
+	#
+	# TODO - We can probably optimize this.  The methods shouldn't
+	# change often.  Can we cache the methods and invalidate the cache
+	# at the proper times?
 
 	foreach my $callback (
 		grep /^on_${role}_\S+$/,
@@ -386,6 +390,9 @@ sub observe_role {
 sub emit {
 	my ($self, @args) = @_;
 
+	# TODO - Checking arguments is tedious, but _check_args() method
+	# calls add up.
+
 	my $args = $self->_check_args(
 		\@args,
 		[ 'event' ],
@@ -396,6 +403,7 @@ sub emit {
 	my $callback_args = $args->{args} || {};
 
 	# Look for self-handling of the event.
+	# TODO - can() calls are also candidates for caching.
 
 	if ($self->can("on_my_$event")) {
 		my $method = "on_my_$event";
@@ -410,6 +418,7 @@ sub emit {
 	);
 
 	# This event is observed.  Broadcast it to observers.
+	# TODO - Accessor calls are expensive.  Optimize them away.
 
 	while (
 		my ($observer, $callbacks) = each %{$self->watchers_by_event()->{$event}}
