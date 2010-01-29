@@ -87,6 +87,9 @@ reason to release often.
 
 TODO - Complete the documentation.
 
+Reflex is "reactive" in the sense that it is an implementation of the
+"reactor" pattern.  http://en.wikipedia.org/wiki/Reactor_pattern
+
 =head1 GETTING HELP
 
 See irc.perl.org #moose for help with Moose.

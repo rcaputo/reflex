@@ -159,7 +159,7 @@ TODO - Needs a better example.
 =head1 DESCRIPTION
 
 Reflex::POE::Wheel::Run represents an enhanced POE::Wheel::Run object.
-Currently, the sole enhancement is to also wait for SIGCHLD and notify
+Currently, the sole enhancement is to wait for SIGCHLD and notify
 observers when the child process exits.
 
 TODO - Further improvement would be to defer the SIGCHLD notification

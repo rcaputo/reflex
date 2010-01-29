@@ -118,7 +118,7 @@ Reflex::PID, which extends it), but the API is not firm.
 
 =head1 DESCRIPTION
 
-Reflex::Signal is a generig signal observer.  Objects may use it to be
+Reflex::Signal is a general signal observer.  Objects may use it to be
 notified when the OS sends signals.  It may also be extended to handle
 nuanced semantics of more specific signals.
 

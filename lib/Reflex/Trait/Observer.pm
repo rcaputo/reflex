@@ -128,8 +128,8 @@ contain
 
 	Reflex::Timer->new(interval => 1, auto_repeat => 1);
 
-In other words, it will emit an event ("tick") once per second until
-destroyed.
+In other words, it will emit the Reflex::Timer event ("tick") once per
+second until destroyed.
 
 TODO - Complete the documentation.
 

@@ -110,14 +110,14 @@ Reflex::Trait::Emitter - Automatically emit events when values change.
 
 =head1 DESCRIPTION
 
-Reflex::Trait::Emitter allows an object to automatically emit an event
-when the value of its attribute changes.  In the SYNOPSIS, changing
+Reflex::Trait::Emitter implements a trait to an object that automatically emits
+an event when the value of the attribute changes.  In the SYNOPSIS, changing
 the value of count() will cause the Counter object to emit a "count"
 event with the new count's value.
 
-Custom mutators may also use Reflex::Object's emit() method to
-announce changes.  Reflex::Trait::Emitter is expected to handle many
-common scenarios.
+Custom mutators and methods may also use Reflex::Object's emit() method to
+announce their own changes.  Reflex::Trait::Emitter is expected to handle
+many common scenarios.
 
 TODO - Complete the documentation.
 

@@ -108,13 +108,13 @@ TODO - Need an example.
 =head1 DESCRIPTION
 
 Reflex::POE::Wheel is a base class for POE::Wheel wrappers.
-Subclasses configure Reflex::POE::Wheel to provide the proper
+Subclasses will configure Reflex::POE::Wheel to provide the proper
 POE::Wheel constructor parameters.  Additional configuration converts
 the POE::Wheel events into Reflex::Object events.
 
 Methods are not yet converted automatically.  It seems more sensible
 to provide a native Reflex::Object interface, although one could
-certainly use Moose's "handles" attribute optioni to pass the wheel's
+certainly use Moose's "handles" attribute option to pass the wheel's
 methods through the wrapper.
 
 TODO - Complete the documentation.

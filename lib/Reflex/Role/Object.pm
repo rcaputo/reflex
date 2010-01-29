@@ -309,7 +309,7 @@ sub observe {
 }
 
 # Self is no longer being observed.  Remove observations from self.
-sub isnt_observed {
+sub stop_observers {
 	my ($self, $observer, $events) = @_;
 
 	my @events = @{$events || []};
@@ -551,12 +551,12 @@ sub ignore {
 			# Decrement the session's use count.
 			$POE::Kernel::poe_kernel->refcount_decrement($self->session_id, "in_use");
 		}
-		$observed->isnt_observed($self, \@events);
+		$observed->stop_observers($self, \@events);
 	}
 	else {
 		delete $self->watched_object_events()->{$observed};
 		delete $self->watched_objects()->{$observed};
-		$observed->isnt_observed($self);
+		$observed->stop_observers($self);
 
 		# Decrement the session's use count.
 		$POE::Kernel::poe_kernel->refcount_decrement($self->session_id, "in_use");
@@ -614,7 +614,7 @@ __END__
 
 =head1 NAME
 
-Reflex::Object - Give an object reflexes.
+Reflex::Role::Object - Give an object reflexive roles.
 
 =head1 SYNOPSIS
 
@@ -644,10 +644,10 @@ methods based on the other object's role or purpose within the owner.
 TODO - The name "role" conflicts with Moose concepts, and so it may be
 renamed.  Alternative names are welcome.
 
-=head2 isnt_observed
+=head2 stop_observers
 
-Stop observing this object.  Used during shutdown and destruction to
-end all observers watching the object.
+Stop all observers watching this object.  It's used during shutdown
+and destruction to detach a departing object from its observers.
 
 =head2 is_observed
 

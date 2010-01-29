@@ -51,9 +51,8 @@ Reflex::POE::Session - Observe events from a POE::Session object.
 
 =head1 SYNOPSIS
 
-# Not a complete example.  Please see eg-13-irc-bot.pl in the examples
-# for a working one.
-
+# Not a complete example.
+# Please see eg-13-irc-bot.pl in the examples for one.
 
   has poco_watcher => (
     isa     => 'Reflex::POE::Session',
@@ -93,10 +92,10 @@ TODO - Either complete the example, or find a shorter one.
 
 Reflex::POE::Session allows a Reflex::Object to receive events from a
 specific POE::Session instance, identified by the session's ID.  In
-the future, it may also limit the events it may see, for better
+the future it may also limit the events it sees to allow better
 performance.
 
-TODO - Complete the documentatin.
+TODO - Complete the documentation.
 
 =head1 GETTING HELP
 

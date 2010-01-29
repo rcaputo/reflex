@@ -6,7 +6,7 @@ use lib qw(../lib);
 
 # An object's emitted events can also trigger methods in the subclass.
 # This example creates a UDP echo server using inheritance rather than
-# the composition archtectures in past examples.
+# the composition architectures in past examples.
 
 {
 	package Reflex::UdpPeer::Echo;
