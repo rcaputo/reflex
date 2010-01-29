@@ -1,4 +1,4 @@
-[_] 51% Framework Requirements
+[_] 45% Framework Requirements
 	About
 		This document summarizes the best ideas from the patterns document.
 		The patterns document tries to enumerate all available options.
@@ -33,19 +33,25 @@
 				System designs that fit within these frameworks are elegant.
 				Systems that wish to use other concepts are generally awkward.
 				Adapters can connect between metaphors, but they should not be needed.
+	[_] 0% Documentation Requirements
+		Many "requirements" are really recommended conventions.
+		For example:
+			If we require return values to be typed, or ignored.
+			Obviously we can't force code to do that.
+			So we document it.
+		[_] 0% Style guide?
 	[X] 100% Namespace Requirements
 		[X] 100% Choose a short base name for the namespace.
 			Large class names are unwieldy.
 			Objects should be under a single top-level namespace.
 				What single top-level namespace should be used?
 				Bacon - Basic Asynchronous Cooperative Object Networks?
-				Reflex
-				???
+				Reflex <- chosen one
 		[X] 100% Choose a relatively flat namespace for the framework.
 			Excessive namespace nesting is unwieldy.
 			The namespace should be organized.
 			How should the namespace be organized?
-	[_] 25% Class and Object Structural Requirements
+	[_] 20% Class and Object Structural Requirements
 		[X] 100% Support full object orientation.
 			[X] 100% Support composition of smaller objects into larger ones (has-a).
 			[X] 100% Support composition through direct inheritance.
@@ -56,13 +62,37 @@
 				$self - The object being called.
 				$message - A Message object, or a subclass.
 				[_] 0% What about out-of-band information, such as other continuations?
+					Additional parameters?
+					Standard members of $message?
+					Lexical magic?
+						Not in the base.
+						Maybe as an extension.
 			[_] 0% Methods should standardize their return semantics.
-				What are those semantics?
-				Returned messages must be typed.
+				[_] 0% What are those semantics?
+					Ignore return values?
+					emit() as return?
+				[_] 0% Returned messages must be typed.
 		[_] 0% Function parameters should follow a single standard.
 			[_] 0% What should that standard be?
 		[_] 0% Procedural design should be supported.
 			Some people will prefer procedural design.
+		[_] 0% Determine whether "role" is a confusing name.
+			Alternatives:
+				part
+					Interestingly ambiguous.
+					Parts as in objects that assemble into other things.
+					Parts as in roles or duties in the whole.
+				duty
+					Uninterestingly unambiguous.
+					Dreary name.
+					No longer than role or part.
+				job
+					Shortest alternative.
+					Ambiguous, since "job" may mean a work unit.
+					Perhaps drearier than duty.
+				Not: responsibility
+					Too long.
+					Res. or resp. are ambiguous abbreviations.
 	[_] 83% Object Containership Composition Rules
 		[X] 100% Containership rules are delegated to the objects themselves.
 		[_] 50% Runtime roles may be assigned as part of the observation, not the sub-object.
