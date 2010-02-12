@@ -76,6 +76,8 @@
 			[_] 0% What should that standard be?
 		[_] 0% Procedural design should be supported.
 			Some people will prefer procedural design.
+			[_] Objects are their own condvars.
+				$object->wait() waits for the object to finish/destruct.
 		[_] 0% Determine whether "role" is a confusing name.
 			Alternatives:
 				part
@@ -113,7 +115,7 @@
 				[X] 100% Moose introspection allows objects to find their contents.
 	[X] 100% Class Inheritance Rules
 		[X] 100% Class inheritance rules are delegated to Moose.
-	[_] 22% Messaging Requirements
+	[_] 15% Messaging Requirements
 		[_] 0% Object command interfaces must be methods.
 			[_] 0% Methods on the objects themselves may pass messages into themselves.
 				Synchronous method calls are translated into asynchronous messages.
@@ -138,14 +140,26 @@
 			[_] 50% Emitted messages are next handled by explicit and role-based observers.
 				[_] 0% Explicit observers.
 				[X] 100% Role-based observers.
-		[_] 75% All forms of message handler must be supported.
+		[_] 37% All forms of message handler must be supported.
 			[X] 100% Anonymous Coderefs
 				Anonymous coderefs support closures.
 				Anonymous coderefs and closures may be used to implement faux continuation passing style.
-			[X] 100% Named Subroutine References
+				[X] Simple.
+					my $t = Reflex::Timer->new( ..., on_event => \&coderef );
+				[X] Observer.
+					$object->watch( watched => $object, event => "name", callback => \&coderef );
+				[X] Traits.
+					has member => ( traits => ['Reflex::Trait::Observed'] );
+			[_] 0% Named Subroutine References
 				Named message handlers are exportable as reusable interfaces.
-			[X] 100% Object Methods
+				[_] TODO - What is this?
+			[_] 50% Object Methods
 				Is this not obvious?
+				[X] Simple.
+					my $t = Reflex::Timer->new( ..., on_event => rcb_method($watcher, "method_name") );
+				[_] Observer.
+					$self->
+				Traits not supported at this time.
 			[_] 0% Class Methods
 				Classes may be used as singletons.
 				[_] 0% Do we want to support this?
