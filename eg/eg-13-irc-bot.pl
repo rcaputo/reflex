@@ -36,7 +36,7 @@ use lib qw(../lib);
 			POE::Component::IRC->spawn(
 				nick    => "reflex_$$",
 				ircname => "Reflex Test Bot",
-				server  => "10.0.0.25",
+				server  => "irc.perl.org",
 			) || die "Drat: $!"
 		);
 
@@ -57,7 +57,7 @@ use lib qw(../lib);
 	sub on_poco_irc_001 {
 		my $self = shift;
 		print "Connected.  Joining a channel...\n";
-		$self->component->yield(join => "#room");
+		$self->component->yield(join => "#poe");
 	}
 
 	sub on_poco_irc_public {

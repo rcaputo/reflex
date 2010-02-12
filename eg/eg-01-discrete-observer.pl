@@ -22,20 +22,20 @@ use lib qw(../lib);
 
 use Reflex::Object;
 use Reflex::Timer;
-use ExampleHelpers qw(tell);
+use ExampleHelpers qw(eg_say);
 
-tell("starting timer object");
+eg_say("starting timer object");
 my $timer = Reflex::Timer->new( interval => 1, auto_repeat => 1 );
 
-tell("starting watcher object");
+eg_say("starting watcher object");
 my $watcher = Reflex::Object->new();
 
-tell("watcher watching timer");
+eg_say("watcher watching timer");
 $watcher->observe(
 	observed  => $timer,
 	event     => "tick",
 	callback  => sub {
-		tell("watcher sees 'tick' event");
+		eg_say("watcher sees 'tick' event");
 	},
 );
 
