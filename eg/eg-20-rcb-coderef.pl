@@ -23,6 +23,10 @@
 # 5. All callback mechanisms may be specified by slightly verbose but
 #    unambiguous syntax.
 
+# Ideally all the eg-*-rcb-*.pl examples will use the identical
+# ThingWithCallbacks.  That class will have no custom callback logic
+# at all.
+
 use warnings;
 use strict;
 use lib qw(../lib);

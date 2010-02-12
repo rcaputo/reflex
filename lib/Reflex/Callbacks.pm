@@ -18,7 +18,7 @@ use Reflex::Callback;
 #use Reflex::Callback::Class;
 use Reflex::Callback::CodeRef;
 #use Reflex::Callback::Emit;   # For current Reflex compatibility
-#use Reflex::Callback::Method;
+use Reflex::Callback::Method;
 #use Reflex::Callback::Object;
 #use Reflex::Callback::Promise;
 #use Reflex::Callback::Role;
@@ -65,10 +65,9 @@ coerce 'Reflex::Callback'
 		};
 
 sub cb_method {
-	die;
 	my ($object, $method_name) = @_;
 	return Reflex::Callback::Method->new(
-		object => $object,
+		object      => $object,
 		method_name => $method_name,
 	);
 }
