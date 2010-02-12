@@ -12,7 +12,7 @@ sub import {
 	my $caller_package = caller();
 
 	# Use the packages in the caller's package.
-	# TODO - I think lexical magic isn't supported.
+	# TODO - Is lexical magic supported?
 
 	eval join(
 		"; ",
@@ -28,6 +28,10 @@ sub import {
 		$msg =~ s/(\(\@INC contains.*?\)) at .*/$1/s;
 		croak $msg;
 	}
+}
+
+sub run_all {
+	Reflex::Object->run_all();
 }
 
 1;
@@ -85,8 +89,6 @@ Sorry for the lack of documentation.  It conflicted with releasing
 early.  Contributions are very much welcome.  Give the project a
 reason to release often.
 
-TODO - Complete the documentation.
-
 Reflex is "reactive" in the sense that it is an implementation of the
 "reactor" pattern.  http://en.wikipedia.org/wiki/Reactor_pattern
 
@@ -133,14 +135,13 @@ L<bug-Reflex@rt.cpan.org|mailto:bug-Reflex@rt.cpan.org>.
 
 =head1 AUTHORS
 
-Rocco Caputo, and a (hopefully) growing cadre of contributors---
-perhaps including you.  Reflex is open source, and we welcome
-involvement.
+Rocco Caputo, RCAPUTO on CPAN.
 
 =head2 OTHER CONTRIBUTORS
 
-Nobody yet.  As of this writing, Reflex has only just been released.
-The repository is publicly available for your hacking pleasure:
+Reflex is open source, and we welcome involvement.
+
+Chris Fedde, CFEDDE on CPAN
 
 =over 2
 
@@ -155,9 +156,12 @@ The repository is publicly available for your hacking pleasure:
 Please browse the source for the TODO marker.  Some are visible in the
 documentation, and others are sprinlked around in the code's comments.
 
+Also see L<docs/requirements.otl> in the distribution.  This is a Vim
+Outliner file with the current roadmap and progress.
+
 =head1 COPYRIGHT AND LICCENSE
 
-Copyright 2009 by Rocco Caputo.
+Copyright 2009-2010 by Rocco Caputo.
 
 Reflex is free software.  You may redistribute and/or modify it under
 the same terms as Perl itself.
