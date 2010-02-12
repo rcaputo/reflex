@@ -1,8 +1,8 @@
 #!/usr/bin/env perl
 
-# This example illustrates implicit and explicit callbacks via object
-# methods.  A ThingWithCallbacks will call methods on objects defined
-# in this file.
+# This example illustrates explicit callbacks via object methods.  A
+# ThingWithCallbacks will call methods on objects defined in this
+# file.
 
 # Reflex::Callbacks and the Reflex::Callback helper classes will
 # abstract callbacks to fulfill a number of goals.  The goals are

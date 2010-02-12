@@ -73,7 +73,23 @@ sub cb_method {
 }
 
 sub cb_object {
-	die;
+	my ($object, $methods) = @_;
+
+	# They passed us a scalar.  Emulate cb_methods().
+	return ($methods => cb_method(@_)) unless ref $methods;
+
+	if (ref($methods) eq "ARRAY") {
+		return map { ($_ => cb_method($object, $_)) } @$methods;
+	}
+
+	if (ref($methods) eq "HASH") {
+		return(
+			map { ($_ => cb_method($object, $methods->{$_})) }
+			keys %$methods
+		);
+	}
+
+	croak "cb_object with unknown methods type: $methods";
 }
 
 sub cb_class {
