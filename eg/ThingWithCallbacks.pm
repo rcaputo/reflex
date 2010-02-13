@@ -34,7 +34,7 @@ sub BUILD {
 
 sub run {
 	my $self = shift;
-	$self->cb()->send( on_event => {} );
+	$self->cb()->send( event => {} );
 }
 
 1;

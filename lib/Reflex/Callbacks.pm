@@ -15,11 +15,9 @@ use Moose;
 use Moose::Util::TypeConstraints;
 
 use Reflex::Callback;
-#use Reflex::Callback::Class;
 use Reflex::Callback::CodeRef;
 #use Reflex::Callback::Emit;   # For current Reflex compatibility
 use Reflex::Callback::Method;
-#use Reflex::Callback::Object;
 #use Reflex::Callback::Promise;
 #use Reflex::Callback::Role;
 
@@ -92,12 +90,35 @@ sub cb_object {
 	croak "cb_object with unknown methods type: $methods";
 }
 
+# A bit of a cheat.  Goes with the Object|Str type constraint in
+# Reflex::Callback::Method.
 sub cb_class {
 	cb_object(@_);
 }
 
+# Role callbacks inspect the handler object or class methods and
+# determine the events being handled by their names.
 sub cb_role {
-	die;
+	my ($invocant, $role, $prefix) = @_;
+	$prefix = "on" unless defined $prefix;
+
+	my $method_prefix = qr/^${prefix}_${role}_(\S+)/;
+
+	my @class_methods = (
+		grep /$method_prefix/,
+		map { $_->name() }
+		$invocant->meta()->get_all_methods()
+	);
+
+	my @events = (
+		map { /$method_prefix/; "on_$1" }
+		@class_methods
+	);
+
+	my %methods;
+	@methods{@events} = @class_methods;
+
+	return cb_object($invocant, \%methods);
 }
 
 sub cb_promise {
@@ -144,6 +165,9 @@ sub gather_cb {
 sub send {
 	my ($self, $event, $arg) = @_;
 	$arg //= {};
+
+	$event =~ s/^(on_)?/on_/;
+
 	$self->callback_map()->{$event}->deliver($arg);
 }
 
