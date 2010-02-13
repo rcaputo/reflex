@@ -17,9 +17,9 @@ has method_name => (
 );
 
 sub deliver {
-	my $self = shift;
+	my ($self, $event, $arg) = @_;
 	my $method_name = $self->method_name();
-	$self->object()->$method_name(@_);
+	$self->object()->$method_name($arg);
 }
 
 1;

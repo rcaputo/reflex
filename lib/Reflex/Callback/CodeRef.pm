@@ -10,8 +10,8 @@ has code_ref => (
 );
 
 sub deliver {
-	my $self = shift;
-	$self->code_ref()->(@_);
+	my ($self, $event, $arg) = @_;
+	$self->code_ref()->($arg);
 }
 
 

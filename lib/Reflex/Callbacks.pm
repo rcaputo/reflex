@@ -18,8 +18,7 @@ use Reflex::Callback;
 use Reflex::Callback::CodeRef;
 #use Reflex::Callback::Emit;   # For current Reflex compatibility
 use Reflex::Callback::Method;
-#use Reflex::Callback::Promise;
-#use Reflex::Callback::Role;
+use Reflex::Callback::Promise;
 
 use Exporter;
 use base qw(Exporter);
@@ -122,7 +121,11 @@ sub cb_role {
 }
 
 sub cb_promise {
-	die;
+	my $promise_ref = shift;
+
+	$$promise_ref = Reflex::Callback::Promise->new();
+
+	return( on_promise => $$promise_ref );
 }
 
 sub cb_coderef (&) {
@@ -141,6 +144,10 @@ sub gather_cb {
 		my $callback = $arg->{$_};
 
 		if (blessed $callback) {
+			if ($callback->isa('Reflex::Callback::Promise')) {
+				return $callback;
+			}
+
 			if ($callback->isa('Reflex::Callback')) {
 				$return{$_} = $callback;
 				next;
@@ -168,7 +175,7 @@ sub send {
 
 	$event =~ s/^(on_)?/on_/;
 
-	$self->callback_map()->{$event}->deliver($arg);
+	$self->callback_map()->{$event}->deliver($event, $arg);
 }
 
 1;
