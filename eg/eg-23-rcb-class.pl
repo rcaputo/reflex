@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
-# This example illustrates explicit callbacks via objects, where
-# callback events are mapped to handlers by name.  Methods may be
+# This example illustrates explicit callbacks via classes, where
+# callback events are mapped to class methods by name.  Methods may be
 # named after the events they handle, or they may differ.
 
 # Reflex::Callbacks and the Reflex::Callback helper classes will
@@ -14,19 +14,19 @@ use strict;
 use lib qw(../lib);
 
 # Create a thing that will invoke callbacks.  This syntax uses
-# explicitly specified cb_object() callbacks and a scalar for the
+# explicitly specified cb_class() callbacks and a scalar for the
 # methods list.  cb_method() would be slightly more efficient in this
-# case, but cb_object() also works.
+# case, but cb_class() also works.
 #
 # There is no nonambiguous implicit syntax at this time.  Suggestions
 # for one are welcome.
 
 {
-	package ScalarHandlerObject;
+	package ScalarHandlerClass;
 	use Moose;
 
 	use ExampleHelpers qw(eg_say);
-	use Reflex::Callbacks qw(cb_object);
+	use Reflex::Callbacks qw(cb_class);
 	use ThingWithCallbacks;
 
 	has callback_thing => ( is => 'rw', isa => 'ThingWithCallbacks' );
@@ -36,14 +36,14 @@ use lib qw(../lib);
 
 		$self->callback_thing(
 			ThingWithCallbacks->new(
-				cb_object($self, "on_event"),
+				cb_class(__PACKAGE__, "on_event"),
 			)
 		);
 	}
 
 	sub on_event {
 		my ($self, $arg) = @_;
-		eg_say("$self - scalar object handled event");
+		eg_say("$self - scalar class handled event");
 	}
 
 	sub run_thing {
@@ -52,21 +52,21 @@ use lib qw(../lib);
 	}
 }
 
-my $sho = ScalarHandlerObject->new();
+my $sho = ScalarHandlerClass->new();
 $sho->run_thing();
 
-# In this case, an object handles a list of callbacks.  Each callback
+# In this case, a class handles a list of callbacks.  Each callback
 # method is named after the event it handles.
 #
 # There is no nonambiguous implicit syntax for this either, but
 # suggestions are welcome.
 
 {
-	package ArrayHandlerObject;
+	package ArrayHandlerClass;
 	use Moose;
 
 	use ExampleHelpers qw(eg_say);
-	use Reflex::Callbacks qw(cb_object);
+	use Reflex::Callbacks qw(cb_class);
 	use ThingWithCallbacks;
 
 	has callback_thing => ( is => 'rw', isa => 'ThingWithCallbacks' );
@@ -76,14 +76,14 @@ $sho->run_thing();
 
 		$self->callback_thing(
 			ThingWithCallbacks->new(
-				cb_object($self, ["on_event"]),
+				cb_class(__PACKAGE__, ["on_event"]),
 			)
 		);
 	}
 
 	sub on_event {
 		my ($self, $arg) = @_;
-		eg_say("$self - array object handled event");
+		eg_say("$self - array class handled event");
 	}
 
 	sub run_thing {
@@ -92,10 +92,10 @@ $sho->run_thing();
 	}
 }
 
-my $aho = ArrayHandlerObject->new();
+my $aho = ArrayHandlerClass->new();
 $aho->run_thing();
 
-# In this case, an object handles a hash of callbacks.  Hash keys are
+# In this case, a class handles a hash of callbacks.  Hash keys are
 # event names, and the values are the corresponding handler method
 # names.  The hash gives classes flexibility in the methods they use.
 #
@@ -103,11 +103,11 @@ $aho->run_thing();
 # suggestions are welcome.
 
 {
-	package HashHandlerObject;
+	package HashHandlerClass;
 	use Moose;
 
 	use ExampleHelpers qw(eg_say);
-	use Reflex::Callbacks qw(cb_object);
+	use Reflex::Callbacks qw(cb_class);
 	use ThingWithCallbacks;
 
 	has callback_thing => ( is => 'rw', isa => 'ThingWithCallbacks' );
@@ -117,14 +117,14 @@ $aho->run_thing();
 
 		$self->callback_thing(
 			ThingWithCallbacks->new(
-				cb_object($self, { on_event => "handle_event" }),
+				cb_class(__PACKAGE__, { on_event => "handle_event" }),
 			)
 		);
 	}
 
 	sub handle_event {
 		my ($self, $arg) = @_;
-		eg_say("$self - hash object handled event");
+		eg_say("$self - hash class handled event");
 	}
 
 	sub run_thing {
@@ -133,5 +133,5 @@ $aho->run_thing();
 	}
 }
 
-my $hho = HashHandlerObject->new();
+my $hho = HashHandlerClass->new();
 $hho->run_thing();

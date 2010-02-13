@@ -93,7 +93,7 @@ sub cb_object {
 }
 
 sub cb_class {
-	die;
+	cb_object(@_);
 }
 
 sub cb_role {
