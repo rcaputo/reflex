@@ -7,28 +7,28 @@ use strict;
 use lib qw(../lib);
 
 {
-  package App;
-  use Reflex::Object;
-  use Reflex::Timer;
-  use base qw(Reflex::Object);
+	package App;
+	use Reflex::Object;
+	use Reflex::Timer;
+	use base qw(Reflex::Object);
 
-  sub BUILD {
-    my $self = shift;
+	sub BUILD {
+		my $self = shift;
 
-    $self->{ticker} = Reflex::Timer->new(
-      interval => 1,
-      auto_repeat => 1,
-    );
+		$self->{ticker} = Reflex::Timer->new(
+			interval => 1,
+			auto_repeat => 1,
+		);
 
-    $self->observe_role(
-      observed => $self->{ticker},
-      role     => "ticker",
-    );
-  }
+		$self->observe_role(
+			observed => $self->{ticker},
+			role     => "ticker",
+		);
+	}
 
-  sub on_ticker_tick {
-    print "tick at ", scalar(localtime), "...\n";
-  }
+	sub on_ticker_tick {
+		print "tick at ", scalar(localtime), "...\n";
+	}
 }
 
 exit App->new()->run_all();

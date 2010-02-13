@@ -54,37 +54,37 @@ Reflex::POE::Session - Observe events from a POE::Session object.
 # Not a complete example.
 # Please see eg-13-irc-bot.pl in the examples for one.
 
-  has poco_watcher => (
-    isa     => 'Reflex::POE::Session',
-    is      => 'rw',
-    traits  => ['Reflex::Trait::Observer'],
-    role    => 'poco',
-  );
+	has poco_watcher => (
+		isa     => 'Reflex::POE::Session',
+		is      => 'rw',
+		traits  => ['Reflex::Trait::Observer'],
+		role    => 'poco',
+	);
 
-  sub BUILD {
-    my $self = shift;
+	sub BUILD {
+		my $self = shift;
 
-    $self->component(
-      POE::Component::IRC->spawn(
-        nick    => "reflex_$$",
-        ircname => "Reflex Test Bot",
-        server  => "10.0.0.25",
-      ) || die "Drat: $!"
-    );
+		$self->component(
+			POE::Component::IRC->spawn(
+				nick    => "reflex_$$",
+				ircname => "Reflex Test Bot",
+				server  => "10.0.0.25",
+			) || die "Drat: $!"
+		);
 
-    $self->poco_watcher(
-      Reflex::POE::Session->new(
-        sid => $self->component()->session_id(),
-      )
-    );
+		$self->poco_watcher(
+			Reflex::POE::Session->new(
+				sid => $self->component()->session_id(),
+			)
+		);
 
-    $self->run_within_session(
-      sub {
-        $self->component()->yield(register => "all");
-        $self->component()->yield(connect  => {});
-      }
-    )
-  }
+		$self->run_within_session(
+			sub {
+				$self->component()->yield(register => "all");
+				$self->component()->yield(connect  => {});
+			}
+		)
+	}
 
 TODO - Either complete the example, or find a shorter one.
 

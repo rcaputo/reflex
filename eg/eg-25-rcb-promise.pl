@@ -20,18 +20,18 @@ use lib qw(../lib);
 # Create a thing that will invoke callbacks.
 
 {
-  package PromiseThing;
-  use Moose;
-  extends 'Reflex::Object';
-  use Reflex::Timer;
+	package PromiseThing;
+	use Moose;
+	extends 'Reflex::Object';
+	use Reflex::Timer;
 	use Reflex::Callbacks qw(gather_cb);
 
-  has ticker => (
-    isa     => 'Reflex::Timer',
-    is      => 'rw',
-    setup   => { interval => 1, auto_repeat => 1 },
-    traits  => [ 'Reflex::Trait::Observer' ],
-  );
+	has ticker => (
+		isa     => 'Reflex::Timer',
+		is      => 'rw',
+		setup   => { interval => 1, auto_repeat => 1 },
+		traits  => [ 'Reflex::Trait::Observer' ],
+	);
 
 	has cb => ( is => 'rw', isa => 'Reflex::Callbacks' );
 
@@ -40,10 +40,10 @@ use lib qw(../lib);
 		$self->cb(gather_cb($arg));
 	}
 
-  sub on_ticker_tick {
+	sub on_ticker_tick {
 		my $self = shift;
 		$self->cb()->send( event => {} );
-  }
+	}
 }
 
 use Reflex::Callbacks qw(cb_promise);

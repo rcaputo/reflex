@@ -123,36 +123,36 @@ Reflex::POE::Wheel::Run - Allow a Reflex class to represent POE::Wheel::Run.
 # Not a complete example.  Please see eg-07-wheel-run.pl or even
 # better eg-08-observer-trait.pl for working examples.
 
-  has child => (
-    traits  => ['Reflex::Trait::Observer'],
-    isa     => 'Reflex::POE::Wheel::Run|Undef',
-    is      => 'rw',
-  );
+	has child => (
+		traits  => ['Reflex::Trait::Observer'],
+		isa     => 'Reflex::POE::Wheel::Run|Undef',
+		is      => 'rw',
+	);
 
-  sub BUILD {
-    my $self = shift;
-    $self->child(
-      Reflex::POE::Wheel::Run->new(
-        Program => "$^X -wle 'print qq[pid(\$\$) moo(\$_)] for 1..10; exit'",
-      )
-    );
-  }
+	sub BUILD {
+		my $self = shift;
+		$self->child(
+			Reflex::POE::Wheel::Run->new(
+				Program => "$^X -wle 'print qq[pid(\$\$) moo(\$_)] for 1..10; exit'",
+			)
+		);
+	}
 
-  sub on_child_stdout {
-    my ($self, $args) = @_;
-    print "stdout: $args->{output}\n";
-  }
+	sub on_child_stdout {
+		my ($self, $args) = @_;
+		print "stdout: $args->{output}\n";
+	}
 
-  sub on_child_close {
-    my ($self, $args) = @_;
-    print "child closed all output\n";
-  }
+	sub on_child_close {
+		my ($self, $args) = @_;
+		print "child closed all output\n";
+	}
 
-  sub on_child_signal {
-    my ($self, $args) = @_;
-    print "child $args->{pid} exited: $args->{exit}\n";
-    $self->child(undef);
-  }
+	sub on_child_signal {
+		my ($self, $args) = @_;
+		print "child $args->{pid} exited: $args->{exit}\n";
+		$self->child(undef);
+	}
 
 TODO - Needs a better example.
 
