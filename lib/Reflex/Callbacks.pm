@@ -20,16 +20,19 @@ use Reflex::Callback::CodeRef;
 use Reflex::Callback::Method;
 use Reflex::Callback::Promise;
 
-use Exporter;
-use base qw(Exporter);
-our @EXPORT_OK = qw(
-	cb_class
-	cb_coderef
-	cb_method
-	cb_object
-	cb_promise
-	cb_role
-	gather_cb
+use Moose::Exporter;
+Moose::Exporter->setup_import_methods(
+	as_is => [
+		qw(
+			cb_class
+			cb_coderef
+			cb_method
+			cb_object
+			cb_promise
+			cb_role
+			gather_cb
+		)
+	]
 );
 
 use Carp qw(croak);
