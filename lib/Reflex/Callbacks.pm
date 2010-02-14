@@ -181,4 +181,11 @@ sub send {
 	$self->callback_map()->{$event}->deliver($event, $arg);
 }
 
+sub add_callback {
+	my ($self, %callback_map) = @_;
+	while (my ($event, $callback) = each %callback_map) {
+		$self->callback_map()->{$event} = $callback;
+	}
+}
+
 1;
