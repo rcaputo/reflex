@@ -120,7 +120,8 @@ The interval specifies the interval between events are fired.
 auto_repeat is either specified as 1 or not specified and in the former
 case, the events will be fired repeatedly and in the latter, only one event
 is fired.
- 
+event_name is a key in the hash that specifies what the event emitted should 
+be called. 
 TODO - Complete the API.  It's currently very incomplete.  It only
 handles relative delays via its "interval" constructor parameter, and
 automatic repeat via "auto_repeat".
