@@ -22,6 +22,11 @@ has auto_repeat => (
 	is => 'rw',
 );
 
+has event_name => (
+	isa => 'Str|Undef',
+	is => 'rw',
+);
+
 sub BUILD {
 	my $self = shift;
 	$self->repeat();
@@ -55,7 +60,12 @@ sub repeat {
 sub _deliver {
 	my $self = shift;
 	$self->alarm_id(0);
-	$self->emit( event => "tick" );
+	if(defined($self->event_name())) {
+		$self->emit( event=> $self->event_name());
+	}
+	else {	
+		$self->emit( event => "tick" );
+	}
 	$self->repeat() if $self->auto_repeat();
 }
 
