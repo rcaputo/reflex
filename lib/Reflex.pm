@@ -67,7 +67,11 @@ Reflex - Reactive classes for flexible programs.
 =head1 DESCRIPTION
 
 Reflex is a suite of classes to help programmers write reactive
-programs.  The project has some goals:
+programs.  In short, Reflex aims to allow programmers to write events
+based programs completely OO approach (using Moose).  This makes using
+event-based libraries such as POE a lot simpler and cleaner.
+
+The project has some goals:
 
 =over 2
 
@@ -102,6 +106,9 @@ Support is officially available from POE's mailing list as well.  Send
 a blank message to
 L<poe-subscribe@perl.org|mailto:poe-subscribe@perl.org>
 to join.
+
+The Reflex package also has helpful examples which may serve as a
+tutorial until Reflex is documented more.
 
 =head1 ACKNOWLEDGEMENTS
 
