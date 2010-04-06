@@ -1,3 +1,6 @@
+#calls a method (to be overriden in client) at an interval
+#either this happens only once, or repeats
+
 package Reflex::Timer;
 
 use Moose;
@@ -19,6 +22,11 @@ has auto_repeat => (
 	is => 'rw',
 );
 
+has event_name => (
+	isa => 'Str|Undef',
+	is => 'rw',
+);
+
 sub BUILD {
 	my $self = shift;
 	$self->repeat();
@@ -27,6 +35,7 @@ sub BUILD {
 sub repeat {
 	my $self = shift;
 
+	#return unless interval specified
 	return unless defined $self->interval() and $self->call_gate("repeat");
 
 	# Stop a previous alarm?
@@ -47,10 +56,16 @@ sub repeat {
 	);
 }
 
+#overriden method from Reflex::Object
 sub _deliver {
 	my $self = shift;
 	$self->alarm_id(0);
-	$self->emit( event => "tick" );
+	if(defined($self->event_name())) {
+		$self->emit( event=> $self->event_name());
+	}
+	else {	
+		$self->emit( event => "tick" );
+	}
 	$self->repeat() if $self->auto_repeat();
 }
 
@@ -62,6 +77,7 @@ sub DEMOLISH {
 sub stop {
 	my $self = shift;
 
+	#return if it was a false "alarm" (pun intended)
 	return unless defined $self->alarm_id() and $self->call_gate("stop");
 
 	$POE::Kernel::poe_kernel->alarm_remove($self->alarm_id());
@@ -99,6 +115,13 @@ Reflex::Timer - Observe the passage of time.
 
 Reflex::Timer emits events to mark the passage of time.
 
+Its constructor takes a hash as an argument. 
+The interval specifies the interval between events are fired.
+auto_repeat is either specified as 1 or not specified and in the former
+case, the events will be fired repeatedly and in the latter, only one event
+is fired.
+event_name is a key in the hash that specifies what the event emitted should 
+be called. 
 TODO - Complete the API.  It's currently very incomplete.  It only
 handles relative delays via its "interval" constructor parameter, and
 automatic repeat via "auto_repeat".

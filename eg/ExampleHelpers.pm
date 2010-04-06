@@ -1,3 +1,6 @@
+## Used in the examples to reduce LOC by declaring fucntions that are used
+## over and over in this module
+
 package ExampleHelpers;
 
 use warnings;
