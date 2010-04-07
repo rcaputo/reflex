@@ -16,7 +16,6 @@ use Moose::Util::TypeConstraints;
 
 use Reflex::Callback;
 use Reflex::Callback::CodeRef;
-#use Reflex::Callback::Emit;   # For current Reflex compatibility
 use Reflex::Callback::Method;
 use Reflex::Callback::Promise;
 
@@ -76,18 +75,16 @@ sub cb_object {
 	my ($object, $methods) = @_;
 
 	# They passed us a scalar.  Emulate cb_methods().
-	return ($methods => cb_method(@_)) unless ref $methods;
+	return($methods => cb_method(@_)) unless ref $methods;
 
-	if (ref($methods) eq "ARRAY") {
-		return map { ($_ => cb_method($object, $_)) } @$methods;
-	}
+	return( map { ($_ => cb_method($object, $_)) } @$methods ) if (
+		ref($methods) eq "ARRAY"
+	);
 
-	if (ref($methods) eq "HASH") {
-		return(
-			map { ($_ => cb_method($object, $methods->{$_})) }
-			keys %$methods
-		);
-	}
+	return (
+		map { ($_ => cb_method($object, $methods->{$_})) }
+		keys %$methods
+	) if ref($methods) eq "HASH";
 
 	croak "cb_object with unknown methods type: $methods";
 }
@@ -113,7 +110,7 @@ sub cb_role {
 	);
 
 	my @events = (
-		map { /$method_prefix/; "on_$1" }
+		map { /$method_prefix/; $1 }
 		@class_methods
 	);
 

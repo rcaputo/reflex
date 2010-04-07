@@ -62,14 +62,9 @@ my $singleton_session_id = POE::Session->create(
 
 		### Cross-session emit() is converted into these events.
 
-		emit_to_coderef => sub {
+		deliver_callback => sub {
 			my ($callback, $args) = @_[ARG0, ARG1];
-			$callback->($args);
-		},
-
-		emit_to_method => sub {
-			my ($observer, $method, $args) = @_[ARG0..$#_];
-			$observer->$method($args);
+			$callback->deliver($args);
 		},
 
 		# call_gate() uses this to call methods in the right session.
@@ -178,6 +173,8 @@ has observers => (
 sub BUILD {
 	my ($self, $args) = @_;
 
+	# Set up all emitters and observers.
+
 	foreach my $setup (
 		grep {
 			$_->does('Reflex::Trait::Emitter') || $_->does('Reflex::Trait::Observer')
@@ -220,43 +217,11 @@ sub BUILD {
 		croak "Unknown 'setup' value: $callback";
 	}
 
+	# Known observers.
+
 	foreach my $observer (@{$self->observers()}) {
-
-		# Observing based on role.
-
-		if (exists $observer->{role}) {
-			my @required = qw(observer role);
-			$self->_check_args(
-				$observer,
-				\@required,
-				[ ],
-			);
-
-			my ($observer, $role) = @$observer{@required};
-
-			$observer->observe_role(
-				observed  => $self,
-				role      => $role,
-			);
-			next;
-		}
-
-		# Observe without a role.
-
-		my @required = qw(observer callback event);
-		$self->_check_args(
-			$observer,
-			\@required,
-			[ ],
-		);
-
-		my ($observer, $callback, $event) = @$observer{@required};
-
-		$observer->observe(
-			observed  => $self,
-			event     => $event,
-			callback  => $callback,
-		);
+		my $watcher = shift @$observer;
+		$watcher->observe($self, @$observer);
 	}
 
 	# Clear observers; we're done with them.
@@ -271,39 +236,31 @@ sub BUILD {
 
 # Self is being observed.  Register the observation with self.
 sub observe {
-	my ($self, @args) = @_;
+	my ($self, $observed, %args) = @_;
 
-	my @required = qw(observed event callback);
-	my $args = $self->_check_args(
-		\@args,
-		\@required,
-		[ ],
-	);
+	while (my ($event, $callback) = each %args) {
+		my $observation = {
+			callback  => $callback,
+			event     => $event,
+			observed  => $observed,
+		};
 
-	my ($observed, $event, $callback) = @$args{@required};
+		weaken $observation->{observed};
 
-	# Register what I'm watching.
+		unless (exists $self->watched_objects()->{$observed}) {
+			$self->watched_objects()->{$observed} = $observed;
+			weaken $self->watched_objects()->{$observed};
 
-	my $observation = {
-		callback  => $callback,
-		event     => $event,
-		observed  => $observed,
-	};
-	weaken $observation->{observed};
+			# Keep this object's session alive.
+			$POE::Kernel::poe_kernel->refcount_increment($self->session_id, "in_use");
+		}
 
-	unless (exists $self->watched_objects()->{$observed}) {
-		$self->watched_objects()->{$observed} = $observed;
-		weaken $self->watched_objects()->{$observed};
+		push @{$self->watched_object_events()->{$observed}->{$event}}, $observation;
 
-		# Keep this object's session alive.
-		$POE::Kernel::poe_kernel->refcount_increment($self->session_id, "in_use");
+		# Tell what I'm watching that it's being observed.
+
+		$observed->is_observed($self, $event, $callback);
 	}
-
-	push @{$self->watched_object_events()->{$observed}->{$event}}, $observation;
-
-	# Tell what I'm watching that it's being observed.
-
-	$observed->is_observed($self, $event, $callback);
 
 	undef;
 }
@@ -350,43 +307,6 @@ sub is_observed {
 	push @{$self->watchers()->{$observer}}, $observation;
 }
 
-sub observe_role {
-	my ($self, @args) = @_;
-
-	my @required = qw(observed role);
-	my $args = $self->_check_args(
-		\@args,
-		\@required,
-		[ ],
-	);
-
-	my ($observed, $role) = @$args{@required};
-
-	# Find all relevant methods in the obsever, and explicitly observe
-	# the corresponding events.  Heavy at setup, but light while
-	# running.
-	#
-	# TODO - We can probably optimize this.  The methods shouldn't
-	# change often.  Can we cache the methods and invalidate the cache
-	# at the proper times?
-
-	foreach my $callback (
-		grep /^on_${role}_\S+$/,
-		map { $_->name }
-		$self->meta()->get_all_methods()
-	) {
-		my ($event) = ($callback =~ /^on_${role}_(\S+)$/);
-
-		$self->observe(
-			observed  => $observed,
-			event     => $1,
-			callback  => $callback,
-		);
-	}
-
-	undef;
-}
-
 sub emit {
 	my ($self, @args) = @_;
 
@@ -404,6 +324,7 @@ sub emit {
 
 	# Look for self-handling of the event.
 	# TODO - can() calls are also candidates for caching.
+	# (AKA: Cache as cache can()?)
 
 	if ($self->can("on_my_$event")) {
 		my $method = "on_my_$event";
@@ -426,46 +347,21 @@ sub emit {
 		CALLBACK: foreach my $callback_rec (@$callbacks) {
 			my $callback = $callback_rec->{callback};
 
-			# Coderef callback.
-
-			if (ref($callback) eq 'CODE') {
-				# Same session.  Just call it.
-				if (
-					$callback_rec->{observer}->session_id() eq
-					$POE::Kernel::poe_kernel->get_active_session()->ID
-				) {
-					$callback->($callback_args);
-					next CALLBACK;
-				}
-
-				# Different session.  Post it through.
-				# TODO - Multisession is not tested yet.
-				$poe_kernel->post(
-					$callback_rec->{observer}->session_id(), 'emit_to_coderef',
-					$callback, $callback_args,
-					$callback_rec->{observer}, $self, # keep objects alive a bit
-				);
+			# Same session.  Just deliver it.
+			if (
+				$callback_rec->{observer}->session_id() eq
+				$POE::Kernel::poe_kernel->get_active_session()->ID
+			) {
+				$callback->deliver($event, $callback_args);
 				next CALLBACK;
 			}
 
-			# Method callback.
-
-			if (
-					$callback_rec->{observer}->session_id() eq
-					$POE::Kernel::poe_kernel->get_active_session()->ID
-			) {
-				# Same session.  Just call it.
-				$callback_rec->{observer}->$callback($callback_args);
-			}
-			else {
-				# Different session.  Post it through.
-				# TODO - Multisession is not tested yet.
-				$poe_kernel->post(
-					$callback_rec->{observer}->session_id(), 'emit_to_method',
-					$callback_rec->{observer}, $callback, $callback_args,
-					$self, # keep object alive a bit
-				);
-			}
+			# Different session.  Post it through.
+			$poe_kernel->post(
+				$callback_rec->{observer}->session_id(), 'deliver_calback',
+				$callback, $callback_args,
+				$callback_rec->{observer}, $self, # keep objects alive a bit
+			);
 		}
 	}
 }
@@ -635,14 +531,6 @@ TODO - Complete the documentation, including examples for all methods.
 =head2 observe
 
 Observe events emitted by another object.  See L</emit>.
-
-=head2 observe_role
-
-Observe events emitted by another object, and call this object's
-methods based on the other object's role or purpose within the owner.
-
-TODO - The name "role" conflicts with Moose concepts, and so it may be
-renamed.  Alternative names are welcome.
 
 =head2 stop_observers
 

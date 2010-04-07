@@ -23,6 +23,7 @@ use lib qw(../lib);
 use Reflex::Object;
 use Reflex::Timer;
 use ExampleHelpers qw(eg_say);
+use Reflex::Callbacks qw(cb_coderef);
 
 eg_say("starting timer object");
 my $timer = Reflex::Timer->new( interval => 1, auto_repeat => 1 );
@@ -32,11 +33,8 @@ my $watcher = Reflex::Object->new();
 
 eg_say("watcher watching timer");
 $watcher->observe(
-	observed  => $timer,
-	event     => "tick",
-	callback  => sub {
-		eg_say("watcher sees 'tick' event");
-	},
+	$timer,
+	tick => cb_coderef( sub { eg_say("watcher sees 'tick' event") } ),
 );
 
 # Run the objects until they are done.

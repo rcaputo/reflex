@@ -1,6 +1,7 @@
 package Reflex::Trait::Observer;
 use Moose::Role;
 use Scalar::Util qw(weaken);
+use Reflex::Callbacks qw(cb_role);
 
 has trigger => (
 	is => 'ro',
@@ -23,12 +24,13 @@ has trigger => (
 
 			return unless defined $value;
 
-			$self->observe_role(
-				observed  => $value,
-				role      => (
+			$self->observe(
+				$value,
+				cb_role(
+					$self,
 					$role ||=
 					$self->meta->find_attribute_by_name($meta_self->name())->role()
-				),
+				)
 			);
 		}
 	}
@@ -43,9 +45,10 @@ has initializer => (
 		return sub {
 			my ($self, $value, $callback, $attr) = @_;
 			if (defined $value) {
-				$self->observe_role(
-					observed => $value,
-					role     => (
+				$self->observe(
+					$value,
+					cb_role(
+						$self,
 						$role ||=
 						$self->meta->find_attribute_by_name($attr->name())->role()
 					),

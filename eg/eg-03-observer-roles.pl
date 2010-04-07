@@ -20,6 +20,7 @@ use lib qw(../lib);
 	extends 'Reflex::Object';
 	use Reflex::Timer;
 	use ExampleHelpers qw(eg_say);
+	use Reflex::Callbacks qw(cb_role);
 
 	has timer => (
 		isa => 'Reflex::Timer',
@@ -32,23 +33,17 @@ use lib qw(../lib);
 		eg_say("watcher creates a timer with the waitron role");
 		$self->timer(
 			Reflex::Timer->new(
-				interval => 1,
+				interval    => 1,
 				auto_repeat => 1,
 				observers   => [
-					{
-						observer  => $self,
-						role      => "waitron",
-					}
-				],
+					[ $self => cb_role($self, "waitron") ],
+				]
 			),
 		);
 
 		# It's possible to mix and match.
 		eg_say("observing timer as the waitroff role, too");
-		$self->observe_role(
-			observed  => $self->timer(),
-			role      => "waitroff",
-		);
+		$self->observe($self->timer() => cb_role($self, "waitroff"));
 	}
 
 	sub on_waitron_tick {
