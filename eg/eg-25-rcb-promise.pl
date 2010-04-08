@@ -42,7 +42,7 @@ use lib qw(../lib);
 
 	sub on_ticker_tick {
 		my $self = shift;
-		$self->cb()->send( event => {} );
+		$self->cb()->deliver( event => {} );
 	}
 }
 

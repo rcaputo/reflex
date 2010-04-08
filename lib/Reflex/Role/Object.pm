@@ -334,15 +334,19 @@ sub emit {
 
 	# This event isn't observed.
 
-	return unless (
-		exists $self->watchers_by_event()->{$event}
-	);
+	my $deliver_event = $event;
+	unless (exists $self->watchers_by_event()->{$deliver_event}) {
+		$deliver_event = "on_promise";
+		return unless exists $self->watchers_by_event()->{$deliver_event};
+	}
 
 	# This event is observed.  Broadcast it to observers.
 	# TODO - Accessor calls are expensive.  Optimize them away.
 
 	while (
-		my ($observer, $callbacks) = each %{$self->watchers_by_event()->{$event}}
+		my ($observer, $callbacks) = each %{
+			$self->watchers_by_event()->{$deliver_event}
+		}
 	) {
 		CALLBACK: foreach my $callback_rec (@$callbacks) {
 			my $callback = $callback_rec->{callback};

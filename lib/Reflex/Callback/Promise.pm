@@ -11,7 +11,7 @@ has queue => (
 );
 
 # Delivering to a promise enqueues the message.
-sub send {
+sub deliver {
 	my ($self, $event, $arg) = @_;
 	push @{$self->queue()}, [ $event, $arg ];
 }

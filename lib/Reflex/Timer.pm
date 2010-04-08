@@ -63,7 +63,7 @@ sub _deliver {
 	if(defined($self->event_name())) {
 		$self->emit( event=> $self->event_name());
 	}
-	else {	
+	else {
 		$self->emit( event => "tick" );
 	}
 	$self->repeat() if $self->auto_repeat();
