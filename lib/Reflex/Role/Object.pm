@@ -168,6 +168,11 @@ has observers => (
 	default => sub { [] },
 );
 
+has promise => (
+	is => 'rw',
+	isa => 'Reflex::Callback::Promise',
+);
+
 # Base class.
 
 sub BUILD {
@@ -336,8 +341,14 @@ sub emit {
 
 	my $deliver_event = $event;
 	unless (exists $self->watchers_by_event()->{$deliver_event}) {
+		if ($self->promise()) {
+			$self->promise()->deliver($event, $callback_args);
+			return;
+		}
+
 		$deliver_event = "on_promise";
 		return unless exists $self->watchers_by_event()->{$deliver_event};
+		# Fall through.
 	}
 
 	# This event is observed.  Broadcast it to observers.
@@ -504,6 +515,14 @@ sub run_within_session {
 sub run_all {
 	POE::Kernel->run();
 }
+
+sub wait {
+	my $self = shift;
+
+	$self->promise() || $self->promise(Reflex::Callback::Promise->new());
+	return $self->promise()->wait();
+}
+
 
 no Moose;
 #__PACKAGE__->meta()->make_immutable();
