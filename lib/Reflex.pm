@@ -44,6 +44,9 @@ Reflex - Reactive classes for flexible programs.
 
 =head1 SYNOPSIS
 
+	# See eg-18-synopsis-no-moose.pl for a slightly longer version that
+	# doesn't use Moose.
+
 	{
 		package App;
 		use Moose;
@@ -66,37 +69,18 @@ Reflex - Reactive classes for flexible programs.
 
 =head1 DESCRIPTION
 
-Reflex is a suite of classes to help programmers write reactive
-programs.  In short, Reflex aims to allow programmers to write events
-based programs completely OO approach (using Moose).  This makes using
-event-based libraries such as POE a lot simpler and cleaner.
-
-The project has some goals:
-
-=over 2
-
-=item * Be concise.
-
-=item * Be convenient.
-
-=item * Be portable.
-
-=item * Be fast.
-
-=item * Don't get in the way.
-
-=item * Release early, and release often.
-
-=back
-
-Sorry for the lack of documentation.  It conflicted with releasing
-early.  Contributions are very much welcome.  Give the project a
-reason to release often.
+Reflex is a suite of classes to help programmers write reactive (AKA
+event-driven) programs.  Reflex uses Moose meta-object features
+internally, but programs don't need to use Moose directly.  However,
+Reflex does provide some conveniences for those programs that do use
+Moose.
 
 Reflex is "reactive" in the sense that it is an implementation of the
 "reactor" pattern.  http://en.wikipedia.org/wiki/Reactor_pattern
 
 =head1 GETTING HELP
+
+See irc.perl.org #reflex for help with Reflex.
 
 See irc.perl.org #moose for help with Moose.
 
@@ -115,7 +99,7 @@ tutorial until Reflex is documented more.
 irc.perl.org channel
 L<#moose|irc://irc.perl.org/moose>
 and
-L<#poe|irc://irc.perl.org/moose>.
+L<#poe|irc://irc.perl.org/poe>.
 The former for assisting in learning their fine libraries, sometimes
 against everyone's better judgement.  The latter for putting up with
 lengthy and sometimes irrelevant design discussion for oh so long.
