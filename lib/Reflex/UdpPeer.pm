@@ -1,5 +1,6 @@
 package Reflex::UdpPeer;
 use Moose;
+extends 'Reflex::Object';
 with 'Reflex::Role::UdpPeer';
 
 # Composes Reflex::Role::udpPeer into a class.

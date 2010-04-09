@@ -229,6 +229,24 @@ sub BUILD {
 		$watcher->observe($self, @$observer);
 	}
 
+	# Discrete callbacks.
+
+	CALLBACK: while (my ($param, $value) = each %$args) {
+		next unless $param =~ /^on_(\S+)/;
+
+		# There is an object, so we have a watcher.
+		if ($value->object()) {
+			$value->object()->observe($self, $1 => $value);
+			next CALLBACK;
+		}
+
+		# TODO - Who is the watcher?
+		if ($value->object()) {
+			$self->observe($self, $1 => $value);
+			next CALLBACK;
+		}
+	}
+
 	# Clear observers; we're done with them.
 	# TODO - Moose probably has a better way of validating parameters.
 	$self->observers([]);
@@ -244,6 +262,8 @@ sub observe {
 	my ($self, $observed, %args) = @_;
 
 	while (my ($event, $callback) = each %args) {
+		$event =~ s/^on_//;
+
 		my $observation = {
 			callback  => $callback,
 			event     => $event,
@@ -251,7 +271,6 @@ sub observe {
 		};
 
 		weaken $observation->{observed};
-
 		unless (exists $self->watched_objects()->{$observed}) {
 			$self->watched_objects()->{$observed} = $observed;
 			weaken $self->watched_objects()->{$observed};
@@ -346,7 +365,7 @@ sub emit {
 			return;
 		}
 
-		$deliver_event = "on_promise";
+		$deliver_event = "promise";
 		return unless exists $self->watchers_by_event()->{$deliver_event};
 		# Fall through.
 	}

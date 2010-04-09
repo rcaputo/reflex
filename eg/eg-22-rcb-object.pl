@@ -117,7 +117,7 @@ $aho->run_thing();
 
 		$self->callback_thing(
 			ThingWithCallbacks->new(
-				cb_object($self, { on_event => "handle_event" }),
+				cb_object($self, { event => "handle_event" }),
 			)
 		);
 	}

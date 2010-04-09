@@ -1,6 +1,3 @@
-#calls a method (to be overriden in client) at an interval
-#either this happens only once, or repeats
-
 package Reflex::Timer;
 
 use Moose;
@@ -19,11 +16,6 @@ has alarm_id => (
 
 has auto_repeat => (
 	isa => 'Bool',
-	is => 'rw',
-);
-
-has event_name => (
-	isa => 'Str|Undef',
 	is => 'rw',
 );
 
@@ -60,12 +52,7 @@ sub repeat {
 sub _deliver {
 	my $self = shift;
 	$self->alarm_id(0);
-	if(defined($self->event_name())) {
-		$self->emit( event=> $self->event_name());
-	}
-	else {
-		$self->emit( event => "tick" );
-	}
+	$self->emit( event => "tick" );
 	$self->repeat() if $self->auto_repeat();
 }
 

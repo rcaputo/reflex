@@ -60,4 +60,6 @@ use lib qw(../lib);
 	}
 }
 
-exit UdpPeer->new( port => 12345 )->run_all();
+my $port = 12345;
+print "Starting UDP echo service on port $port.\n";
+exit UdpPeer->new( port => $port )->run_all();

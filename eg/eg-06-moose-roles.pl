@@ -11,6 +11,7 @@ use lib qw(../lib);
 {
 	package Reflex::UdpPeer::Echo;
 	use Moose;
+	extends 'Reflex::Object';
 	with 'Reflex::Role::UdpPeer';
 
 	sub on_my_datagram {

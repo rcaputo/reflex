@@ -77,12 +77,13 @@ sub cb_object {
 	# They passed us a scalar.  Emulate cb_methods().
 	return($methods => cb_method(@_)) unless ref $methods;
 
+	# Events match method names.
 	return( map { ($_ => cb_method($object, $_)) } @$methods ) if (
 		ref($methods) eq "ARRAY"
 	);
 
 	return (
-		map { ($_ => cb_method($object, $methods->{$_})) }
+		map { ("on_$_" => cb_method($object, $methods->{$_})) }
 		keys %$methods
 	) if ref($methods) eq "HASH";
 
@@ -124,7 +125,6 @@ sub cb_promise {
 	my $promise_ref = shift;
 
 	$$promise_ref = Reflex::Callback::Promise->new();
-
 	return( on_promise => $$promise_ref );
 }
 

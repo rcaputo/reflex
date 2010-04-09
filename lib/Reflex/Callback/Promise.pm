@@ -1,8 +1,7 @@
 package Reflex::Callback::Promise;
 
 use Moose;
-extends 'Reflex::Callback';
-extends 'Reflex::Callbacks';
+extends qw(Reflex::Callbacks Reflex::Callback);
 
 has queue => (
 	is      => 'rw',
