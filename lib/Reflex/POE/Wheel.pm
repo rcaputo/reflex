@@ -87,9 +87,6 @@ sub _deliver {
 	);
 }
 
-no Moose;
-__PACKAGE__->meta()->make_immutable();
-
 1;
 
 __END__

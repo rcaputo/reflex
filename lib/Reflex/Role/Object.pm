@@ -346,6 +346,11 @@ sub emit {
 	my $event         = $args->{event};
 	my $callback_args = $args->{args} || {};
 
+	# TODO - Needs consideration:
+	# TODO - Weaken?
+	# TODO - Underscores for Reflex parameters?
+	$callback_args->{_sender} = $self;
+
 	# Look for self-handling of the event.
 	# TODO - can() calls are also candidates for caching.
 	# (AKA: Cache as cache can()?)
@@ -484,6 +489,7 @@ sub ignore {
 		$observed->stop_observers($self, \@events);
 	}
 	else {
+		use Carp qw(cluck); cluck "whaaaa" unless defined $observed;
 		delete $self->watched_object_events()->{$observed};
 		delete $self->watched_objects()->{$observed};
 		$observed->stop_observers($self);
@@ -541,10 +547,6 @@ sub wait {
 	$self->promise() || $self->promise(Reflex::Callback::Promise->new());
 	return $self->promise()->wait();
 }
-
-
-no Moose;
-#__PACKAGE__->meta()->make_immutable();
 
 1;
 

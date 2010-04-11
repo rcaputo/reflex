@@ -7,26 +7,27 @@ extends 'Reflex::Object';
 use Scalar::Util qw(weaken);
 
 has handle => (
-	isa => 'IO::Handle',
+	isa => 'FileHandle',
 	is  => 'rw',
+	# TODO - On change, stop the old handle and start the new one.
 );
 
 has rd => (
-	isa => 'Bool',
-	is  => 'rw',
-	# TODO - On set, change the handle's watcher state.
+	isa         => 'Bool',
+	is          => 'rw',
+	trigger     => \&_changed_rd,
 );
 
 has wr => (
-	isa => 'Bool',
-	is  => 'rw',
-	# TODO - On set, change the handle's watcher state.
+	isa         => 'Bool',
+	is          => 'rw',
+	trigger     => \&_changed_wr,
 );
 
 has ex => (
-	isa => 'Bool',
-	is  => 'rw',
-	# TODO - On set, change the handle's watcher state.
+	isa         => 'Bool',
+	is          => 'rw',
+	trigger     => \&_changed_ex,
 );
 
 sub BUILD {
@@ -38,20 +39,69 @@ sub start {
 	my $self = shift;
 	return unless $self->call_gate("start");
 
+	# TODO - Repeated code between this and the _changed_rd() etc.
+	# methods.  Repeating code is bad, but it's more efficient.  Is
+	# there an efficient way to avoid the repetition?
+
 	my $envelope = [ $self ];
 	weaken $envelope->[0];
 
 	$POE::Kernel::poe_kernel->select_read(
-		$self->handle(), 'select_ready', $envelope, 'read'
+		$self->handle(), 'select_ready', $envelope, 'readable'
 	) if $self->rd();
 
 	$POE::Kernel::poe_kernel->select_write(
-		$self->handle(), 'select_ready', $envelope, 'write'
+		$self->handle(), 'select_ready', $envelope, 'writable'
 	) if $self->wr();
 
 	$POE::Kernel::poe_kernel->select_expedite(
-		$self->handle(), 'select_ready', $envelope, 'expedite'
+		$self->handle(), 'select_ready', $envelope, 'exception'
 	) if $self->ex();
+}
+
+sub _changed_rd {
+	my ($self, $value) = @_;
+	return unless $self->call_gate("_changed_rd", $value);
+	if ($value) {
+		my $envelope = [ $self ];
+		weaken $envelope->[0];
+		$POE::Kernel::poe_kernel->select_read(
+			$self->handle(), 'select_ready', $envelope, 'readable'
+		);
+	}
+	else {
+		$POE::Kernel::poe_kernel->select_read($self->handle(), undef);
+	}
+}
+
+sub _changed_wr {
+	my ($self, $value) = @_;
+	return unless $self->call_gate("_changed_rd", $value);
+	if ($value) {
+		my $envelope = [ $self ];
+		weaken $envelope->[0];
+		$POE::Kernel::poe_kernel->select_read(
+			$self->handle(), 'select_ready', $envelope, 'writable'
+		);
+	}
+	else {
+		$POE::Kernel::poe_kernel->select_read($self->handle(), undef);
+	}
+}
+
+sub _changed_ex {
+	my ($self, $value) = @_;
+	return unless $self->call_gate("_changed_rd", $value);
+	if ($value) {
+		my $envelope = [ $self ];
+		weaken $envelope->[0];
+		$POE::Kernel::poe_kernel->select_read(
+			$self->handle(), 'select_ready', $envelope, 'exception'
+		);
+	}
+	else {
+		$POE::Kernel::poe_kernel->select_read($self->handle(), undef);
+	}
 }
 
 sub stop {
@@ -63,6 +113,7 @@ sub stop {
 	$POE::Kernel::poe_kernel->select_expedite($self->handle(), undef) if $self->ex();
 }
 
+# Part of the POE/Reflex contract.
 sub _deliver {
 	my ($self, $handle, $mode) = @_;
 	$self->emit(
@@ -79,7 +130,6 @@ sub DEMOLISH {
 }
 
 no Moose;
-__PACKAGE__->meta()->make_immutable();
 
 1;
 

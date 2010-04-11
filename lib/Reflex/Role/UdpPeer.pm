@@ -36,7 +36,7 @@ after 'BUILD' => sub {
 	undef;
 };
 
-sub on_remote_read {
+sub on_remote_readable {
 	my ($self, $args) = @_;
 
 	my $remote_address = recv(
@@ -64,6 +64,7 @@ sub send {
 		[ ],
 	);
 
+	# Success!
 	return if send(
 		$self->handle()->handle(), # TODO - Ugh!
 		$args->{datagram},
@@ -85,9 +86,6 @@ sub destruct {
 	my $self = shift;
 	$self->handle(undef);
 }
-
-no Moose;
-#__PACKAGE__->meta()->make_immutable();
 
 1;
 
