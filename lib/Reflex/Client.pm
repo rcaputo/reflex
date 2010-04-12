@@ -25,9 +25,7 @@ has server => (
 sub on_my_connected {
 	my ($self, $args) = @_;
 
-	# TODO - Reflex::Handle should make this convenient.
 	$self->stop();
-	$self->handle(undef);
 
 	$self->server(
 		$self->protocol()->new(
@@ -41,27 +39,21 @@ sub on_my_fail {
 	my ($self, $args) = @_;
 	warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
 
-	# TODO - Reflex::Handle should make this convenient.
 	$self->stop();
-	$self->handle(undef);
 }
 
 sub on_server_close {
 	my ($self, $args) = @_;
 	warn "server closed connection.\n";
 
-	# TODO - Reflex::Handle should make this convenient.
 	$self->sever()->stop();
-	$self->server(undef);
 }
 
 sub on_server_fail {
 	my ($self, $args) = @_;
 	warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
 
-	# TODO - Reflex::Handle should make this convenient.
 	$self->server()->stop();
-	$self->server(undef);
 }
 
 1;

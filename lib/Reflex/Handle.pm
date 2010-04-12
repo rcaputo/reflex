@@ -107,11 +107,12 @@ sub _changed_ex {
 
 sub stop {
 	my $self = shift;
-	return unless $self->call_gate("stop");
 
-	$POE::Kernel::poe_kernel->select_read($self->handle(), undef) if $self->rd();
-	$POE::Kernel::poe_kernel->select_write($self->handle(), undef) if $self->wr();
-	$POE::Kernel::poe_kernel->select_expedite($self->handle(), undef) if $self->ex();
+	$self->rd(0) if $self->rd();
+	$self->wr(0) if $self->wr();
+	$self->ex(0) if $self->ex();
+
+	$self->handle(undef);
 }
 
 # Part of the POE/Reflex contract.
