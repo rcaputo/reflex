@@ -7,9 +7,10 @@ extends 'Reflex::Object';
 use Scalar::Util qw(weaken);
 
 has handle => (
-	isa => 'FileHandle',
+	isa => 'Maybe[FileHandle]',
 	is  => 'rw',
 	# TODO - On change, stop the old handle and start the new one.
+	# TODO - On clear, stop the old handle.
 );
 
 has rd => (

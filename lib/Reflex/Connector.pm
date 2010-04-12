@@ -9,17 +9,21 @@ use Errno qw(EWOULDBLOCK EINPROGRESS);
 use Socket qw(SOL_SOCKET SO_ERROR inet_aton pack_sockaddr_in);
 
 has remote_addr => (
-	is => 'ro',
-	isa => 'Str',
+	is      => 'ro',
+	isa     => 'Str',
 	default => 'localhost',
 );
 
 # TODO - Make it an integer.  Coerce from string by resolving
 # service name.
 has remote_port => (
-	is => 'ro',
-	isa => 'Str',
+	is       => 'ro',
+	isa      => 'Str',
 	required => 1,
+);
+
+has '+handle' => (
+	default => sub { IO::Socket::INET->new(Proto => 'tcp') }
 );
 
 sub BUILD {
