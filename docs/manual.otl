@@ -1,0 +1,65 @@
+Introduction
+	What Reflex Is
+		Reflex is an object oriented approach to event-driven programming.
+		It provides an event driven base class.
+		Everything builds from there.
+	What Reflex Is Not
+	Authors
+		Rocco Caputo.
+		Looking for more.
+	License
+		Same terms as Perl itself.
+	Contributors
+		Chris Fedde.
+		Looking for more.
+Functional Reference
+	Objects
+	Low-Level Events
+		Watching for I/O
+		Watching for Signals
+		Watching Processes
+		Waiting for Time
+	Convenience Classes
+		Accepting Client Connections
+		Connecting to Servers
+		Waiting for Peer Datagrams
+		Stream I/O
+	Protocols
+		Streams
+			Raw
+			Character Translations
+		Terminated Records
+			Lines
+		Length-Prepended Blocks
+			Serialized Perl Data Structures
+		Fixed-Length Blocks
+		Filters
+			Grep
+			Map
+Class Reference
+	Reflex
+	Internal Helpers
+		Callback
+			CodeRef
+			Emit
+			Method
+			Null
+		Traits
+			Emitter
+			Observer
+	External Helpers
+		Callbacks
+	Watchers
+		Fd
+			Input
+			Output
+			Exception
+		Pid
+		Signal
+		Time Watchers
+			Interval
+			Alarm
+	Clients, Servers, and Peers
+		Acceptor
+		Connector
+		Receiver

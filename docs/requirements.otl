@@ -1,4 +1,4 @@
-[_] 45% Framework Requirements
+[_] 44% Framework Requirements
 	About
 		This document summarizes the best ideas from the patterns document.
 		The patterns document tries to enumerate all available options.
@@ -200,9 +200,10 @@
 			[_] 0% Receiver data is not visible to the sender.
 			[_] 0% Message-scoped resources should be stored in the message's continuation.
 				[_] 0% Message cancelation triggers associated resource cleanup.
-	[_] 36% Common primitive classes must be provided.
-		[_] 2% Low-level event watchers.
-			[_] 0% Reflex::Handle
+	[_] 44% Common primitive classes must be provided.
+		[_] 27% Low-level event watchers.
+			[_] 50% Reflex::Handle
+				[X] 100% Strawman implementation.
 				[_] 0% Determine API.
 			[_] 16% Reflex::Timer
 				[_] 0% Determine full API.
@@ -213,22 +214,30 @@
 					[_] 0% Repeat without drift.
 					[_] 0% Use DateTime for interval math.
 			[_] 0% Reflex::Cron
-				Wait for repeating times.
+				[_] 0% Strawman implementation.
 				[_] 0% Determine API.
 					See POE::Component::Cron for clues.
 					Would Chris Fedde like to work on this?
-			[_] 0% Reflex::Signal
+				[_] 0% Wait for repeating times.
+			[_] 50% Reflex::Signal
+				[X] 100% Strawman implementation.
 				[_] 0% Determine API.
-			[_] 0% Reflex::PID (SIGCHLD)
+			[_] 50% Reflex::PID (SIGCHLD)
+				[X] 100% Strawman implementation.
 				[_] 0% Determine API.
 			[_] 0% What else?
-		[_] 8% Primitive program pieces.
+		[_] 7% Primitive program pieces.
 			[_] 0% Reflex::App
+				[_] 0% Strawman implementation.
 				[_] 0% Determine API.
-			[_] 12% Reflex::Client::HTTP
+			[_] 20% Reflex::Client::HTTP
+				[_] 33% Reflex::Connector
+					[X] 100% Strawman implementation.
+					[_] 0% Determine API.
+					[_] 0% IPv6 support.
 				[_] 0% Reflex::Connector::Keepalive
-					[_] 0% Reflex::Connector
-						[_] 0% Determine API.
+					[_] 0% Strawman implementation.
+					[_] 0% Determine API.
 				[_] 0% Reflex::Resolver
 					[_] 0% Determine API.
 					[_] 0% Determine how to make asynchronous.
@@ -237,23 +246,24 @@
 						Threads?
 					[_] 0% IPV4
 					[_] 0% IPv6
-				[_] 0% Reflex::Connector
-					[_] % Strawman API.
-					[_] 0% Determine API.
 				[_] 50% Reflex::Stream
 					[X] 100%Strawman implementation.
 					[_] 0% Determine API.
 					Use Data::Transform internally to parse & marshall data.
-			[_] 50% Reflex::Listener
+			[_] 33% Reflex::Listener
 				[X] 100% Strawman implementation.
 				[_] 0% Determine API.
 					See POE::Wheel::ListenAccept for clues.
+				[_] 0% IPv6 support.
 			[_] 0% Reflex::Process
+				[_] 0% Strawman implementation.
 				[_] 0% Determine API.
 					See POE::Wheel::Run for clues.
 			[_] 0% Reflex::UdpPeer
+				[_] 0% Strawman implementation.
 				[_] 0% Determine API.
 			[_] 0% Reflex::Tail
+				[_] 0% Strawman implementation.
 				[_] 0% Determine API.
 					See POE::Wheel::FollowTail for clues.
 			[_] 0% What else?  Probably a lot!
@@ -316,7 +326,9 @@
 				[X] 100% Components that emit specific events require Wheel-like wrappers.
 					[X] 100% Is this worth supporting?
 						No.  The Session subscriber can detect any events emitted by the component.
-	[_] 50% Optimizations.
+	[_] 33% Optimizations.
 		[X] 100% Only $kernel->call() when we need to switch sessions.
+		[_] 0% Do we need call() at all?
+			[_] 0% Explore IO::Lambda's cheat.
 		[_] 0% Consolidate POE-specific code out into a single role.
 			Allows other event loops to be supported directly rather than through POE.
