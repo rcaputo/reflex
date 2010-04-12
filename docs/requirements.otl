@@ -200,7 +200,7 @@
 			[_] 0% Receiver data is not visible to the sender.
 			[_] 0% Message-scoped resources should be stored in the message's continuation.
 				[_] 0% Message cancelation triggers associated resource cleanup.
-	[_] 34% Common primitive classes must be provided.
+	[_] 36% Common primitive classes must be provided.
 		[_] 2% Low-level event watchers.
 			[_] 0% Reflex::Handle
 				[_] 0% Determine API.
@@ -222,10 +222,10 @@
 			[_] 0% Reflex::PID (SIGCHLD)
 				[_] 0% Determine API.
 			[_] 0% What else?
-		[_] 0% Primitive program pieces.
+		[_] 8% Primitive program pieces.
 			[_] 0% Reflex::App
 				[_] 0% Determine API.
-			[_] 0% Reflex::Client::HTTP
+			[_] 12% Reflex::Client::HTTP
 				[_] 0% Reflex::Connector::Keepalive
 					[_] 0% Reflex::Connector
 						[_] 0% Determine API.
@@ -237,11 +237,15 @@
 						Threads?
 					[_] 0% IPV4
 					[_] 0% IPv6
-				[_] 0% Reflex::Socket
+				[_] 0% Reflex::Connector
+					[_] % Strawman API.
 					[_] 0% Determine API.
-				[_] 0% Reflex::Stream
+				[_] 50% Reflex::Stream
+					[X] 100%Strawman implementation.
+					[_] 0% Determine API.
 					Use Data::Transform internally to parse & marshall data.
-			[_] 0% Reflex::Listener
+			[_] 50% Reflex::Listener
+				[X] 100% Strawman implementation.
 				[_] 0% Determine API.
 					See POE::Wheel::ListenAccept for clues.
 			[_] 0% Reflex::Process

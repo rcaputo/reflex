@@ -4,6 +4,8 @@ package Reflex::Listener;
 use Moose;
 extends 'Reflex::Handle';
 
+has '+rd' => ( default => 1 );
+
 sub on_my_readable {
 	my ($self, $args) = @_;
 

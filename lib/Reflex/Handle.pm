@@ -76,31 +76,31 @@ sub _changed_rd {
 
 sub _changed_wr {
 	my ($self, $value) = @_;
-	return unless $self->call_gate("_changed_rd", $value);
+	return unless $self->call_gate("_changed_wr", $value);
 	if ($value) {
 		my $envelope = [ $self ];
 		weaken $envelope->[0];
-		$POE::Kernel::poe_kernel->select_read(
+		$POE::Kernel::poe_kernel->select_write(
 			$self->handle(), 'select_ready', $envelope, 'writable'
 		);
 	}
 	else {
-		$POE::Kernel::poe_kernel->select_read($self->handle(), undef);
+		$POE::Kernel::poe_kernel->select_write($self->handle(), undef);
 	}
 }
 
 sub _changed_ex {
 	my ($self, $value) = @_;
-	return unless $self->call_gate("_changed_rd", $value);
+	return unless $self->call_gate("_changed_ex", $value);
 	if ($value) {
 		my $envelope = [ $self ];
 		weaken $envelope->[0];
-		$POE::Kernel::poe_kernel->select_read(
+		$POE::Kernel::poe_kernel->select_expedite(
 			$self->handle(), 'select_ready', $envelope, 'exception'
 		);
 	}
 	else {
-		$POE::Kernel::poe_kernel->select_read($self->handle(), undef);
+		$POE::Kernel::poe_kernel->select_expedite($self->handle(), undef);
 	}
 }
 

@@ -13,6 +13,8 @@ extends 'Reflex::Handle';
 # Stored as a string reference so we can modify it without calling
 # accessors for silly things.
 
+# TODO - Buffer put() if not connected.  Flush them after connect.
+
 has out_buffer => (
 	is      => 'rw',
 	isa     => 'ScalarRef',

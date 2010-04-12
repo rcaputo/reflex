@@ -1,7 +1,65 @@
-# A TCP echo server.
-# Strawman use cases for Reflex::Stream and Reflex::Listener.
+# A TCP echo client.
+# Strawman use cases for Reflex::Stream and Reflex::Connector.
+# TODO - Create a generic client with sane default methods.  That will
+# simplify simple servers like this one.
 
 use lib qw(./lib ../lib);
+
+{
+	package TcpEchoClient;
+	use Moose;
+	use Reflex::Stream;
+	use Reflex::Connector;
+	extends 'Reflex::Connector';
+
+	has server => (
+		is      => 'rw',
+		isa     => 'Maybe[Reflex::Stream]',
+		traits  => ['Reflex::Trait::Observer'],
+	);
+
+	sub on_my_connected {
+		my ($self, $args) = @_;
+		$self->stop();
+		$self->server( Reflex::Stream->new(
+				handle => $args->{socket},
+				rd => 1,
+			)
+		);
+		$self->server()->put("Hello\015\012");
+	}
+
+	sub on_my_fail {
+		my ($self, $args) = @_;
+		warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
+	}
+
+	sub on_server_close {
+		my ($self, $args) = @_;
+		warn "server closed connection.\n";
+		$self->server(undef); # TODO - Moosey clear?
+	}
+
+	sub on_server_fail {
+		my ($self, $args) = @_;
+		warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
+	}
+
+	sub on_server_stream {
+		my ($self, $args) = @_;
+		warn "got from server: $args->{data}\n";
+		$self->server(undef); # TODO - Moosey clear?
+	}
+}
+
+TcpEchoClient->new(
+	handle => IO::Socket::INET->new(Proto => 'tcp'),
+	remote_addr => '127.0.0.1',
+	remote_port => 12345,
+)->run_all();
+
+__END__
+
 
 {
 	package TcpEchoSession;
@@ -78,4 +136,5 @@ TcpEchoServer->new(
 		Listen    => 5,
 		Reuse     => 1,
 	),
+	rd => 1,
 )->run_all();
