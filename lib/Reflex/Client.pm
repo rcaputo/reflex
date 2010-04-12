@@ -16,7 +16,7 @@ has protocol => (
 	default => 'Reflex::Stream',
 );
 
-has server => (
+has connection => (
 	is      => 'rw',
 	isa     => 'Maybe[Reflex::Stream]',
 	traits  => ['Reflex::Trait::Observer'],
@@ -27,7 +27,7 @@ sub on_my_connected {
 
 	$self->stop();
 
-	$self->server(
+	$self->connection(
 		$self->protocol()->new(
 			handle => $args->{socket},
 			rd     => 1,
@@ -38,22 +38,24 @@ sub on_my_connected {
 sub on_my_fail {
 	my ($self, $args) = @_;
 	warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
-
 	$self->stop();
 }
 
-sub on_server_close {
+sub on_connection_close {
 	my ($self, $args) = @_;
 	warn "server closed connection.\n";
-
-	$self->sever()->stop();
+	$self->stop();
 }
 
-sub on_server_fail {
+sub on_connection_fail {
 	my ($self, $args) = @_;
 	warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
-
-	$self->server()->stop();
+	$self->stop();
 }
+
+after stop => sub {
+	my $self = shift;
+	$self->connection(undef);
+};
 
 1;

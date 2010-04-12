@@ -10,19 +10,17 @@ use lib qw(./lib ../lib);
 
 	after on_my_connected => sub {
 		my ($self, $args) = @_;
-		$self->server()->put("Hello, world!\n");
+		$self->connection()->put("Hello, world!\n");
 	};
 
-	sub on_server_stream {
+	sub on_connection_stream {
 		my ($self, $args) = @_;
 
 		# Not chomped.
 		warn "got from server: $args->{data}";
 
-		# Close the connection after we've got the echo.
-		# TODO - Moosey way to clear this?
-		# TODO - Socket shutdown?
-		$self->server(undef);
+		# Disconnect after we receive the echo.
+		$self->stop();
 	}
 }
 
