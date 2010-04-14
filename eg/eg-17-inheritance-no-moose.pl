@@ -11,7 +11,7 @@ use lib qw(../lib);
 	use Reflex::Timer;
 	use base qw(Reflex::Timer);
 
-	sub on_my_tick {
+	sub on_timer_tick {
 		print "tick at ", scalar(localtime), "...\n";
 	}
 }

@@ -62,7 +62,7 @@ use lib qw(../lib);
 
 	sub on_poco_irc_public {
 		my ($self, $args) = @_;
-		my ($who, $where, $what) = @$args;
+		my ($who, $where, $what) = @$args{0,1,2};
 
 		my $nick = (split /!/, $who)[0];
 		my $channel = $where->[0];

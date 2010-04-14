@@ -6,7 +6,7 @@ extends 'Reflex::Handle';
 
 has '+rd' => ( default => 1 );
 
-sub on_my_readable {
+sub on_handle_readable {
 	my ($self, $args) = @_;
 
 	my $peer = accept(my ($socket), $args->{handle});

@@ -36,7 +36,7 @@ sub deliver {
 	foreach my $self (values %{$session_id_to_object{$sender_id}}) {
 		$self->emit(
 			event => $event,
-			args  => [ @$args ],
+			args  => { map { $_ => $args->[$_] } (0..$#$args) },
 		);
 	}
 }

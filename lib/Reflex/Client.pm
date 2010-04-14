@@ -22,7 +22,7 @@ has connection => (
 	traits  => ['Reflex::Trait::Observer'],
 );
 
-sub on_my_connected {
+sub on_connector_connected {
 	my ($self, $args) = @_;
 
 	$self->stop();
@@ -35,7 +35,7 @@ sub on_my_connected {
 	);
 }
 
-sub on_my_fail {
+sub on_connector_fail {
 	my ($self, $args) = @_;
 	warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
 	$self->stop();

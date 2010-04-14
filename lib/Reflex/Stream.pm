@@ -61,7 +61,7 @@ sub put {
 	return;
 }
 
-sub on_my_readable {
+sub on_handle_readable {
 	my ($self, $args) = @_;
 
 	my $in_buffer   = "";
@@ -84,7 +84,7 @@ sub on_my_readable {
 	}
 
 	$self->emit(
-		event => "stream",
+		event => "data",
 		args  => {
 			data => $in_buffer
 		},
@@ -93,7 +93,7 @@ sub on_my_readable {
 	return;
 }
 
-sub on_my_writable {
+sub on_handle_writable {
 	my ($self, $args) = @_;
 
 	my $out_buffer   = $self->out_buffer();

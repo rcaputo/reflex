@@ -102,7 +102,7 @@ Reflex::Role::UdpPeer - Turn an object into a UDP network peer.
 		use Moose;
 		with 'Reflex::Role::UdpPeer';
 
-		sub on_my_datagram {
+		sub on_udppeer_datagram {
 			my ($self, $args) = @_;
 			my $data = $args->{datagram};
 
@@ -117,7 +117,7 @@ Reflex::Role::UdpPeer - Turn an object into a UDP network peer.
 			);
 		}
 
-		sub on_my_error {
+		sub on_udppeer_error {
 			my ($self, $args) = @_;
 			warn "$args->{op} error $args->{errnum}: $args->{errstr}";
 			$self->destruct();

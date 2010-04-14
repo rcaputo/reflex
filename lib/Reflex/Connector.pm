@@ -64,7 +64,7 @@ sub BUILD {
 	}
 }
 
-sub on_my_writable {
+sub on_handle_writable {
 	my ($self, $args) = @_;
 
 	# Not watching anymore.

@@ -23,7 +23,7 @@ Inherit it.
 		use Moose;
 		extends 'Reflex::UdpPeer';
 
-		sub on_my_datagram {
+		sub on_udppeer_datagram {
 			my ($self, $args) = @_;
 			my $data = $args->{datagram};
 
@@ -38,7 +38,7 @@ Inherit it.
 			);
 		}
 
-		sub on_my_error {
+		sub on_udppeer_error {
 			my ($self, $args) = @_;
 			warn "$args->{op} error $args->{errnum}: $args->{errstr}";
 			$self->destruct();

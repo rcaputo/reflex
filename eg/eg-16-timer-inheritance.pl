@@ -9,7 +9,7 @@ use lib qw(../lib);
 	use Moose;
 	extends 'Reflex::Timer';
 
-	sub on_my_tick {
+	sub on_timer_tick {
 		print "tick at ", scalar(localtime), "...\n";
 	}
 }

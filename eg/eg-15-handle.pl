@@ -36,7 +36,7 @@ use lib qw(../lib);
 		undef;
 	};
 
-	sub on_remote_read {
+	sub on_remote_readable {
 		my ($self, $args) = @_;
 
 		my $remote_address = recv(

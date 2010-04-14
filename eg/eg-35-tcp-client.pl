@@ -1,19 +1,19 @@
 # A TCP echo client.
 # Strawman use cases for Reflex::Stream and Reflex::Connector.
 
-use lib qw(./lib ../lib);
+use lib qw(../lib);
 
 {
 	package TcpEchoClient;
 	use Moose;
 	extends 'Reflex::Client';
 
-	after on_my_connected => sub {
+	after on_connector_connected => sub {
 		my ($self, $args) = @_;
 		$self->connection()->put("Hello, world!\n");
 	};
 
-	sub on_connection_stream {
+	sub on_connection_data {
 		my ($self, $args) = @_;
 
 		# Not chomped.

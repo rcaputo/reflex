@@ -1,25 +1,25 @@
 # A TCP echo server.
 # Strawman use cases for Reflex::Stream and Reflex::Listener.
 
-use lib qw(./lib ../lib);
+use lib qw(../lib);
 
 {
 	package TcpEchoSession;
 	use Moose;
 	extends 'Reflex::Stream';
 
-	sub on_my_stream {
+	sub on_stream_data {
 		my ($self, $args) = @_;
 		$self->put($args->{data});
 	}
 
-	sub on_my_fail {
+	sub on_stream_fail {
 		my ($self, $args) = @_;
 		warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
 		$self->emit( event => "shutdown", args => {} );
 	}
 
-	sub on_my_close {
+	sub on_stream_close {
 		my ($self, $args) = @_;
 		$self->emit( event => "shutdown", args => {} );
 	}
@@ -38,7 +38,7 @@ use lib qw(./lib ../lib);
 		default => sub { {} },
 	);
 
-	sub on_my_accepted {
+	sub on_listener_accepted {
 		my ($self, $args) = @_;
 
 		# TODO - We're developing a pattern here:
@@ -60,7 +60,7 @@ use lib qw(./lib ../lib);
 		$self->clients()->{$client} = $client;
 	}
 
-	sub on_my_fail {
+	sub on_listener_fail {
 		my ($self, $args) = @_;
 		warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
 	}
@@ -71,10 +71,12 @@ use lib qw(./lib ../lib);
 	}
 }
 
+my $port = 12345;
+print "Setting up TCP echo server on localhost:$port...\n";
 TcpEchoServer->new(
 	handle => IO::Socket::INET->new(
 		LocalAddr => '127.0.0.1',
-		LocalPort => 12345,
+		LocalPort => $port,
 		Listen    => 5,
 		Reuse     => 1,
 	),

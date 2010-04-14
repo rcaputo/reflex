@@ -157,10 +157,18 @@ has watched_objects => (
 	default => sub { {} },
 );
 
-has role => (
-	isa     => 'Str',
-	is      => 'ro',
-);
+# TODO - Needs to be class, not object based!
+#has role => (
+#	is      => 'ro',
+#	isa     => 'Str',
+#	default => sub {
+#		my $self = shift;
+#		my $role = ref($self);
+#		$role =~ s/^Reflex:://;
+#		$role =~ tr[a-zA-Z0-9][_]cs;
+#		return lc $role;
+#	},
+#);
 
 has observers => (
 	isa     => 'ArrayRef',
@@ -349,15 +357,22 @@ sub emit {
 	# TODO - Needs consideration:
 	# TODO - Weaken?
 	# TODO - Underscores for Reflex parameters?
+	# TODO - Must be a hash reference.  Would be nice if non-hashref
+	# errors were pushed to the caller.
 	$callback_args->{_sender} = $self;
 
 	# Look for self-handling of the event.
 	# TODO - can() calls are also candidates for caching.
 	# (AKA: Cache as cache can()?)
 
-	if ($self->can("on_my_$event")) {
-		my $method = "on_my_$event";
-		$self->$method($callback_args);
+	my $caller_role = caller();
+	$caller_role =~ s/^Reflex::(?:Role::)?//;
+	$caller_role =~ tr[a-zA-Z0-9][_]cs;
+
+	my $self_method = "on_" . lc($caller_role) . "_" . $event;
+	#warn $self_method;
+	if ($self->can($self_method)) {
+		$self->$self_method($callback_args);
 		return;
 	}
 
