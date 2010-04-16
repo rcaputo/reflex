@@ -10,7 +10,7 @@ use lib qw(../lib);
 
 	sub on_client_connected {
 		my ($self, $args) = @_;
-		$self->put("Hello, world!\n");
+		$self->connection()->put("Hello, world!\n");
 	};
 
 	sub on_client_data {

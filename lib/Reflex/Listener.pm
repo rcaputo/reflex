@@ -22,7 +22,7 @@ sub on_handle_readable {
 	}
 
 	$self->emit(
-		event => "fail",
+		event => "failure",
 		args  => {
 			peer    => undef,
 			socket  => undef,
