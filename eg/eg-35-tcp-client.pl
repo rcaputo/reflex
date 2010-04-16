@@ -8,12 +8,12 @@ use lib qw(../lib);
 	use Moose;
 	extends 'Reflex::Client';
 
-	after on_connector_connected => sub {
+	sub on_client_connected {
 		my ($self, $args) = @_;
-		$self->connection()->put("Hello, world!\n");
+		$self->put("Hello, world!\n");
 	};
 
-	sub on_connection_data {
+	sub on_client_data {
 		my ($self, $args) = @_;
 
 		# Not chomped.

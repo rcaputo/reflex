@@ -50,7 +50,7 @@ sub BUILD {
 	unless (connect($self->handle(), $packed_address)) {
 		if ($! and ($! != EINPROGRESS) and ($! != EWOULDBLOCK)) {
 			$self->emit(
-				event => "fail",
+				event => "failure",
 				args  => {
 					socket  => undef,
 					errnum  => ($!+0),
@@ -74,7 +74,7 @@ sub on_handle_writable {
 	$! = unpack('i', getsockopt($args->{handle}, SOL_SOCKET, SO_ERROR));
 	if ($!) {
 		$self->emit(
-			event => "fail",
+			event => "failure",
 			args  => {
 				socket  => undef,
 				errnum  => ($!+0),
@@ -86,7 +86,7 @@ sub on_handle_writable {
 	}
 
 	$self->emit(
-		event => "connected",
+		event => "success",
 		args  => {
 			socket  => $args->{handle},
 			errnum  => ($!+0),

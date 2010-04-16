@@ -78,7 +78,7 @@ sub on_handle_readable {
 	unless ($octet_count) {
 		# TODO - It's getting a little tedious to specify empty args for
 		# events that don't include data.
-		$self->emit(event => "close", args => {} );
+		$self->emit(event => "closed", args => {} );
 		$self->rd(0);
 		return;
 	}
@@ -123,7 +123,7 @@ sub _emit_failure {
 	my ($self, $errfun) = @_;
 
 	$self->emit(
-		event => "fail",
+		event => "failure",
 		args  => {
 			data    => undef,     # TODO - Indicates fail another way.
 			errnum  => ($!+0),

@@ -20,9 +20,13 @@ has connection => (
 	is      => 'rw',
 	isa     => 'Maybe[Reflex::Stream]',
 	traits  => ['Reflex::Trait::Observer'],
+	# Maps $self->put() to $self->connection()->put().
+	# TODO - Would be nice to have something like this for outbout
+	# events.  See on_connection_data() later in this module for more.
+	handles => ['put'],
 );
 
-sub on_connector_connected {
+sub on_connector_success {
 	my ($self, $args) = @_;
 
 	$self->stop();
@@ -33,24 +37,36 @@ sub on_connector_connected {
 			rd     => 1,
 		)
 	);
+
+	$self->emit(event => "connected", args => {});
 }
 
-sub on_connector_fail {
+sub on_connector_failure {
 	my ($self, $args) = @_;
 	warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
 	$self->stop();
 }
 
-sub on_connection_close {
+sub on_connection_closed {
 	my ($self, $args) = @_;
 	warn "server closed connection.\n";
 	$self->stop();
 }
 
-sub on_connection_fail {
+sub on_connection_failure {
 	my ($self, $args) = @_;
 	warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
 	$self->stop();
+}
+
+# This odd construct lets us rethrow a low-level event as a
+# higher-level event.  It's similar to the way Moose "handles" works,
+# although in the other (outbound) direction.
+# TODO - It's rather inefficient to rethrow like this at runtime.
+# Some compile- or init-time remapping construct would be better.
+sub on_connection_data {
+	my ($self, $args) = @_;
+	$self->emit( event => "data", args => $args );
 }
 
 after stop => sub {
