@@ -181,6 +181,12 @@ has promise => (
 	isa => 'Reflex::Callback::Promise',
 );
 
+has emits_seen => (
+	is      => 'rw',
+	isa     => 'HashRef[Str]',
+	default => sub { {} },
+);
+
 # Base class.
 
 sub BUILD {
@@ -249,10 +255,8 @@ sub BUILD {
 		}
 
 		# TODO - Who is the watcher?
-		if ($value->object()) {
-			$self->observe($self, $1 => $value);
-			next CALLBACK;
-		}
+		$self->observe($self, $1 => $value);
+		next CALLBACK;
 	}
 
 	# Clear observers; we're done with them.
@@ -372,6 +376,18 @@ sub emit {
 	my $self_method = "on_" . lc($caller_role) . "_" . $event;
 	#warn $self_method;
 	if ($self->can($self_method)) {
+		# Already seen this; we're recursing!  Break it up!
+		if ($self->emits_seen()->{"$self -> $self_method"}) {
+			$self->emits_seen({});
+			$poe_kernel->post(
+				$self->session_id(), 'call_gate_method',
+				$self, $self_method, $callback_args
+			);
+			return;
+		}
+
+		# Not recursing yet.  Give it a try!
+		$self->emits_seen()->{"$self -> $self_method"} = 1;
 		$self->$self_method($callback_args);
 		return;
 	}
