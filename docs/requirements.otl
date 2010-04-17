@@ -1,4 +1,4 @@
-[_] 44% Framework Requirements
+[_] 47% Framework Requirements
 	About
 		This document summarizes the best ideas from the patterns document.
 		The patterns document tries to enumerate all available options.
@@ -95,14 +95,15 @@
 				Not: responsibility
 					Too long.
 					Res. or resp. are ambiguous abbreviations.
-	[_] 83% Object Containership Composition Rules
+	[X] 100% Object Containership Composition Rules
 		[X] 100% Containership rules are delegated to the objects themselves.
-		[_] 50% Runtime roles may be assigned as part of the observation, not the sub-object.
-			[_] 0% Multiple watchers may have the same runtime role.
+		[X] 100% Runtime roles may be assigned as part of the observation, not the sub-object.
+			[X] 100% Multiple watchers may have the same runtime role.
 				This is already possible.
 				Currently roles address watchers.
 				Multiple watchers for a role requires additional addressing.
 				Possibly passing the watcher object into the callback.
+				[X] 100% Implement a _sender parameter supplied by Reflex::Role::Object.
 			[X] 100% Default handler method names may be derived from roles and message types.
 				Sender is a DNS resolver.
 				Sender's role is "resolver".
@@ -115,7 +116,7 @@
 				[X] 100% Moose introspection allows objects to find their contents.
 	[X] 100% Class Inheritance Rules
 		[X] 100% Class inheritance rules are delegated to Moose.
-	[_] 19% Messaging Requirements
+	[_] 20% Messaging Requirements
 		[_] 0% Object command interfaces must be methods.
 			[_] 0% Methods on the objects themselves may pass messages into themselves.
 				Synchronous method calls are translated into asynchronous messages.
@@ -126,17 +127,25 @@
 				Synchronous method calls are translated into asynchronous messages.
 		[_] 0% Local accessors and simple mutators must be synchronous.
 			Messages for local accessors and mutators is unnecessary overhead.
-		[_] 38% Objects must be permitted to emit messages into their containers.
+		[_] 44% Objects must be permitted to emit messages into their containers.
 			[_] 0% Message emission is optional, depending on the use case.
 				[_] 0% Define a use case where message emission is required.
 				[_] 0% Define a use case where it's not.
-			[_] 66% Emitted messages are first handled by the object emitting them.
+			[_] 83% Emitted messages are first handled by the object emitting them.
 				[X] 100% Subclasses may handle messages emitted by base classes.
 				[X] 100% Subclasses may emit new messages.
-				[_] 0% Subclasses may emit the same message without re-catching it.
+				[_] 50% Subclasses may emit the same message without re-catching it.
 					Implies that events bubble out of the object.
 					Base class emits, and subclasses pass it outward.
-					[_] 0% Do we want to do bubbling like this?
+					[X] 100% Implement as small methods that re-emit events.
+						Easy to implement.
+						Tedious, because you have to implement one for every event.
+						Slow because of the extra method indirection.
+					[_] 0% Implement some kind of event mapping.
+						Hard to implement.
+						Syntactically messy because the mapping must be made explicit.
+							This could probably be cleaned up later.
+						Faster since it avoids the indirection.
 			[_] 50% Emitted messages are next handled by explicit and role-based observers.
 				[_] 0% Explicit observers.
 				[X] 100% Role-based observers.
@@ -200,19 +209,19 @@
 			[_] 0% Receiver data is not visible to the sender.
 			[_] 0% Message-scoped resources should be stored in the message's continuation.
 				[_] 0% Message cancelation triggers associated resource cleanup.
-	[_] 44% Common primitive classes must be provided.
+	[_] 48% Common primitive classes must be provided.
 		[_] 27% Low-level event watchers.
 			[_] 50% Reflex::Handle
 				[X] 100% Strawman implementation.
 				[_] 0% Determine API.
 			[_] 16% Reflex::Timer
-				[_] 0% Determine full API.
 				[_] 50% Delay a number of seconds.
 					[X] 100% Repeat with drift.
 					[_] 0% Repeat without drift.
 				[_] 0% Wait for a specific time.
 					[_] 0% Repeat without drift.
 					[_] 0% Use DateTime for interval math.
+				[_] 0% Determine full API.
 			[_] 0% Reflex::Cron
 				[_] 0% Strawman implementation.
 				[_] 0% Determine API.
@@ -226,7 +235,7 @@
 				[X] 100% Strawman implementation.
 				[_] 0% Determine API.
 			[_] 0% What else?
-		[_] 7% Primitive program pieces.
+		[_] 19% Primitive program pieces.
 			[_] 0% Reflex::App
 				[_] 0% Strawman implementation.
 				[_] 0% Determine API.
@@ -266,6 +275,10 @@
 				[_] 0% Strawman implementation.
 				[_] 0% Determine API.
 					See POE::Wheel::FollowTail for clues.
+			[X] 100% Reflex::Collection
+				Manage a collection of Reflex objects.
+				Removes objects from itself when they shut down.
+				Reflex servers can use this to manage client objects.
 			[_] 0% What else?  Probably a lot!
 		[X] 100% POE Interfaces
 			[X] 100% Wheel wrappers.

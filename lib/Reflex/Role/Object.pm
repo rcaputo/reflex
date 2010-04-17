@@ -418,6 +418,7 @@ sub emit {
 			my $callback = $callback_rec->{callback};
 
 			# Same session.  Just deliver it.
+			# TODO - Break recursive callbacks?
 			if (
 				$callback_rec->{observer}->session_id() eq
 				$POE::Kernel::poe_kernel->get_active_session()->ID
@@ -428,7 +429,7 @@ sub emit {
 
 			# Different session.  Post it through.
 			$poe_kernel->post(
-				$callback_rec->{observer}->session_id(), 'deliver_calback',
+				$callback_rec->{observer}->session_id(), 'deliver_callback',
 				$callback, $callback_args,
 				$callback_rec->{observer}, $self, # keep objects alive a bit
 			);
