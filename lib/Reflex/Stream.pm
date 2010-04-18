@@ -136,3 +136,4 @@ sub _emit_failure {
 }
 
 1;
+# TODO - Document.

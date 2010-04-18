@@ -97,6 +97,7 @@ package Moose::Meta::Attribute::Custom::Trait::Reflex::Trait::Observer;
 sub register_implementation { 'Reflex::Trait::Observer' }
 
 1;
+# TODO - Document.
 
 __END__
 

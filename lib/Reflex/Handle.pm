@@ -134,56 +134,59 @@ sub DEMOLISH {
 no Moose;
 
 1;
+# TODO - Document.
 
 __END__
 
 =head1 NAME
 
-Reflex::Handle - Base class for reactive filehandle objects.
+Reflex::Handle - Watch a filehandle for read- and/or writability.
 
 =head1 SYNOPSIS
 
-# Not a complete program.  See Reflex::Role::UdpPeer source, or
-# eg-15-handle.pl in the examples.
+	package Reflex::Listener;
+	use Moose;
+	extends 'Reflex::Handle';
 
-	has handle => (
-		isa     => 'Reflex::Handle|Undef',
-		is      => 'rw',
-		traits  => ['Reflex::Trait::Observer'],
-		role    => 'remote',
-	);
+	has '+rd' => ( default => 1 );
 
-	$self->handle(
-		Reflex::Handle->new(
-			handle => IO::Socket::INET->new(
-				Proto     => 'udp',
-				LocalPort => $self->port(),
-			),
-			rd => 1,
-		)
-	);
-
-	sub on_remote_read {
+	sub on_handle_readable {
 		my ($self, $args) = @_;
 
-		my $remote_address = recv(
-			$args->{handle}, my $datagram = "", 16384, 0
-		);
+		my $peer = accept(my ($socket), $args->{handle});
+		if ($peer) {
+			$self->emit(
+				event => "accepted",
+				args  => {
+					peer    => $peer,
+					socket  => $socket,
+				}
+			);
+			return;
+		}
 
-		send(
-			$args->{handle}, $datagram, 0, $remote_address
+		$self->emit(
+			event => "failure",
+			args  => {
+				peer    => undef,
+				socket  => undef,
+				errnum  => ($!+0),
+				errstr  => "$!",
+				errfun  => "accept",
+			},
 		);
 	}
 
-=head1 DESCRIPTION
+	1;
 
-B<This is early release code.  Please contact us to discuss the API.>
+=head1 DESCRIPTION
 
 Reflex::Handle watches a filehandle and emits events when it has data
 to be read, is ready to be written upon, or has some exceptional
 condition to be addressed.
 
-TODO - Complete the documentation.
+As with most Reflex objects, Reflex::Handle may be composed by
+subclassing (is-a) or by containership (has-a).
 
 =head1 GETTING HELP
 

@@ -7,6 +7,7 @@ with 'Reflex::Role::UdpPeer';
 # Does nothing of its own.
 
 1;
+# TODO - Document.
 
 __END__
 
@@ -98,32 +99,17 @@ Reflex::UdpPeer is a base class for UDP network peers.
 
 TODO - Complete the documentation.
 
-=head1 GETTING HELP
-
-L<Reflex/GETTING HELP>
-
-=head1 ACKNOWLEDGEMENTS
-
-L<Reflex/ACKNOWLEDGEMENTS>
-
 =head1 SEE ALSO
 
-L<Reflex> and L<Reflex/SEE ALSO>
-
-=head1 BUGS
-
+L<Reflex>
+L<Reflex/ACKNOWLEDGEMENTS>
+L<Reflex/ASSISTANCE>
+L<Reflex/AUTHORS>
 L<Reflex/BUGS>
-
-=head1 CORE AUTHORS
-
-L<Reflex/CORE AUTHORS>
-
-=head1 OTHER CONTRIBUTORS
-
-L<Reflex/OTHER CONTRIBUTORS>
-
-=head1 COPYRIGHT AND LICENSE
-
-L<Reflex/COPYRIGHT AND LICENSE>
+L<Reflex/BUGS>
+L<Reflex/CONTRIBUTORS>
+L<Reflex/COPYRIGHT>
+L<Reflex/LICENSE>
+L<Reflex/TODO>
 
 =cut

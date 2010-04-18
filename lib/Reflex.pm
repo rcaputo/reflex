@@ -218,7 +218,7 @@ Reflex bundles a number of helpful base classes to get things started.
   Reflex::Trait::Observer - observe events emitted by a member object
   Reflex - helper functions and documentation
 
-=head1 GETTING HELP
+=head1 ASSISTANCE
 
 See irc.perl.org #reflex for help with Reflex.
 
@@ -268,7 +268,7 @@ L<bug-Reflex@rt.cpan.org|mailto:bug-Reflex@rt.cpan.org>.
 
 Rocco Caputo, RCAPUTO on CPAN.
 
-=head2 OTHER CONTRIBUTORS
+=head2 CONTRIBUTORS
 
 Reflex is open source, and we welcome involvement.
 

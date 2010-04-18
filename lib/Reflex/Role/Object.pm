@@ -581,6 +581,7 @@ sub wait {
 }
 
 1;
+# TODO - Document.
 
 __END__
 

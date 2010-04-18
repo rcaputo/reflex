@@ -97,3 +97,4 @@ sub on_handle_writable {
 }
 
 1;
+# TODO - Document.

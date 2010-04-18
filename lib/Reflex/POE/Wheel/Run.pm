@@ -108,6 +108,7 @@ sub on_sigchld_signal {
 }
 
 1;
+# TODO - Document.
 
 __END__
 

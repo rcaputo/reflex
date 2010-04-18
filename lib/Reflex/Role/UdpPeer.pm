@@ -88,6 +88,7 @@ sub destruct {
 }
 
 1;
+# TODO - Document.
 
 __END__
 

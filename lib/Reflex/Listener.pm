@@ -34,3 +34,4 @@ sub on_handle_readable {
 }
 
 1;
+# TODO - Document.

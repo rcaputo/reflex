@@ -7,6 +7,7 @@ with 'Reflex::Role::Object';
 # Does nothing of its own.
 
 1;
+# TODO - Document.
 
 __END__
 
