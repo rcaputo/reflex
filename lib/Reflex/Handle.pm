@@ -134,7 +134,6 @@ sub DEMOLISH {
 no Moose;
 
 1;
-# TODO - Document.
 
 __END__
 
@@ -188,32 +187,94 @@ condition to be addressed.
 As with most Reflex objects, Reflex::Handle may be composed by
 subclassing (is-a) or by containership (has-a).
 
-=head1 GETTING HELP
+=head2 Attributes
 
-L<Reflex/GETTING HELP>
+Reflex::Handle has a few attributes that control its behavior.  These
+attributes may be specified during construction.  They may also be
+changed while the object runs through methods of the same name.
 
-=head1 ACKNOWLEDGEMENTS
+=head3 handle
 
-L<Reflex/ACKNOWLEDGEMENTS>
+Reflex::Handle's "handle" should contain a Perl file handle to watch.
+
+	my $socket = IO::Socket::INET->new(
+		LocalAddr => '127.0.0.1',
+		LocalPort => 12345,
+		Listen    => 5,
+		Reuse     => 1,
+	);
+
+	my $handle = Reflex::Handle->new( handle => $socket );
+
+However a Reflex::Handle won't emit events without also enabling one
+or more of "rd", "wr", or "ex".
+
+=head3 rd
+
+The "rd" attribute is a Boolean that controls whether Reflex::Handle
+watches "handle" for readability.  Reflex::Handle emits "readable"
+events when handles contain data ready to be received.
+
+	my $handle = Reflex::Handle->new(
+		handle      => $socket,
+		rd          => 1,
+		on_readable => cb_coderef(\&read_from_it),
+	);
+
+It may also be modified at run time to enable or disable readability
+watching as needed.
+
+	$handle->rd(0);  # Done reading.
+
+=head3 wr
+
+The "wr" attribute enables or disables watching for writability on the
+"handle" attribute.  Its semantics and usage are otherwise identical
+to those of "rd".
+
+Reflex::Handle emits "writable" events when underlying file handles
+have buffer space for new output.  For example, when a socket has
+successfully written data to the network and has capacity to buffer
+more data.
+
+=head3 ex
+
+The "wr" attribute enables or disables watching for exceptions on the
+"handle" attribute.  Exceptions include errors and out-of-band
+notifications.  Its semantics and usage are otherwise identical to
+those of "rd".
+
+Reflex::Handle emits "exception" events when "ex" is enabled and some
+exceptional occurrence happens.
+
+=head1 EXAMPLES
+
+L<Reflex::Listener> extends Reflex::Handle to listen for connections
+on a server socket.
+
+L<Reflex::Connector> extends Reflex::Handle to wait for non-blocking
+client sockets to fully connect.
+
+L<Reflex::Stream> extends Reflex::Handle to read data when it's ready
+and write data when it can.
+
+L<Reflex::Role::UdpPeer> extends Reflex::Handle to read UDP packets
+when they arrive on a socket.
 
 =head1 SEE ALSO
 
-L<Reflex> and L<Reflex/SEE ALSO>
+L<Moose::Manual::Concepts>
 
-=head1 BUGS
+L<Reflex>
 
+L<Reflex/ACKNOWLEDGEMENTS>
+L<Reflex/ASSISTANCE>
+L<Reflex/AUTHORS>
 L<Reflex/BUGS>
-
-=head1 CORE AUTHORS
-
-L<Reflex/CORE AUTHORS>
-
-=head1 OTHER CONTRIBUTORS
-
-L<Reflex/OTHER CONTRIBUTORS>
-
-=head1 COPYRIGHT AND LICENSE
-
-L<Reflex/COPYRIGHT AND LICENSE>
+L<Reflex/BUGS>
+L<Reflex/CONTRIBUTORS>
+L<Reflex/COPYRIGHT>
+L<Reflex/LICENSE>
+L<Reflex/TODO>
 
 =cut
