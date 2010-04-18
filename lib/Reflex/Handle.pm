@@ -33,12 +33,12 @@ has ex => (
 
 sub BUILD {
 	my $self = shift;
-	$self->start();
+	$self->_start();
 }
 
-sub start {
+sub _start {
 	my $self = shift;
-	return unless $self->call_gate("start");
+	return unless $self->call_gate("_start");
 
 	# TODO - Repeated code between this and the _changed_rd() etc.
 	# methods.  Repeating code is bad, but it's more efficient.  Is
@@ -246,6 +246,22 @@ those of "rd".
 
 Reflex::Handle emits "exception" events when "ex" is enabled and some
 exceptional occurrence happens.
+
+=head2 Methods
+
+=head3 stop
+
+Reflex::Handle's stop() method disables all watching and clears the
+file handle held within the object.  stop() will be called implicitly
+if the Reflex::Handle object is destroyed.
+
+If the program is holding no other reference to the watched file, then
+Perl will close the file after the Reflex::Handle object is stopped.
+
+	sub on_handle_error {
+		my $self = shift;
+		$self->handle()->stop();
+	}
 
 =head1 EXAMPLES
 
