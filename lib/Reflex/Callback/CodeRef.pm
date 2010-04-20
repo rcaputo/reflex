@@ -24,7 +24,7 @@ Reflex::Callback::CodeRef - Callback adapter for plain code references
 
 =head1 SYNOPSIS
 
-In practice:
+Used within Reflex:
 
 	use Reflex::Callbacks qw(cb_coderef);
 
@@ -38,7 +38,7 @@ In practice:
 
 	$ct->run_all();
 
-Specifically:
+Low-level usage:
 
 	sub callback {
 		my $arg = shift;

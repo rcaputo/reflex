@@ -10,12 +10,12 @@ sub on_stream_data {
 sub on_stream_failure {
 	my ($self, $args) = @_;
 	warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
-	$self->emit( event => "shutdown", args => {} );
+	$self->emit( event => "stopped", args => {} );
 }
 
 sub on_stream_closed {
 	my ($self, $args) = @_;
-	$self->emit( event => "shutdown", args => {} );
+	$self->emit( event => "stopped", args => {} );
 }
 
 sub DEMOLISH {

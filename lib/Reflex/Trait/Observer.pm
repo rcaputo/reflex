@@ -97,7 +97,6 @@ package Moose::Meta::Attribute::Custom::Trait::Reflex::Trait::Observer;
 sub register_implementation { 'Reflex::Trait::Observer' }
 
 1;
-# TODO - Document.
 
 __END__
 
@@ -119,50 +118,47 @@ Reflex::Trait::Observer - Automatically observe Reflex objects.
 
 =head1 DESCRIPTION
 
-Reflex::Trait::Observer allows an object to automatically observe
-other objects it owns.  In the SYNOPSIS, storing a Reflex::Timer in
-clock() allows the owner to observe the timer's events.
+Reflex::Trait::Observer allows one Reflex::Object to automatically
+observe other another it has stored in an attribute.  In the SYNOPSIS,
+storing a Reflex::Timer in the clock() attribute allows the owner to
+observe the timer's events.
 
-Reflex::Object has explicit methods to do this, namely observe() and
-observe_role(), but they are more verbose.
+This trait is a bit of Moose-based syntactic sugar for
+Reflex::Object's more explict observe() and observe_role() methods.
 
-The "setup" attribute option provides default constructor parameters
-for the attribute.  In the above example, clock() will by default
-contain
+=head2 setup
+
+The "setup" option provides default constructor parameters for the
+attribute.  In the above example, clock() will by default contain
 
 	Reflex::Timer->new(interval => 1, auto_repeat => 1);
 
 In other words, it will emit the Reflex::Timer event ("tick") once per
 second until destroyed.
 
-TODO - Complete the documentation.
+=head2 role
 
-=head1 GETTING HELP
+Attribute events are mapped to the owner's methods using Reflex's
+role-based callback convention.  For example, Reflex will look for an
+on_clock_tick() method to handle "tick" events from an object with the
+'clock" role.
 
-L<Reflex/GETTING HELP>
-
-=head1 ACKNOWLEDGEMENTS
-
-L<Reflex/ACKNOWLEDGEMENTS>
+The "role" option allows roles to be set or overridden.  An observer
+attribute's name is its default role.
 
 =head1 SEE ALSO
 
-L<Reflex> and L<Reflex/SEE ALSO>
+L<Reflex>
+L<Reflex::Trait::Emitter>
 
-=head1 BUGS
-
+L<Reflex/ACKNOWLEDGEMENTS>
+L<Reflex/ASSISTANCE>
+L<Reflex/AUTHORS>
 L<Reflex/BUGS>
-
-=head1 CORE AUTHORS
-
-L<Reflex/CORE AUTHORS>
-
-=head1 OTHER CONTRIBUTORS
-
-L<Reflex/OTHER CONTRIBUTORS>
-
-=head1 COPYRIGHT AND LICENSE
-
-L<Reflex/COPYRIGHT AND LICENSE>
+L<Reflex/BUGS>
+L<Reflex/CONTRIBUTORS>
+L<Reflex/COPYRIGHT>
+L<Reflex/LICENSE>
+L<Reflex/TODO>
 
 =cut

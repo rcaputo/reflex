@@ -73,81 +73,64 @@ has event => (
 	},
 );
 
-has setup => (
-	isa     => 'CodeRef|HashRef',
-	is      => 'ro',
-);
-
 package Moose::Meta::Attribute::Custom::Trait::Reflex::Trait::Emitter;
 sub register_implementation { 'Reflex::Trait::Emitter' }
 
 1;
-# TODO - Document.
 
 __END__
 
 =head1 NAME
 
-Reflex::Trait::Emitter - Automatically emit events when values change.
+Reflex::Trait::Emitter - Emit an event when an attribute's value changes.
 
 =head1 SYNOPSIS
 
-	# Not a complete program.  See examples eg-09-emitter-trait.pl and
-	# eg-10-setup.pl for working examples.
+	# Not a complete program.  See examples eg-09-emitter-trait.pl
+	# and eg-10-setup.pl for working examples.
 
-	{
-		package Counter;
-		use Moose;
-		extends 'Reflex::Object';
-		use Reflex::Trait::Emitter;
+	package Counter;
+	use Moose;
+	extends 'Reflex::Object';
+	use Reflex::Trait::Emitter;
 
-		has count   => (
-			traits    => ['Reflex::Trait::Emitter'],
-			isa       => 'Int',
-			is        => 'rw',
-			default   => 0,
-		);
-	}
+	has count   => (
+		traits    => ['Reflex::Trait::Emitter'],
+		isa       => 'Int',
+		is        => 'rw',
+		default   => 0,
+	);
 
 =head1 DESCRIPTION
 
-Reflex::Trait::Emitter causes events to be emitted whenever an object
-member's value changes.  In the SYNOPSIS example, changes to the value
-of count() cause the Counter object to emit "count" events.  Each
-event is accompanied by the new value.
+An attribute with the Reflex::Trait::Emitter trait emit an event on
+behalf of its object whenever its value changes.  The event will be
+named after the attribute by default.  It will be accompanied by a
+"value" parameter, the value of which is the attribute's new value at
+the time of the change.
 
-Custom mutators and methods may also use Reflex::Object's emit()
-method to announce their own changes.  Reflex::Trait::Emitter is
-expected to handle many common scenarios.
+In the SYNOPSIS example, changes to count() cause its Counter object
+to emit "count" events.
 
-TODO - Complete the documentation.
+=head2 event
 
-=head1 GETTING HELP
-
-L<Reflex/GETTING HELP>
-
-=head1 ACKNOWLEDGEMENTS
-
-L<Reflex/ACKNOWLEDGEMENTS>
+The "default" option can be used to override the default event emitted
+by the Reflex::Trait::Emitter trait.  That default, by the way, is the
+name of the attribute.
 
 =head1 SEE ALSO
 
-L<Reflex> and L<Reflex/SEE ALSO>
+L<Reflex>
+L<Reflex::Trait::Observer>
 
-=head1 BUGS
-
+L<Reflex/ACKNOWLEDGEMENTS>
+L<Reflex/ASSISTANCE>
+L<Reflex/AUTHORS>
 L<Reflex/BUGS>
-
-=head1 CORE AUTHORS
-
-L<Reflex/CORE AUTHORS>
-
-=head1 OTHER CONTRIBUTORS
-
-L<Reflex/OTHER CONTRIBUTORS>
-
-=head1 COPYRIGHT AND LICENSE
-
-L<Reflex/COPYRIGHT AND LICENSE>
+L<Reflex/BUGS>
+L<Reflex/CONTRIBUTORS>
+L<Reflex/COPYRIGHT>
+L<Reflex/LICENSE>
+L<Reflex/TODO>
 
 =cut

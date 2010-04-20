@@ -25,7 +25,7 @@ Reflex::Callback::Method - Callback adapter for class and object methods
 
 =head1 SYNOPSIS
 
-In practice:
+Used within Reflex:
 
 	package MethodHandler;
 	use Moose;
@@ -55,7 +55,7 @@ In practice:
 
 	MethodHandler->new()->run_all();
 
-Specifically:
+Low-level usage:
 
 	{
 		package Object;

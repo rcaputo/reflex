@@ -36,7 +36,7 @@ Reflex::Callback::Promise - Condvar-like non-callback adapter
 
 =head1 SYNOPSIS
 
-In practice:
+Used within Reflex:
 
 	use Reflex::Timer;
 	use ExampleHelpers qw(eg_say);
@@ -50,7 +50,7 @@ In practice:
 		eg_say("promise timer returned an event (@$event)");
 	}
 
-Specifically:
+Low-level usage:
 
 	use Reflex::Callback::Promise;
 
