@@ -30,13 +30,12 @@ sub stop_watching {
 }
 
 1;
-# TODO - Document.
 
 __END__
 
 =head1 NAME
 
-Reflex::PID - Observe the exit of a subprocess, via handling SIGCHLD.
+Reflex::PID - Observe the exit of a subprocess by its SIGCHLD signal.
 
 =head1 SYNOPSIS
 
@@ -71,38 +70,47 @@ Reflex::PID - Observe the exit of a subprocess, via handling SIGCHLD.
 
 =head1 DESCRIPTION
 
-Reflex::PID waits for a child process to exit, then announces the fact
-by emitting a "signal" event.
+Reflex::PID waits for a particular child process to exit.  It emits a
+"signal" event with information about the child process when it has
+detected the child has exited.
 
-TODO - Complete the documentation, including the parameters of the
-signal event.
+Since Reflex::PID waits for a particular process ID, it's pretty much
+useless afterwards.  Consider pairing it with Reflex::Collection if
+you have to maintain several transient processes.
 
-=head1 GETTING HELP
+Reflex::PID extends Reflex::Signal to handle a particular kind of
+signal---SIGCHLD.
 
-L<Reflex/GETTING HELP>
+TODO - However, first we need to make Reflex::PID objects stop
+themselves and emit "stopped" events when they're done.  Otherwise
+Reflex::Collection won't know when to destroy them.
 
-=head1 ACKNOWLEDGEMENTS
+=head2 Public Events
 
-L<Reflex/ACKNOWLEDGEMENTS>
+=head3 signal
+
+Reflex::PID's "signal" event includes two named parameters.  "pid"
+contains the process ID that exited.  "exit" contains the process'
+exit value---a copy of C<$?> at the time the process exited.  Please
+see L<perlvar/"$?"> for more information about that special Perl
+variable.
 
 =head1 SEE ALSO
 
-L<Reflex> and L<Reflex/SEE ALSO>
+L<Moose::Manual::Concepts>
 
-=head1 BUGS
+L<Reflex>
+L<Reflex::Signal>
+L<Reflex::POE::Wheel::Run>
 
+L<Reflex/ACKNOWLEDGEMENTS>
+L<Reflex/ASSISTANCE>
+L<Reflex/AUTHORS>
 L<Reflex/BUGS>
-
-=head1 CORE AUTHORS
-
-L<Reflex/CORE AUTHORS>
-
-=head1 OTHER CONTRIBUTORS
-
-L<Reflex/OTHER CONTRIBUTORS>
-
-=head1 COPYRIGHT AND LICENSE
-
-L<Reflex/COPYRIGHT AND LICENSE>
+L<Reflex/BUGS>
+L<Reflex/CONTRIBUTORS>
+L<Reflex/COPYRIGHT>
+L<Reflex/LICENSE>
+L<Reflex/TODO>
 
 =cut

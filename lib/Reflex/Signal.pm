@@ -101,7 +101,6 @@ sub DEMOLISH {
 }
 
 1;
-# TODO - Document.
 
 __END__
 
@@ -111,45 +110,66 @@ Reflex::Signal - Generic signal observer and base class for specific ones.
 
 =head1 SYNOPSIS
 
-TODO - Sorry, not yet.  This class works (see the source for
-Reflex::PID, which extends it), but the API is not firm.
+As a callback:
+
+	use Reflex::Signal;
+	use Reflex::Callbacks qw(cb_coderef);
+
+	my $usr1 = Reflex::Signal->new(
+		name      => "USR1",
+		on_signal => cb_coderef { print "Got SIGUSR1.\n" },
+	);
+
+As a promise:
+
+	my $usr2 = Reflex::Signal->new( name => "USR2" );
+	while ($usr2->wait()) {
+		print "Got SIGUSR2.\n";
+	}
+
+May also be used with observers, and Reflex::Trait::Observer, but
+those use cases aren't shown here.
 
 =head1 DESCRIPTION
 
-Reflex::Signal is a general signal observer.  Objects may use it to be
-notified when the OS sends signals.  It may also be extended to handle
-nuanced semantics of more specific signals.
+Reflex::Signal is a general signal observer.  It may be used to notify
+programs when they are sent a signal via kill.
 
-TODO - Complete the API.
+=head2 Public Attributes
 
-TODO - Complete the documentation.
+=head3 name
 
-=head1 GETTING HELP
+"name" defines the name (or number) of an interesting signal.
+The Reflex::Signal object will emit events when it detects that the
+process has been given that signal.
 
-L<Reflex/GETTING HELP>
+=head2 Public Methods
 
-=head1 ACKNOWLEDGEMENTS
+None at this time.  Destroy the object to stop it.
 
-L<Reflex/ACKNOWLEDGEMENTS>
+=head2 Public Events
+
+Reflex::Signal and its subclasses emit just one event: "signal".
+Generic signals have no additional information, but specific ones may.
+For example, Reflex::PID (SIGCHLD) includes a process ID and
+information about its exit.
 
 =head1 SEE ALSO
 
-L<Reflex> and L<Reflex/SEE ALSO>
+L<Moose::Manual::Concepts>
 
-=head1 BUGS
+L<Reflex>
+L<Reflex::PID>
+L<Reflex::POE::Wheel::Run>
 
+L<Reflex/ACKNOWLEDGEMENTS>
+L<Reflex/ASSISTANCE>
+L<Reflex/AUTHORS>
 L<Reflex/BUGS>
-
-=head1 CORE AUTHORS
-
-L<Reflex/CORE AUTHORS>
-
-=head1 OTHER CONTRIBUTORS
-
-L<Reflex/OTHER CONTRIBUTORS>
-
-=head1 COPYRIGHT AND LICENSE
-
-L<Reflex/COPYRIGHT AND LICENSE>
+L<Reflex/BUGS>
+L<Reflex/CONTRIBUTORS>
+L<Reflex/COPYRIGHT>
+L<Reflex/LICENSE>
+L<Reflex/TODO>
 
 =cut
