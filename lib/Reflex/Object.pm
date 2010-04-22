@@ -7,59 +7,61 @@ with 'Reflex::Role::Object';
 # Does nothing of its own.
 
 1;
-# TODO - Document.
 
 __END__
 
 =head1 NAME
 
-Reflex::Object - Base class for reactive objects.
+Reflex::Object - Base class for reactive (aka, event driven) objects.
 
 =head1 SYNOPSIS
 
-	{
-		package Object;
-		use Moose;
-		extends 'Reflex::Object';
-		...;
-	}
+Using Moose:
+
+	package Object;
+	use Moose;
+	extends 'Reflex::Object';
+
+	...;
+
+	1;
+
+Not using Moose:
+
+	package Object;
+	use warnings;
+	use strict;
+	use base 'Reflex::Object';
+
+	...;
+
+	1;
 
 =head1 DESCRIPTION
 
-Reflex::Object is the base class for all Reflex objects, including
-many of the event watchers.
+Reflex::Object is a base class for all Reflex objects, including many
+of the ones that notify programs of external events.
 
-Please see L<Reflex::Role::Object> for actual documentation.  The role
-implements Reflex::Object's internals.
-
-TODO - Complete the documeentation.
-
-=head1 GETTING HELP
-
-L<Reflex/GETTING HELP>
-
-=head1 ACKNOWLEDGEMENTS
-
-L<Reflex/ACKNOWLEDGEMENTS>
+Please see L<Reflex::Role::Object> for actual documentation.
+Everything that Reflex::Object does comes from that role.  The
+documentation is kept with the role in order for them to be near each
+other.  It's so romantic!
 
 =head1 SEE ALSO
 
-L<Reflex> and L<Reflex/SEE ALSO>
+L<Moose::Manual::Concepts>
 
-=head1 BUGS
+L<Reflex>
+L<Reflex::Role::Object>
 
+L<Reflex/ACKNOWLEDGEMENTS>
+L<Reflex/ASSISTANCE>
+L<Reflex/AUTHORS>
 L<Reflex/BUGS>
-
-=head1 CORE AUTHORS
-
-L<Reflex/CORE AUTHORS>
-
-=head1 OTHER CONTRIBUTORS
-
-L<Reflex/OTHER CONTRIBUTORS>
-
-=head1 COPYRIGHT AND LICENSE
-
-L<Reflex/COPYRIGHT AND LICENSE>
+L<Reflex/BUGS>
+L<Reflex/CONTRIBUTORS>
+L<Reflex/COPYRIGHT>
+L<Reflex/LICENSE>
+L<Reflex/TODO>
 
 =cut

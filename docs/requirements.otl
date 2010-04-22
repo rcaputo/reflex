@@ -40,6 +40,10 @@
 			Obviously we can't force code to do that.
 			So we document it.
 		[_] 0% Style guide?
+			[_] % Event naming conventions.
+				Event names should read well following "on".
+					On failure.
+					On success.
 	[X] 100% Namespace Requirements
 		[X] 100% Choose a short base name for the namespace.
 			Large class names are unwieldy.
