@@ -18,5 +18,5 @@ my $t = Reflex::Timer->new(
 );
 
 while (my $event = $t->wait()) {
-	eg_say("wait() returned an event (@$event)");
+	eg_say("wait() returned an event ($event->{name})");
 }

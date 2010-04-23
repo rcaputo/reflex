@@ -2,6 +2,11 @@ package Reflex::Trait::Emitter;
 use Moose::Role;
 use Scalar::Util qw(weaken);
 
+has setup => (
+	isa     => 'CodeRef|HashRef',
+	is      => 'ro',
+);
+
 has trigger => (
 	is => 'ro',
 	default => sub {
@@ -117,6 +122,21 @@ to emit "count" events.
 The "default" option can be used to override the default event emitted
 by the Reflex::Trait::Emitter trait.  That default, by the way, is the
 name of the attribute.
+
+=head2 setup
+
+The "setup" option provides default constructor parameters for the
+attribute.  In the above example, clock() will by default contain
+
+	Reflex::Timer->new(interval => 1, auto_repeat => 1);
+
+In other words, it will emit the Reflex::Timer event ("tick") once per
+second until destroyed.
+
+=head1 CAVEATS
+
+The "setup" option is a work-around for unfortunate default timing.
+It will be deprecated if default can be made to work instead.
 
 =head1 SEE ALSO
 

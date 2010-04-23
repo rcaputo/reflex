@@ -36,12 +36,12 @@ use lib qw(../lib);
 
 		$self->callback_thing(
 			ThingWithCallbacks->new(
-				cb_class(__PACKAGE__, "on_event"),
+				cb_class(__PACKAGE__, "event"),
 			)
 		);
 	}
 
-	sub on_event {
+	sub event {
 		my ($self, $arg) = @_;
 		eg_say("$self - scalar class handled event");
 	}
@@ -76,12 +76,12 @@ $sho->run_thing();
 
 		$self->callback_thing(
 			ThingWithCallbacks->new(
-				cb_class(__PACKAGE__, ["on_event"]),
+				cb_class(__PACKAGE__, ["event"]),
 			)
 		);
 	}
 
-	sub on_event {
+	sub event {
 		my ($self, $arg) = @_;
 		eg_say("$self - array class handled event");
 	}

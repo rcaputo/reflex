@@ -17,5 +17,5 @@ my $p = ReflexPromise->new(
 );
 
 while (my $event = $p->wait()) {
-	eg_say("wait() returned an event (@$event)");
+	eg_say("wait() returned an event ($event->{name})");
 }

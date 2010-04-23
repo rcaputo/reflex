@@ -75,7 +75,7 @@ sub cb_object {
 	my ($object, $methods) = @_;
 
 	# They passed us a scalar.  Emulate cb_methods().
-	return($methods => cb_method(@_)) unless ref $methods;
+	return("on_$methods" => cb_method($object, $methods)) unless ref $methods;
 
 	# Events match method names.
 	return( map { ("on_$_" => cb_method($object, $_)) } @$methods ) if (
