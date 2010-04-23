@@ -1,4 +1,4 @@
-[_] 47% Framework Requirements
+[_] 49% Framework Requirements
 	About
 		This document summarizes the best ideas from the patterns document.
 		The patterns document tries to enumerate all available options.
@@ -40,10 +40,14 @@
 			Obviously we can't force code to do that.
 			So we document it.
 		[_] 0% Style guide?
-			[_] % Event naming conventions.
+			[_] 0% Event naming conventions.
 				Event names should read well following "on".
 					On failure.
 					On success.
+				[_] 0% "stopped" role for Reflex::Collections?
+					[_] 0% How to document these interactions?
+			[_] 0% Command naming conventions.
+				stop()
 	[X] 100% Namespace Requirements
 		[X] 100% Choose a short base name for the namespace.
 			Large class names are unwieldy.
@@ -55,7 +59,7 @@
 			Excessive namespace nesting is unwieldy.
 			The namespace should be organized.
 			How should the namespace be organized?
-	[_] 20% Class and Object Structural Requirements
+	[_] 40% Class and Object Structural Requirements
 		[X] 100% Support full object orientation.
 			[X] 100% Support composition of smaller objects into larger ones (has-a).
 			[X] 100% Support composition through direct inheritance.
@@ -75,12 +79,13 @@
 				[_] 0% What are those semantics?
 					Ignore return values?
 					emit() as return?
+						Maybe as an attribute?
 				[_] 0% Returned messages must be typed.
 		[_] 0% Function parameters should follow a single standard.
 			[_] 0% What should that standard be?
-		[_] 0% Procedural design should be supported.
+		[X] 100% Procedural design should be supported.
 			Some people will prefer procedural design.
-			[_] Objects are their own condvars.
+			[X] Objects are their own condvars.
 				$object->wait() waits for the object to finish/destruct.
 		[_] 0% Determine whether "role" is a confusing name.
 			Alternatives:
@@ -120,7 +125,7 @@
 				[X] 100% Moose introspection allows objects to find their contents.
 	[X] 100% Class Inheritance Rules
 		[X] 100% Class inheritance rules are delegated to Moose.
-	[_] 20% Messaging Requirements
+	[_] 24% Messaging Requirements
 		[_] 0% Object command interfaces must be methods.
 			[_] 0% Methods on the objects themselves may pass messages into themselves.
 				Synchronous method calls are translated into asynchronous messages.
@@ -131,6 +136,7 @@
 				Synchronous method calls are translated into asynchronous messages.
 		[_] 0% Local accessors and simple mutators must be synchronous.
 			Messages for local accessors and mutators is unnecessary overhead.
+			[_] 0% Maybe make this part of the style guide.
 		[_] 44% Objects must be permitted to emit messages into their containers.
 			[_] 0% Message emission is optional, depending on the use case.
 				[_] 0% Define a use case where message emission is required.
@@ -153,7 +159,7 @@
 			[_] 50% Emitted messages are next handled by explicit and role-based observers.
 				[_] 0% Explicit observers.
 				[X] 100% Role-based observers.
-		[_] 60% All forms of message handler (callback) must be supported.
+		[_] 80% All forms of message handler (callback) must be supported.
 			[X] 100% Anonymous Coderefs
 				Anonymous coderefs support closures.
 				Anonymous coderefs and closures may be used to implement faux continuation passing style.
@@ -175,9 +181,9 @@
 				[X] Observer (hash).
 					my $t = Reflex::Timer->new( ..., on_event => rcb_object($watcher, \%methods) );
 				Traits not supported at this time.
-			[_] 0% Class Methods
+			[X] 100% Class Methods
 				Classes may be used as singletons.
-				[_] 0% Do we want to support this?
+				[X] 100% Do we want to support this?
 			[X] 100% Promises or condvars.
 		[_] 0% Messages must be associated with their triggers.
 			[_] 0% One message may trigger another, inner message.
@@ -213,7 +219,7 @@
 			[_] 0% Receiver data is not visible to the sender.
 			[_] 0% Message-scoped resources should be stored in the message's continuation.
 				[_] 0% Message cancelation triggers associated resource cleanup.
-	[_] 48% Common primitive classes must be provided.
+	[_] 50% Common primitive classes must be provided.
 		[_] 27% Low-level event watchers.
 			[_] 50% Reflex::Handle
 				[X] 100% Strawman implementation.
@@ -239,7 +245,7 @@
 				[X] 100% Strawman implementation.
 				[_] 0% Determine API.
 			[_] 0% What else?
-		[_] 19% Primitive program pieces.
+		[_] 25% Primitive program pieces.
 			[_] 0% Reflex::App
 				[_] 0% Strawman implementation.
 				[_] 0% Determine API.
@@ -272,8 +278,8 @@
 				[_] 0% Strawman implementation.
 				[_] 0% Determine API.
 					See POE::Wheel::Run for clues.
-			[_] 0% Reflex::UdpPeer
-				[_] 0% Strawman implementation.
+			[_] 50% Reflex::UdpPeer
+				[X] 100% Strawman implementation.
 				[_] 0% Determine API.
 			[_] 0% Reflex::Tail
 				[_] 0% Strawman implementation.
