@@ -52,7 +52,6 @@ sub DESTROY {
 }
 
 1;
-# TODO - Document.
 
 __END__
 
@@ -62,51 +61,100 @@ Reflex::POE::Postback - Communicate with POE components expecting postbacks.
 
 =head1 SYNOPSIS
 
-# Not a complete example.  Please see eg-11-poco-postback.pl in the
-# examples for a working one.
+Not a complete example.  Please see eg-11-poco-postback.pl in the eg
+directory for a complete working program.
 
-	$self->component->request(
-		Reflex::POE::Postback->new(
-			$self, "on_component_result", { cookie => 123 }
-		),
+	my $postback = Reflex::POE::Postback->new(
+		$self, "on_component_result", { cookie => 123 }
 	);
-
-TODO - Needs a better example.
 
 =head1 DESCRIPTION
 
-Reflex::POE::Postback creates an object that's compatible with the POE
-postback.  These may be given to POE components that require postbacks to
-work.
+Reflex::POE::Postback creates an object that's substitutes for
+POE::Session postbacks.  When invoked, however, they sent events back
+to the object and method (and with optional continuation data)
+provided during construction.
 
-TODO - Complete the documentation.
+Reflex::POE::Postback was designed to interact with POE modules that
+want to respond via caller-provided postbacks.  Authors are encouraged
+to encapsulate POE interaction within Reflex objects.  Most users
+should therefore not need use Reflex::POE::Postback (or other
+Reflex::POE helpers) directly.
 
-=head1 GETTING HELP
+=head2 Public Methods
 
-L<Reflex/GETTING HELP>
+=head3 new
 
-=head1 ACKNOWLEDGEMENTS
+new() constructs a new Reflex::POE::Postback object, which will be a
+blessed coderef following POE's postback convention.
 
-L<Reflex/ACKNOWLEDGEMENTS>
+It takes three positional parameters: the required object and method
+to invoke when the postback is called, and an optional context that
+will be passed verbatim to the callback.
+
+=head2 Callback Parameters
+
+=head3 context
+
+The "context" callback parameter contains whatever was supplied to the
+Reflex::POE::Postback when it was created.  In the case of the
+SYNOPSIS, that would be:
+
+	sub on_component_result {
+		my ($self, $arg) = @_;
+
+		# Displays: 123
+		print $arg->{context}{cookie}, "\n";
+	}
+
+=head3 response
+
+"response" contains an array reference that holds whatever was passed
+to the postback.  If we assume this postback call:
+
+	$postback->(qw(eight six seven five three oh nine));
+
+Then the callback might look something like this:
+
+	sub on_component_result {
+		my ($self, $arg) = @_;
+
+		# Displays: nine
+		print "$arg->{response}[-1]\n";
+	}
+
+=head1 CAVEATS
+
+Reflex::POE::Postback must produce objects as blessed coderefs.  This
+is something I don't know how to do yet with Moose, so Moose isn't
+used.  Therefore, Reflex::POE::Postback doesn't do a lot of things one
+might expect after working with other Reflex objects.
+
+If Moose can be used later, it may fundamentally change the entire
+interface.  The goal is to do this only once, however.
+
+It might be nice to map positional response parameters to named
+parameters.  Reflex::POE::Wheel does this, but it remains to be seen
+whether that's considered cumbersome.
 
 =head1 SEE ALSO
 
-L<Reflex> and L<Reflex/SEE ALSO>
+L<Moose::Manual::Concepts>
 
-=head1 BUGS
+L<Reflex>
+L<Reflex::POE::Event>
+L<Reflex::POE::Session>
+L<Reflex::POE::Wheel::Run>
+L<Reflex::POE::Wheel>
 
+L<Reflex/ACKNOWLEDGEMENTS>
+L<Reflex/ASSISTANCE>
+L<Reflex/AUTHORS>
 L<Reflex/BUGS>
-
-=head1 CORE AUTHORS
-
-L<Reflex/CORE AUTHORS>
-
-=head1 OTHER CONTRIBUTORS
-
-L<Reflex/OTHER CONTRIBUTORS>
-
-=head1 COPYRIGHT AND LICENSE
-
-L<Reflex/COPYRIGHT AND LICENSE>
+L<Reflex/BUGS>
+L<Reflex/CONTRIBUTORS>
+L<Reflex/COPYRIGHT>
+L<Reflex/LICENSE>
+L<Reflex/TODO>
 
 =cut

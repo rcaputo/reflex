@@ -108,18 +108,19 @@ sub on_sigchld_signal {
 }
 
 1;
-# TODO - Document.
 
 __END__
 
 =head1 NAME
 
-Reflex::POE::Wheel::Run - Allow a Reflex class to represent POE::Wheel::Run.
+Reflex::POE::Wheel::Run - Represent POE::Wheel::Run as a Reflex class.
 
 =head1 SYNOPSIS
 
-# Not a complete example.  Please see eg-07-wheel-run.pl or even
-# better eg-08-observer-trait.pl for working examples.
+Unfortunately there isn't a concise, completely executable example for
+the synopsis at this time.  Please see eg-07-wheel-run.pl and
+eg-08-observer-trait.pl in the distribution's eg directory for longer
+but fully executable ones.
 
 	has child => (
 		traits  => ['Reflex::Trait::Observer'],
@@ -152,45 +153,82 @@ Reflex::POE::Wheel::Run - Allow a Reflex class to represent POE::Wheel::Run.
 		$self->child(undef);
 	}
 
-TODO - Needs a better example.
-
 =head1 DESCRIPTION
 
 Reflex::POE::Wheel::Run represents an enhanced POE::Wheel::Run object.
-Currently, the sole enhancement is to wait for SIGCHLD and notify
-observers when the child process exits.
+It will manage a child process, and it will also wait for (and report
+on) the corresponding SIGCHLD.
 
-TODO - Further improvement would be to defer the SIGCHLD notification
-until all child output has been received.
+This module delegates to L<POE::Wheel::Run> for most of its
+implementation.  Please refer to that module for implementation
+details.
 
-TODO - Complete the API and documentation.
+=head2 Public Methods
 
-=head1 GETTING HELP
+This class adds no public methods to those of its base class,
+Reflex::POE::Wheel.
 
-L<Reflex/GETTING HELP>
+=head2 Public Events
 
-=head1 ACKNOWLEDGEMENTS
+Objects of this class emit all of POE::Wheel::Run's events, albeit
+renamed into Reflex-friendly forms.  Generally these forms are
+determined by removing the "Event" suffix and lowercasing what
+remains.  POE::Wheel::Run's StdinEvent becomes "stdin", and so on.
 
-L<Reflex/ACKNOWLEDGEMENTS>
+=head3 stdin
+
+See POE::Wheel::Run's StdinEvent.  Within Reflex, this event comes
+with only one parameter: "wheel_id".  This is the POE::Wheel::Run
+object's ID.
+
+=head3 stdout
+
+See POE::Wheel::Run's StdoutEvent.  Reflex includes two parameters:
+"wheel_id" and "output".  The latter parameter contains data the child
+process wrote to its STDOUT handle.
+
+=head3 stderr
+
+See POE::Wheel::Run's StderrEvent.  Reflex includes two parameters:
+"wheel_id" and "output".  The latter parameter contains data the child
+process wrote to its STDERR handle.
+
+=head3 error
+
+See POE::Wheel::Run's ErrorEvent.  Reflex maps the wheel's parameters
+to: "operation", "errnum", "errstr", "wheel_id" and "handle_name",
+respectively.
+
+=head3 closed
+
+See POE::Wheel::Run's CloseEvent.  Reflex includes only one parameter
+for this event: "wheel_id".
+
+=head1 CAVEATS
+
+This class could further be improved so that it doesn't report SIGCHLD
+until all the child's output has been received and processed.  This
+would resolve a long-standing nondeterminism in the timing of
+on_child_close() vs. on_child_signal().
 
 =head1 SEE ALSO
 
-L<Reflex> and L<Reflex/SEE ALSO>
+L<Moose::Manual::Concepts>
 
-=head1 BUGS
+L<Reflex>
+L<Reflex::POE::Event>
+L<Reflex::POE::Postback>
+L<Reflex::POE::Session>
+L<Reflex::POE::Wheel>
 
+L<Reflex/ACKNOWLEDGEMENTS>
+L<Reflex/ASSISTANCE>
+L<Reflex/AUTHORS>
 L<Reflex/BUGS>
-
-=head1 CORE AUTHORS
-
-L<Reflex/CORE AUTHORS>
-
-=head1 OTHER CONTRIBUTORS
-
-L<Reflex/OTHER CONTRIBUTORS>
-
-=head1 COPYRIGHT AND LICENSE
-
-L<Reflex/COPYRIGHT AND LICENSE>
+L<Reflex/BUGS>
+L<Reflex/CONTRIBUTORS>
+L<Reflex/COPYRIGHT>
+L<Reflex/LICENSE>
+L<Reflex/TODO>
 
 =cut
