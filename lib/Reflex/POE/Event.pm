@@ -4,18 +4,21 @@ use Moose;
 use Carp qw(croak);
 
 has object => (
-	is => 'ro',
-	isa => 'Reflex::Object',
+	is        => 'ro',
+	isa       => 'Reflex::Object',
+	required  => 1,
 );
 
 has method => (
-	is => 'rw',
-	isa => 'Str',
+	is        => 'rw',
+	isa       => 'Str',
+	required  => 1,
 );
 
 has context => (
-	is => 'rw',
-	isa => 'HashRef',
+	is      => 'rw',
+	isa     => 'HashRef',
+	default => sub { {} },
 );
 
 sub BUILD {
@@ -47,7 +50,6 @@ sub deliver {
 }
 
 1;
-# TODO - Document.
 
 __END__
 
@@ -57,64 +59,128 @@ Reflex::POE::Event - Communicate with POE components expecting events.
 
 =head1 SYNOPSIS
 
-# Not a complete example.  Please see eg-12-poco-event.pl in the
-# examples for a working one.
+This BUILD method is from eg-12-poco-event.pl in Reflex's eg
+directory.  It's for an App (application) class that must request
+service from a POE component by posting an event.
 
-	$self->run_within_session(
-		sub {
-			$self->component->request(
-				Reflex::POE::Event->new(
-					object  => $self,
-					method  => "on_component_result",
-					context => { cookie => 123 },
-				),
-			);
-		}
-	);
+  sub BUILD {
+    my $self = shift;
+    $self->component( PoCoEvent->new() );
 
-TODO - Needs a better example.
+    # Make sure it runs within the object's POE::Session.
+    $self->run_within_session(
+      sub {
+        $self->component->request(
+          Reflex::POE::Event->new(
+            object  => $self,
+            method  => "on_component_result",
+            context => { cookie => 123 },
+          ),
+        );
+      }
+    );
+  }
+
+App's constructor runs within its creator's session, which may not be
+the right one to send the event.  run_within_session() guarantees that
+Reflex::POE::Event is sent from the App, so that responses will reach
+the App later.
+
+An optional context (or continuation) may be stored with the event.
+It will be returned to the callback as its "context" parameter.
 
 =head1 DESCRIPTION
 
-Reflex::POE::Event creates an object that may be used as a POE event.
-When this event is posted back to Reflex, it will be routed to the
-proper Reflex::Object and method.
+Reflex::POE::Event is a helper object for interacting with POE modules
+that expect event names for callbacks.  It creates an object that may
+be used as a POE event name.  Reflex routes these events to their
+proper callbacks when POE sends them back.
 
-Reflex will clean up its bookkeeping for this event when the object is
-destroyed.  It's therefore important to maintain the object's blessing
-until it's definitely through being used.
+Authors are encouraged to encapsulate POE interaction within Reflex
+objects.  Most users should not need use Reflex::POE::Event (or other
+Reflex::POE helpers) directly.
 
-TODO - Is there a better, more reliable way to track the end of an
-event's use?
+=head2 Public Attributes
 
-TODO - Complete the documentation.
+=head3 object
 
-=head1 GETTING HELP
+"object" contains a reference to the object that will handle this
+POE event.
 
-L<Reflex/GETTING HELP>
+=head3 method
 
-=head1 ACKNOWLEDGEMENTS
+"method" contains the name of the method that will handle this event.
 
-L<Reflex/ACKNOWLEDGEMENTS>
+=head3 context
+
+Context optionally contains a hash reference of named values.  This
+hash reference will be passed to the event's "context" callback
+parameter.
+
+=head2 Callback Parameters
+
+Reflex::POE::Event provides some callback parameters for your
+convenience.
+
+=head3 context
+
+The "context" parameter includes whatever was supplied to the event's
+constructor.  Consider this event and its callback:
+
+	my $event = Reflex::POE::Event->new(
+		object => $self,
+		method => "callback",
+		context => { abc => 123 },
+	);
+
+	sub callback {
+		my ($self, $args) = @_;
+		print(
+			"Our context: $args->{context}{abc}\n",
+			"POE args: @{$args->{response}}\n"
+		);
+	}
+
+=head3 response
+
+POE events often include additional positional parameters in POE's
+C<ARG0..$#_> offsets.  These are provided as an array reference in the
+callback's "response" parameter.  An example is shown in the
+documentation for the "context" callback parameter.
+
+=head1 CAVEATS
+
+Reflex::POE::Event objects must pass through POE unscathed.  POE's
+basic Kernel and Session do this, but rare third-party modules may
+stringify or otherwise modify event names.  If you encounter one,
+please let the author know.
+
+Reflex::POE::Event's implementation may change.  For example, it may
+generate strings at a later date, if such strings can fulfill all the
+needs of the current object-based implementation.
+
+Reflex::POE::Event's interface may change significantly now that we
+have Reflex::Callbacks.  The main change would be to support generic
+callbacks rather than hardcode for method dispatch.
 
 =head1 SEE ALSO
 
-L<Reflex> and L<Reflex/SEE ALSO>
+L<Moose::Manual::Concepts>
 
-=head1 BUGS
+L<Reflex>
+L<Reflex::POE::Postback>
+L<Reflex::POE::Session>
+L<Reflex::POE::Wheel::Run>
+L<Reflex::POE::Wheel>
 
+L<Reflex/ACKNOWLEDGEMENTS>
+L<Reflex/ASSISTANCE>
+L<Reflex/AUTHORS>
 L<Reflex/BUGS>
-
-=head1 CORE AUTHORS
-
-L<Reflex/CORE AUTHORS>
-
-=head1 OTHER CONTRIBUTORS
-
-L<Reflex/OTHER CONTRIBUTORS>
-
-=head1 COPYRIGHT AND LICENSE
-
-L<Reflex/COPYRIGHT AND LICENSE>
+L<Reflex/BUGS>
+L<Reflex/CONTRIBUTORS>
+L<Reflex/COPYRIGHT>
+L<Reflex/LICENSE>
+L<Reflex/TODO>
 
 =cut

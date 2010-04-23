@@ -42,7 +42,6 @@ sub deliver {
 }
 
 1;
-# TODO - Document.
 
 __END__
 
@@ -52,15 +51,8 @@ Reflex::POE::Session - Observe events from a POE::Session object.
 
 =head1 SYNOPSIS
 
-# Not a complete example.
-# Please see eg-13-irc-bot.pl in the examples for one.
-
-	has poco_watcher => (
-		isa     => 'Reflex::POE::Session',
-		is      => 'rw',
-		traits  => ['Reflex::Trait::Observer'],
-		role    => 'poco',
-	);
+This sample usage is not a complete program.  The rest of the program
+exists in eg-13-irc-bot.pl, in the tarball's eg directory.
 
 	sub BUILD {
 		my $self = shift;
@@ -87,43 +79,89 @@ Reflex::POE::Session - Observe events from a POE::Session object.
 		)
 	}
 
-TODO - Either complete the example, or find a shorter one.
-
 =head1 DESCRIPTION
 
 Reflex::POE::Session allows a Reflex::Object to receive events from a
-specific POE::Session instance, identified by the session's ID.  In
-the future it may also limit the events it sees to allow better
-performance.
+specific POE::Session instance, identified by the session's ID.
 
-TODO - Complete the documentation.
+Authors are encouraged to encapsulate POE sessions within Reflex
+objects.  Most users should not need use Reflex::POE::Session (or
+other Reflex::POE helpers) directly.
 
-=head1 GETTING HELP
+=head2 Public Attributes
 
-L<Reflex/GETTING HELP>
+=head3 sid
 
-=head1 ACKNOWLEDGEMENTS
+The "sid" must contain the ID of the POE::Session to be watched.  This
+is in fact how Reflex::POE::Session knows which session to watch.  See
+L<POE> for more information about session IDs.
 
-L<Reflex/ACKNOWLEDGEMENTS>
+=head2 Public Events
+
+Reflex::POE::Session will emit() events on behalf of the watched
+POE::Session.  If the session posts "irc_001", then
+Reflex::POE::Session will emit "irc_001", and so on.
+
+Reflex::POE::Session's "args" parameter will contain all of the POE
+event's paramters, from ARG0 through the end of the parameter list.
+They will be mapped to Reflex paramters "0" through the last index.
+
+Assume that this POE post() call invokes this Reflex callback() via
+Refex::POE::Session:
+
+	$kernel->post( event => qw(one one two three five) );
+
+	...;
+
+	sub callback {
+		my ($self, $args) = @_;
+		print(
+			"$args->{0}\n",
+			"$args->{1}\n",
+			"$args->{2}\n",
+			"$args->{3}\n",
+			"$args->{4}\n",
+		);
+	}
+
+The callback will print five lines:
+
+	one
+	one
+	two
+	three
+	five
+
+=head1 CAVEATS
+
+Reflex::POE::Session will take note of every event sent by the
+session, although it won't try to deliver ones that haven't been
+registered with the callback object.  However, the act of filtering
+these events out is more overhead than simply not registering interest
+in the first place.  A later version will be more optimal.
+
+Reflex::POE::Wheel provides a way to map parameters to symbolic names.
+Reflex::POE::Session may also provide a similar mechanism in the
+future, obsoleting the parameter numbers.
 
 =head1 SEE ALSO
 
-L<Reflex> and L<Reflex/SEE ALSO>
+L<Moose::Manual::Concepts>
 
-=head1 BUGS
+L<Reflex>
+L<Reflex::POE::Event>
+L<Reflex::POE::Postback>
+L<Reflex::POE::Wheel::Run>
+L<Reflex::POE::Wheel>
 
+L<Reflex/ACKNOWLEDGEMENTS>
+L<Reflex/ASSISTANCE>
+L<Reflex/AUTHORS>
 L<Reflex/BUGS>
-
-=head1 CORE AUTHORS
-
-L<Reflex/CORE AUTHORS>
-
-=head1 OTHER CONTRIBUTORS
-
-L<Reflex/OTHER CONTRIBUTORS>
-
-=head1 COPYRIGHT AND LICENSE
-
-L<Reflex/COPYRIGHT AND LICENSE>
+L<Reflex/BUGS>
+L<Reflex/CONTRIBUTORS>
+L<Reflex/COPYRIGHT>
+L<Reflex/LICENSE>
+L<Reflex/TODO>
 
 =cut
