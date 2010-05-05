@@ -107,6 +107,11 @@ sub on_sigchld_signal {
 	);
 }
 
+sub kill {
+	my $self = shift;
+	$self->wheel()->kill(@_);
+}
+
 1;
 
 __END__
@@ -165,8 +170,13 @@ details.
 
 =head2 Public Methods
 
-This class adds no public methods to those of its base class,
-Reflex::POE::Wheel.
+This class adds public methods specific to POE::Wheel::Run's
+operation.  However, common methods like put() are both implemented
+and documented in the base L<Reflex::POE::Wheel> class.
+
+=head3 kill
+
+kill() passes its arguments to POE::Wheel::Run's kill() method.
 
 =head2 Public Events
 

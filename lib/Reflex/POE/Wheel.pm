@@ -47,6 +47,11 @@ sub wheel_id {
 	return $self->wheel()->ID();
 }
 
+sub put {
+	my $self = shift;
+	$self->wheel()->put(@_);
+}
+
 sub DEMOLISH {
 	my $self = shift;
 	$self->demolish_wheel();
@@ -130,6 +135,12 @@ C<< $foo->wheel()->ID() >> can also be used instead.
 
 Cause the internal wheel to be demolished.  Provided as a method since
 some wheels may require special handling.
+
+=head3 put
+
+put() sends its parameters to the POE::Wheel's put() method.
+
+	$reflex_poe_wheel->put("one", "two");
 
 =head2 Required Subclass Methods
 

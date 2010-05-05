@@ -16,7 +16,7 @@ use lib qw(../lib);
 
 	has child => (
 		traits  => ['Reflex::Trait::Observer'],
-		isa     => 'Reflex::POE::Wheel::Run|Undef',
+		isa     => 'Maybe[Reflex::POE::Wheel::Run]',
 		is      => 'rw',
 	);
 
@@ -24,9 +24,11 @@ use lib qw(../lib);
 		my $self = shift;
 		$self->child(
 			Reflex::POE::Wheel::Run->new(
-				Program => "$^X -wle 'print qq[pid(\$\$) moo(\$_)] for 1..10; exit'",
+				Program => "$^X -wle '\$|=1; while (<STDIN>) { chomp; print qq[pid(\$\$) moo(\$_)] } exit'",
 			)
 		);
+
+		$self->child()->put("one", "two", "three", "last");
 	}
 
 	sub on_child_stdin {
@@ -36,6 +38,7 @@ use lib qw(../lib);
 	sub on_child_stdout {
 		my ($self, $args) = @_;
 		print "stdout: $args->{output}\n";
+		$self->child()->kill() if $args->{output} =~ /moo\(last\)/;
 	}
 
 	sub on_child_stderr {
