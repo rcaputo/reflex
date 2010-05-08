@@ -291,7 +291,7 @@ Outliner file with the current roadmap and progress.
 Set up Dist::Zilla to reduce technical debt and make releasing code
 fun again.
 
-=head1 COPYRIGHT AND LICCENSE
+=head1 COPYRIGHT AND LICENSE
 
 Copyright 2009-2010 by Rocco Caputo.
 
