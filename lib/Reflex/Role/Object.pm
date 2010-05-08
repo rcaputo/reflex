@@ -51,7 +51,7 @@ my $singleton_session_id = POE::Session->create(
 
 		select_ready => sub {
 			my ($handle, $envelope, $mode) = @_[ARG0, ARG2, ARG3];
-			$envelope->[0]->_deliver($handle, $mode);
+			$envelope->[0]->_deliver($handle, $mode, @_[ARG4..$#_]);
 		},
 
 		### Signals.
