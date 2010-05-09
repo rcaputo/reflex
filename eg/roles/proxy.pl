@@ -13,7 +13,7 @@ my $p = Proxy->new(
 );
 
 # Write test data to one end of the proxy.
-print $socket_a "test request\n";
+$p->put_handle_a("test request\n");
 
 # Wait for it to arrive at the other end.
 # Send something back.
