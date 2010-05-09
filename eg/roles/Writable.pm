@@ -1,18 +1,91 @@
 package Writable;
 use MooseX::Role::Parameterized;
 
-die die die "doesn't work, see source";
+use Scalar::Util qw(weaken);
 
-# TODO - Figure out how to subclass parameterized roles and override
-# attributes of their parameters.  For instance, Writable only differs
-# from Readable in the default parameters!
+parameter handle => (
+	isa     => 'Str',
+	default => 'handle',
+);
 
-with 'Readable';
+parameter knob => (
+	isa     => 'Str',
+	default => sub { my $self = shift; $self->handle() . '_wr'; },
+	lazy    => 1,
+);
 
-parameter '+knob_suffix' => ( default => '_wr' );
-# TODO - Etc.
+parameter active => (
+	isa     => 'Bool',
+	default => 0,
+);
 
-# Don't define anything; use what Readable gives us?
-role { };
+parameter cb => (
+	isa       => 'Str',
+	default   => sub {
+		my $self = shift;
+		"on_" . $self->handle() . "_writable";
+	},
+	lazy      => 1,
+);
+
+role {
+	my $p = shift;
+
+	my $h = $p->handle();
+	my $k = $p->knob();
+	my $active = $p->active();
+	my $trigger_name = "_${k}_changed";
+	my $cb_name = $p->cb();
+
+	has $k => (
+		is      => 'rw',
+		isa     => 'Bool',
+		default => $active,
+		trigger => sub {
+			my $self = shift;
+			$self->$trigger_name(@_);
+		},
+		initializer => sub {
+			my $self = shift;
+			$self->$trigger_name(@_);
+		},
+	);
+
+	method $trigger_name => sub  {
+		my ($self, $value) = @_;
+
+		# Must be run in the right POE session.
+		return unless $self->call_gate($trigger_name, $value);
+
+		# Turn on watcher.
+		if ($value) {
+			my $envelope = [ $self ];
+			weaken $envelope->[0];
+			$POE::Kernel::poe_kernel->select_write(
+				$self->$h(), 'select_ready', $envelope, $cb_name,
+			);
+			return;
+		}
+
+		# Turn off watcher.
+		$POE::Kernel::poe_kernel->select_write($self->$h(), undef);
+	};
+
+	# Turn off watcher during destruction.
+	after DESTROY => sub {
+		my $self = shift;
+		$self->$k(0) if $self->$k();
+	};
+
+	# Part of the POE/Reflex contract.
+	method _deliver => sub {
+		my ($self, $handle, $cb_member) = @_;
+		$self->$cb_member(
+			{
+				handle => $handle,
+			}
+		);
+	};
+};
 
 1;

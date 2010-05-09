@@ -8,28 +8,10 @@ parameter handle => (
 	default => 'handle',
 );
 
-parameter knob_suffix => (
-	isa     => 'Str',
-	default => '_rd',
-);
-
 parameter knob => (
 	isa     => 'Str',
-	default => sub {
-		my $self = shift;
-		$self->handle() . $self->knob_suffix();
-	},
+	default => sub { my $self = shift; $self->handle() . '_rd'; },
 	lazy    => 1,
-);
-
-parameter select_method => (
-	isa     => 'Str',
-	default => 'select_read',
-);
-
-parameter event => (
-	isa     => 'Str',
-	default => 'readable',
 );
 
 parameter active => (
@@ -37,16 +19,23 @@ parameter active => (
 	default => 0,
 );
 
+parameter cb => (
+	isa       => 'Str',
+	default   => sub {
+		my $self = shift;
+		"on_" . $self->handle() . "_readable";
+	},
+	lazy      => 1,
+);
+
 role {
 	my $p = shift;
 
 	my $h = $p->handle();
 	my $k = $p->knob();
-	my $m = $p->select_method();
-	my $e = $p->event();
 	my $active = $p->active();
 	my $trigger_name = "_${k}_changed";
-	my $emit_name = "${h}_${e}";
+	my $cb_name = $p->cb();
 
 	has $k => (
 		is      => 'rw',
@@ -72,14 +61,14 @@ role {
 		if ($value) {
 			my $envelope = [ $self ];
 			weaken $envelope->[0];
-			$POE::Kernel::poe_kernel->$m(
-				$self->$h(), 'select_ready', $envelope, $e, $emit_name
+			$POE::Kernel::poe_kernel->select_read(
+				$self->$h(), 'select_ready', $envelope, $cb_name,
 			);
 			return;
 		}
 
 		# Turn off watcher.
-		$POE::Kernel::poe_kernel->$m($self->$h(), undef);
+		$POE::Kernel::poe_kernel->select_read($self->$h(), undef);
 	};
 
 	# Turn off watcher during destruction.
@@ -90,10 +79,9 @@ role {
 
 	# Part of the POE/Reflex contract.
 	method _deliver => sub {
-		my ($self, $handle, $mode, $event_name) = @_;
-		$self->emit(
-			event => $event_name,
-			args => {
+		my ($self, $handle, $cb_member) = @_;
+		$self->$cb_member(
+			{
 				handle => $handle,
 			}
 		);
