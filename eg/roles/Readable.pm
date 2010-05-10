@@ -8,12 +8,6 @@ parameter handle => (
 	default => 'handle',
 );
 
-parameter knob => (
-	isa     => 'Str',
-	default => sub { my $self = shift; $self->handle() . '_rd'; },
-	lazy    => 1,
-);
-
 parameter active => (
 	isa     => 'Bool',
 	default => 0,
@@ -32,47 +26,49 @@ role {
 	my $p = shift;
 
 	my $h = $p->handle();
-	my $k = $p->knob();
 	my $active = $p->active();
-	my $trigger_name = "_${k}_changed";
+
 	my $cb_name = $p->cb_ready();
+	my $pause_name    = "pause_${h}_readable";
+	my $resume_name   = "resume_${h}_readable";
+	my $setup_name    = "_setup_${h}_readable";
 
-	my $trigger_coderef = sub { my $self = shift; $self->$trigger_name(@_) };
-
-	has $k => (
-		is          => 'rw',
-		isa         => 'Bool',
-		default     => $active,
-		trigger     => $trigger_coderef,
-		initializer => $trigger_coderef,
-	);
-
-	method $trigger_name => sub  {
-		my ($self, $value) = @_;
-
-		# TODO - Use pause/resume here.
+	method $setup_name => sub {
+		my ($self, $arg) = @_;
 
 		# Must be run in the right POE session.
-		return unless $self->call_gate($trigger_name, $value);
+		return unless $self->call_gate($setup_name, $arg);
 
-		# Turn on watcher.
-		if ($value) {
-			my $envelope = [ $self ];
-			weaken $envelope->[0];
-			$POE::Kernel::poe_kernel->select_read(
-				$self->$h(), 'select_ready', $envelope, $cb_name,
-			);
-			return;
-		}
+		my $envelope = [ $self ];
+		weaken $envelope->[0];
+		$POE::Kernel::poe_kernel->select_read(
+			$self->$h(), 'select_ready', $envelope, $cb_name,
+		);
 
-		# Turn off watcher.
-		$POE::Kernel::poe_kernel->select_read($self->$h(), undef);
+		return if $active;
+
+		$POE::Kernel::poe_kernel->select_pause_read($self->$h());
+	};
+
+	method $pause_name => sub {
+		my $self = shift;
+		$POE::Kernel::poe_kernel->select_pause_read($self->$h());
+	};
+
+	method $resume_name => sub {
+		my $self = shift;
+		$POE::Kernel::poe_kernel->select_resume_read($self->$h());
+	};
+
+	after BUILD => sub {
+		my ($self, $arg) = @_;
+		$self->$setup_name($arg);
 	};
 
 	# Turn off watcher during destruction.
-	after DESTROY => sub {
+	after DEMOLISH => sub {
 		my $self = shift;
-		$self->$k(0) if $self->$k();
+		$POE::Kernel::poe_kernel->select_read($self->h(), undef);
 	};
 
 	# Part of the POE/Reflex contract.

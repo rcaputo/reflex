@@ -22,17 +22,14 @@ role {
 
 	my $h       = $p->handle();
 	my $cb_data = $p->cb_data();
-	my $knob_wr = "${h}_wr";
 
 	with Readable => {
 		handle  => $h,
-		knob    => "${h}_rd",
 		active  => 1,
 	};
 
 	with Writable => {
 		handle  => $h,
-		knob    => $knob_wr,
 	};
 
 	has out_buffer => (
@@ -87,7 +84,7 @@ role {
 			$$out_buffer = substr($next, $octet_count);
 			$$out_buffer .= $_ foreach @chunks;
 
-			$self->$knob_wr(1);
+			$self->resume_handle_writable();
 			return length $$out_buffer;
 		}
 
