@@ -18,6 +18,7 @@ our @CARP_NOT = (__PACKAGE__);
 # TODO - How to prevent this from being redefined?
 #sub POE::Kernel::ASSERT_DEFAULT () { 1 }
 
+sub POE::Kernel::CATCH_EXCEPTIONS () { 0 }
 use POE;
 use Reflex::POE::Session;
 

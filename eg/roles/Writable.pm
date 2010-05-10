@@ -19,7 +19,7 @@ parameter active => (
 	default => 0,
 );
 
-parameter cb => (
+parameter cb_ready => (
 	isa       => 'Str',
 	default   => sub {
 		my $self = shift;
@@ -31,28 +31,26 @@ parameter cb => (
 role {
 	my $p = shift;
 
-	my $h = $p->handle();
-	my $k = $p->knob();
-	my $active = $p->active();
-	my $trigger_name = "_${k}_changed";
-	my $cb_name = $p->cb();
+	my $h             = $p->handle();
+	my $k             = $p->knob();
+	my $active        = $p->active();
+	my $trigger_name  = "_${k}_changed";
+	my $cb_name       = $p->cb_ready();
+
+	my $trigger_coderef = sub { my $self = shift; $self->$trigger_name(@_) };
 
 	has $k => (
-		is      => 'rw',
-		isa     => 'Bool',
-		default => $active,
-		trigger => sub {
-			my $self = shift;
-			$self->$trigger_name(@_);
-		},
-		initializer => sub {
-			my $self = shift;
-			$self->$trigger_name(@_);
-		},
+		is          => 'rw',
+		isa         => 'Bool',
+		default     => $active,
+		trigger     => $trigger_coderef,
+		initializer => $trigger_coderef,
 	);
 
 	method $trigger_name => sub  {
 		my ($self, $value) = @_;
+
+		# TODO - Use pause/resume here.
 
 		# Must be run in the right POE session.
 		return unless $self->call_gate($trigger_name, $value);
@@ -80,11 +78,7 @@ role {
 	# Part of the POE/Reflex contract.
 	method _deliver => sub {
 		my ($self, $handle, $cb_member) = @_;
-		$self->$cb_member(
-			{
-				handle => $handle,
-			}
-		);
+		$self->$cb_member( { handle => $handle, } );
 	};
 };
 

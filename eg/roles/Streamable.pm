@@ -8,10 +8,21 @@ parameter handle => (
 	default => 'handle',
 );
 
+parameter cb_data => (
+	isa       => 'Str',
+	default   => sub {
+		my $self = shift;
+		"on_" . $self->handle() . "_data";
+	},
+	lazy      => 1,
+);
+
 role {
 	my $p = shift;
 
-	my $h = $p->handle();
+	my $h       = $p->handle();
+	my $cb_data = $p->cb_data();
+	my $knob_wr = "${h}_wr";
 
 	with Readable => {
 		handle  => $h,
@@ -21,7 +32,7 @@ role {
 
 	with Writable => {
 		handle  => $h,
-		knob    => "${h}_wr",
+		knob    => $knob_wr,
 	};
 
 	has out_buffer => (
@@ -30,30 +41,25 @@ role {
 		default => sub { my $x = ""; \$x },
 	);
 
-	method "on_" . $p->handle() . "_readable" => sub {
+	method "on_${h}_readable" => sub {
 		my ($self, $arg) = @_;
 
 		my $octet_count = sysread($arg->{handle}, my $buffer = "", 65536);
 		if ($octet_count) {
-			$self->emit(
-				event => $p->handle() . "_data",
-				args => {
-					data => $buffer,
-					handle => $arg->{handle},
-				},
-			);
+			$self->$cb_data({ data => $buffer });
 			return;
 		}
 
 		return if defined $octet_count;
 		warn $!;
+		# TODO - Error callback.
 	};
 
 	method "put_$h" => sub {
 		my ($self, @chunks) = @_;
 
 		# TODO - Benchmark string vs. array.
-		
+
 		my $out_buffer = $self->out_buffer();
 		if (length $$out_buffer) {
 			$$out_buffer .= $_ foreach @chunks;
@@ -78,10 +84,10 @@ role {
 
 			# Wrote less than all.  Save the rest, and turn on write
 			# multiplexing.
-
 			$$out_buffer = substr($next, $octet_count);
 			$$out_buffer .= $_ foreach @chunks;
-			$self->wr(1);
+
+			$self->$knob_wr(1);
 			return length $$out_buffer;
 		}
 
