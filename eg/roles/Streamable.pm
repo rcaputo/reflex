@@ -17,11 +17,21 @@ parameter cb_data => (
 	lazy      => 1,
 );
 
+parameter cb_error => (
+	isa       => 'Str',
+	default   => sub {
+		my $self = shift;
+		"on_" . $self->handle() . "_error";
+	},
+	lazy      => 1,
+);
+
 role {
 	my $p = shift;
 
-	my $h       = $p->handle();
-	my $cb_data = $p->cb_data();
+	my $h         = $p->handle();
+	my $cb_data   = $p->cb_data();
+	my $cb_error  = $p->cb_error();
 
 	with Readable => {
 		handle  => $h,
@@ -48,8 +58,14 @@ role {
 		}
 
 		return if defined $octet_count;
-		warn $!;
-		# TODO - Error callback.
+
+		$self->cb_error(
+			{
+				errnum => ($! + 0),
+				errstr => "$!",
+				errfun => "sysread",
+			}
+		);
 	};
 
 	method "put_$h" => sub {
@@ -70,6 +86,14 @@ role {
 
 			# Hard error.
 			unless (defined $octet_count) {
+				$self->$cb_error(
+					{
+						errnum => ($! + 0),
+						errstr => "$!",
+						errfun => "syswrite",
+					}
+				);
+
 				$self->_emit_failure("syswrite");
 				return;
 			}
