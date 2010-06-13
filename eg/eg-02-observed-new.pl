@@ -1,34 +1,44 @@
 #!/usr/bin/env perl
 
-# An object's observers are registered during construction.
+# This test attaches an event emitter to its watcher at the time the
+# emitter is created.  This reverses the construction order seen in
+# eg-01-discrete-observer.pl, avoiding the potential race condition
+# illustrated there.
 #
-# By registering observers during an object's construction, there is
-# no time between construction and observation where events may be
-# lost.  This is equivalent to eg-01-discrete-observer.pl but without
-# the potential for races.
-#
-# Note: This is verbose syntax.  More concise, convenient syntax has
-# been developed and appears in later examples.
+# This API is still quite verbose.  We'll see more concise and
+# convenient APIs later.
 
 use warnings;
 use strict;
 use lib qw(../lib);
 
-use Reflex::Object;
 use Reflex::Timer;
-use ExampleHelpers qw(eg_say);
 use Reflex::Callbacks qw(cb_coderef);
 
-eg_say("starting watcher object");
-my $watcher = Reflex::Object->new( );
+use Test::More tests => 5;
 
-eg_say("starting timer object with integrated observation");
-my $timer = Reflex::Timer->new(
-	interval    => 1,
+### Create a timer with callbacks.
+#
+# We don't need a discrete observer since we're not explicitly calling
+# observe() on anything.
+
+my $countdown = 3;
+my $timer;
+$timer = Reflex::Timer->new(
+	interval    => 0.1,
 	auto_repeat => 1,
-	on_tick     => cb_coderef( sub { eg_say("watcher sees 'tick' event") } ),
+	on_tick     => cb_coderef(
+		sub {
+			pass("'tick' callback invoked ($countdown)");
+			$timer = undef unless --$countdown;
+		}
+	),
 );
+ok( (defined $timer), "started timer object" );
 
-# Run the objects until they are done.
+### Allow the timer and its watcher to run until they are done.
+
 Reflex::Object->run_all();
+pass("run_all() returned");
+
 exit;

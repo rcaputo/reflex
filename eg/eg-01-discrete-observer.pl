@@ -23,7 +23,6 @@ use lib qw(../lib);
 use Reflex::Object;
 use Reflex::Timer;
 use Reflex::Callbacks qw(cb_coderef);
-use TestHelpers qw(test_diag);
 
 use Test::More tests => 6;
 
@@ -38,13 +37,18 @@ my $watcher = Reflex::Object->new();
 ok( (defined $watcher), "started watcher object" );
 
 ### The watcher will now watch the timer for a little while.
+#
+# The watcher only exists so that observe() may be called.  A better
+# example would have "tick" handled by one of Reflex::Object's
+# methods.  eg-02-observed-new.pl doesn't use a watcher object since
+# no observe() method is called there.
 
 my $countdown = 3;
 $watcher->observe(
 	$timer,
 	tick => cb_coderef(
 		sub {
-			pass("watcher sees 'tick' event");
+			pass("'tick' callback invoked ($countdown)");
 			$timer = undef unless --$countdown;
 		}
 	),
