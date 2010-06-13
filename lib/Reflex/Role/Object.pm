@@ -330,10 +330,10 @@ sub _is_observed {
 sub emit {
 	my ($self, @args) = @_;
 
-	# TODO - Checking arguments is tedious, but _check_args() method
+	# TODO - Checking arguments is tedious, but check_args() method
 	# calls add up.
 
-	my $args = $self->_check_args(
+	my $args = $self->check_args(
 		\@args,
 		[ 'event' ],
 		[ 'args' ],
@@ -425,7 +425,7 @@ sub _deliver {
 	die "@_";
 }
 
-sub _check_args {
+sub check_args {
 	my ($self, $args, $required, $optional) = @_;
 
 	if (ref($args) eq 'ARRAY') {
@@ -439,12 +439,14 @@ sub _check_args {
 
 	my @error;
 
-	my @missing = grep { !exists($args->{$_}) } @$required;
-	push @error, "required parameters are missing: @missing" if @missing;
+	if (my @missing = grep { !exists($args->{$_}) } @$required) {
+		push @error, "required parameters are missing: @missing";
+	}
 
 	my %all = map { $_ => 1 } @$required, @$optional;
-	my @excess = grep { !exists($all{$_}) } keys %$args;
-	push @error, "unknown parameters: @excess" if @excess;
+	if (my @excess = grep { !exists($all{$_}) } keys %$args) {
+		push @error, "unknown parameters: @excess";
+	}
 
 	return $args unless @error;
 	croak join "; ", @error;
@@ -466,13 +468,13 @@ sub _shutdown {
 	);
 
 	foreach my $observer (values %observers) {
-		$observer->ignore(observed => $self);
+		$observer->ignore($self);
 	}
 
 	# Anything we were observing, no longer is being.
 
 	foreach my $observed (values %{$self->watched_objects()}) {
-		$self->ignore(observed => $observed);
+		$self->ignore($observed);
 	}
 }
 
@@ -482,16 +484,9 @@ sub DEMOLISH {
 }
 
 sub ignore {
-	my ($self, @args) = @_;
+	my ($self, $observed, @events) = @_;
 
-	my $args = $self->_check_args(
-		\@args,
-		[ 'observed' ],
-		[ 'events' ],
-	);
-
-	my $observed = $args->{observed};
-	my @events   = @{$args->{events} || []};
+	croak "ignore requires at least an object" unless defined $observed;
 
 	if (@events) {
 		delete @{$self->watched_object_events()->{$observed}}{@events};
@@ -669,21 +664,18 @@ planned:
 =head2 ignore
 
 The ignore() method tells Reflex that one object has lost interest in
-events from another.  It takes two named parameters.  "observed" is
-required and indicates which object is being ignored.  "events" is an
-optional array reference containing zero or more event names to
+events from another.  It requires at least one parameter, the object
+to be ignored.  Additional parameters may name specific events to
 ignore.
 
-	$self->ignore(
-		observed => $an_object_maybe_myself,
-		events   => [qw( success failure )],
-	);
+Ignore an object entirely:
 
-All events will be ignored if "events" is not specified:
+	$self->ignore($an_object_maybe_myself);
 
-	$self->ignore(
-		observed => $an_object_maybe_myself,
-	);
+Ignore just specific events:
+
+	my @events = qw(success failure);
+	$self->ignore($an_object_maybe_myself, @events);
 
 An object may destruct while it's being watched and/or is watching
 other objects.  DEMOLISH will ensure that all watchers related to the

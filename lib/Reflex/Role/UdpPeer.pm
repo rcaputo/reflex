@@ -58,7 +58,7 @@ sub on_remote_readable {
 sub send {
 	my ($self, @args) = @_;
 
-	my $args = $self->_check_args(
+	my $args = $self->check_args(
 		\@args,
 		[ 'datagram', 'remote_addr' ],
 		[ ],
