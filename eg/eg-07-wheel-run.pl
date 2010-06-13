@@ -25,9 +25,7 @@ use lib qw(../lib);
 		$self->wheel(
 			Reflex::POE::Wheel::Run->new(
 				Program => "$^X -wle 'print qq[pid(\$\$) moo(\$_)] for 1..10; exit'",
-				observers => [
-					[ $self, cb_role($self, "child") ],
-				],
+				cb_role($self, "child"),
 			)
 		);
 	}

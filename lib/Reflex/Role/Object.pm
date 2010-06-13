@@ -171,12 +171,6 @@ has watched_objects => (
 #	},
 #);
 
-has observers => (
-	isa     => 'ArrayRef',
-	is      => 'rw',
-	default => sub { [] },
-);
-
 has promise => (
 	is => 'rw',
 	isa => 'Reflex::Callback::Promise',
@@ -237,13 +231,6 @@ sub BUILD {
 		croak "Unknown 'setup' value: $callback";
 	}
 
-	# Known observers.
-
-	foreach my $observer (@{$self->observers()}) {
-		my $watcher = shift @$observer;
-		$watcher->observe($self, @$observer);
-	}
-
 	# Discrete callbacks.
 
 	CALLBACK: while (my ($param, $value) = each %$args) {
@@ -259,10 +246,6 @@ sub BUILD {
 		$self->observe($self, $1 => $value);
 		next CALLBACK;
 	}
-
-	# Clear observers; we're done with them.
-	# TODO - Moose probably has a better way of validating parameters.
-	$self->observers([]);
 
 	# The session has an object.
 	$session_object_count{$self->session_id()}++;

@@ -26,12 +26,7 @@ eg_say("starting timer object with integrated observation");
 my $timer = Reflex::Timer->new(
 	interval    => 1,
 	auto_repeat => 1,
-	observers   => [
-		[
-			$watcher,
-			tick => cb_coderef( sub { eg_say("watcher sees 'tick' event") } ),
-		],
-	],
+	on_tick     => cb_coderef( sub { eg_say("watcher sees 'tick' event") } ),
 );
 
 # Run the objects until they are done.

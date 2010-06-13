@@ -35,9 +35,7 @@ use lib qw(../lib);
 			Reflex::Timer->new(
 				interval    => 1,
 				auto_repeat => 1,
-				observers   => [
-					[ $self => cb_role($self, "waitron") ],
-				]
+				cb_role($self, "waitron"),
 			),
 		);
 
