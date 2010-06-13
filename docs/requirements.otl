@@ -48,6 +48,24 @@
 					[_] 0% How to document these interactions?
 			[_] 0% Command naming conventions.
 				stop()
+		[_] % Normalize names in Reflex
+			[_] % Helpers
+			[_] % Internals
+			[_] % Traits
+			[_] % Parts and Reified Objects
+		[_] 0% Reflex::Manual
+			[_] 0% Nomenclature
+				[_] 0% Reflexive namespace is a sandbox for new modules.
+					Same purpose as the -X namespace convention.
+					A bit more whimsical.
+					Reads better.
+				[_] 0% Reflex is a curated namespace.
+					[_] 0% Define rules for inclusion.
+						Threshold for usage on CPAN?
+						Threshold for requests on mailing list?
+				Other namespaces are fine.
+					MooseX.
+					Elsewhere?  I don't care.
 	[X] 100% Namespace Requirements
 		[X] 100% Choose a short base name for the namespace.
 			Large class names are unwieldy.
