@@ -1,20 +1,20 @@
 #!/usr/bin/env perl
 
-# Watch another object, already created.
+# Reflex APIs are built in layers.  This test exercises Reflex's
+# low-level watcher API.  There are much more concise and convenient
+# APIs layered atop this one.
 #
-# Create a Reflex::Object that may emit events before it can be
-# watched.  Create a watcher after the fact, which then watches the
-# Reflex::Timer.
+# The test creates two objects: One to periodically emit events, and
+# another to watch for those events.  Receipt of those events is
+# verified, as well as natural program exit when all events are done.
 #
-# Warning: Events can be missed in a truly concurrent system if there
-# is time between the creation of a watched object and registering its
-# events' watchers.  See eg-02-watched-new.pl for a safer alternative.
+# Important note: Creating an event emitter before its watcher can
+# produce race conditions.  It's better to create the watcher first,
+# then attach the event source as part of the source's creation.  See
+# eg-02-observed-new.pl for an example.
 #
 # TODO - Another option is to create an object in a stopped state,
 # then start it after watchers have been registered.
-#
-# Note: This is verbose syntax.  More concise, convenient syntax has
-# been developed and appears in later examples.
 
 use warnings;
 use strict;
@@ -22,21 +22,37 @@ use lib qw(../lib);
 
 use Reflex::Object;
 use Reflex::Timer;
-use ExampleHelpers qw(eg_say);
 use Reflex::Callbacks qw(cb_coderef);
+use TestHelpers qw(test_diag);
 
-eg_say("starting timer object");
-my $timer = Reflex::Timer->new( interval => 1, auto_repeat => 1 );
+use Test::More tests => 6;
 
-eg_say("starting watcher object");
+### Create a timer.  This timer will be watched for events.
+
+my $timer = Reflex::Timer->new( interval => 0.1, auto_repeat => 1 );
+ok( (defined $timer), "started timer object" );
+
+### Create an object to watch the timer.
+
 my $watcher = Reflex::Object->new();
+ok( (defined $watcher), "started watcher object" );
 
-eg_say("watcher watching timer");
+### The watcher will now watch the timer for a little while.
+
+my $countdown = 3;
 $watcher->observe(
 	$timer,
-	tick => cb_coderef( sub { eg_say("watcher sees 'tick' event") } ),
+	tick => cb_coderef(
+		sub {
+			pass("watcher sees 'tick' event");
+			$timer = undef unless --$countdown;
+		}
+	),
 );
 
-# Run the objects until they are done.
+### Allow the timer and its watcher to run until they are done.
+
 Reflex::Object->run_all();
+pass("run_all() returned");
+
 exit;
