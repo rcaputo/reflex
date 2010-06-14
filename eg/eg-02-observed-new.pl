@@ -5,8 +5,8 @@
 # eg-01-discrete-observer.pl, avoiding the potential race condition
 # illustrated there.
 #
-# This API is still quite verbose.  We'll see more concise and
-# convenient APIs later.
+# This API is less verbose than eg-01-discrete-observer.pl, but it's
+# not as concise as it can be.  We'll see more concise APIs later.
 
 use warnings;
 use strict;
