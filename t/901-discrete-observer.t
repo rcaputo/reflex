@@ -8,10 +8,15 @@
 # another to watch for those events.  Receipt of those events is
 # verified, as well as natural program exit when all events are done.
 #
-# Important note: Creating an event emitter before its watcher can
-# produce race conditions.  It's better to create the watcher first,
-# then attach the event source as part of the source's creation.  See
-# eg-02-observed-new.pl for an example.
+# While verbose, the observe() syntax allows multiple objects to
+# consume events from a single emitter.  Most other event systems only
+# allow one event consumer.
+#
+# In some cases, events can be lost if observe() is called after an
+# event emitter is created.  However, this shouldn't happen if the
+# emitter and observation are created in the same basic block of code.
+# Under normal circumstances, events are not dispatched in the middle
+# of a basic block of code, so events cannot be lost there.
 #
 # TODO - Another option is to create an object in a stopped state,
 # then start it after watchers have been registered.

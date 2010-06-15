@@ -1,12 +1,11 @@
 #!/usr/bin/env perl
 
 # This test attaches an event emitter to its watcher at the time the
-# emitter is created.  This reverses the construction order seen in
-# eg-01-discrete-observer.pl, avoiding the potential race condition
-# illustrated there.
+# emitter is created.  This is more concise than discrete observe()
+# calls, and it can be combined with observe() to support multiple
+# event consumers per emitter.
 #
-# This API is less verbose than eg-01-discrete-observer.pl, but it's
-# not as concise as it can be.  We'll see more concise APIs later.
+# Moose provides opportunities for more concise APIs, as we'll see.
 
 use warnings;
 use strict;
