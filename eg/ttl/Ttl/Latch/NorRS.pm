@@ -19,7 +19,7 @@ use Moose;
 extends 'Reflex::Object';
 use Ttl::Nor;
 use Reflex::Trait::Observed;
-use Reflex::Trait::Emitter;
+use Reflex::Trait::EmitsOnChange;
 
 has nor_r => (
 	isa     => 'Ttl::Nor',
@@ -38,13 +38,13 @@ has nor_s => (
 has q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Emitter'],
+	traits  => ['Reflex::Trait::EmitsOnChange'],
 );
 
 has not_q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Emitter'],
+	traits  => ['Reflex::Trait::EmitsOnChange'],
 );
 
 sub on_nor_s_out {

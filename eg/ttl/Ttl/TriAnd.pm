@@ -21,7 +21,7 @@ use Moose;
 extends 'Reflex::Object';
 use Ttl::And;
 use Reflex::Trait::Observed;
-use Reflex::Trait::Emitter;
+use Reflex::Trait::EmitsOnChange;
 
 has and_ab => (
   isa     => 'Ttl::And',
@@ -40,7 +40,7 @@ has and_c => (
 has out => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Emitter'],
+	traits  => ['Reflex::Trait::EmitsOnChange'],
 );
 
 sub BUILD {

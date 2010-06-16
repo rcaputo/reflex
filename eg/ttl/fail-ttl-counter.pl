@@ -10,7 +10,7 @@ use lib qw(lib);
 	extends 'Reflex::Object';
 	use Ttl::FlipFlop::T;
 	use Ttl::HexDecoder;
-	use Reflex::Trait::Emitter;
+	use Reflex::Trait::EmitsOnChange;
 	use Reflex::Trait::Observed;
 
 	# Create a four-bit counter using T flip-flops.
@@ -51,7 +51,7 @@ use lib qw(lib);
 	has out => (
 		isa     => 'Str',
 		is      => 'rw',
-		traits  => ['Reflex::Trait::Emitter'],
+		traits  => ['Reflex::Trait::EmitsOnChange'],
 	);
 
 	sub on_t1_q {

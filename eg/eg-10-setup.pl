@@ -4,7 +4,8 @@ use warnings;
 use strict;
 use lib qw(../lib);
 
-# Exercise the new "setup" option for Emitter and Observed traits.
+# Exercise the new "setup" option for EmitsOnChange and Observed
+# traits.
 
 {
 	package Counter;
@@ -12,10 +13,10 @@ use lib qw(../lib);
 	extends 'Reflex::Object';
 	use Reflex::Timer;
 	use Reflex::Trait::Observed;
-	use Reflex::Trait::Emitter;
+	use Reflex::Trait::EmitsOnChange;
 
 	has count   => (
-		traits    => ['Reflex::Trait::Emitter'],
+		traits    => ['Reflex::Trait::EmitsOnChange'],
 		isa       => 'Int',
 		is        => 'rw',
 		default   => 0,

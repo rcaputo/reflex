@@ -18,7 +18,7 @@ extends 'Reflex::Object';
 use Ttl::Nand;
 use Ttl::Latch::NandRS;
 use Reflex::Trait::Observed;
-use Reflex::Trait::Emitter;
+use Reflex::Trait::EmitsOnChange;
 
 has nand_not_r => (
 	isa     => 'Ttl::Nand',
@@ -37,7 +37,7 @@ has nand_s => (
 has clk => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Emitter'],
+	traits  => ['Reflex::Trait::EmitsOnChange'],
 );
 
 sub on_my_clk {
@@ -72,13 +72,13 @@ sub on_nand_not_r_out {
 has q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Emitter'],
+	traits  => ['Reflex::Trait::EmitsOnChange'],
 );
 
 has not_q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Emitter'],
+	traits  => ['Reflex::Trait::EmitsOnChange'],
 );
 
 sub on_latch_q {

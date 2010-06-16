@@ -212,7 +212,7 @@ Reflex bundles a number of helpful base classes to get things started.
   | Reflex::Callback::Promise - adapts callbacks to condvars
   Reflex::POE::Event - represents POE events in Reflex
   Reflex::POE::Postback - represents POE postbacks in Reflex
-  Reflex::Trait::Emitter - emit events when a member's value changes
+  Reflex::Trait::EmitsOnChange - emit events when a member's value changes
   Reflex::Trait::Observed - watch events emitted by a member object
   Reflex - helper functions and documentation
 

@@ -19,7 +19,7 @@ use Moose;
 extends 'Reflex::Object';
 use Ttl::Nand;
 use Reflex::Trait::Observed;
-use Reflex::Trait::Emitter;
+use Reflex::Trait::EmitsOnChange;
 
 has nand_r => (
 	isa     => 'Ttl::Nand',
@@ -38,13 +38,13 @@ has nand_s => (
 has q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Emitter'],
+	traits  => ['Reflex::Trait::EmitsOnChange'],
 );
 
 has not_q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Emitter'],
+	traits  => ['Reflex::Trait::EmitsOnChange'],
 );
 
 sub on_nand_s_out {

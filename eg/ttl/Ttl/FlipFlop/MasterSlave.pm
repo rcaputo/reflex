@@ -18,7 +18,7 @@ extends 'Reflex::Object';
 use Ttl::Latch::ClockedNandRS;
 use Ttl::Not;
 use Reflex::Trait::Observed;
-use Reflex::Trait::Emitter;
+use Reflex::Trait::EmitsOnChange;
 
 has cnrs1 => (
 	isa     => 'Ttl::Latch::ClockedNandRS',
@@ -54,19 +54,19 @@ sub BUILD {
 has clock => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Emitter'],
+	traits  => ['Reflex::Trait::EmitsOnChange'],
 );
 
 has q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Emitter'],
+	traits  => ['Reflex::Trait::EmitsOnChange'],
 );
 
 has not_q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Emitter'],
+	traits  => ['Reflex::Trait::EmitsOnChange'],
 );
 
 sub on_my_clock {

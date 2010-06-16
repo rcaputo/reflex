@@ -7,7 +7,7 @@ use Moose;
 extends 'Reflex::Object';
 use Ttl::FlipFlop::D;
 use Reflex::Trait::Observed;
-use Reflex::Trait::Emitter;
+use Reflex::Trait::EmitsOnChange;
 
 has dff => (
 	isa     => 'Ttl::FlipFlop::D',
@@ -19,13 +19,13 @@ has dff => (
 has q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Emitter'],
+	traits  => ['Reflex::Trait::EmitsOnChange'],
 );
 
 has not_q => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Emitter'],
+	traits  => ['Reflex::Trait::EmitsOnChange'],
 );
 
 sub on_dff_q {

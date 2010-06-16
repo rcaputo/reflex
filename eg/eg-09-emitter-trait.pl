@@ -12,10 +12,10 @@ use lib qw(../lib);
 	extends 'Reflex::Object';
 	use Reflex::Timer;
 	use Reflex::Trait::Observed;
-	use Reflex::Trait::Emitter;
+	use Reflex::Trait::EmitsOnChange;
 
 	has count   => (
-		traits    => ['Reflex::Trait::Emitter'],
+		traits    => ['Reflex::Trait::EmitsOnChange'],
 		isa       => 'Int',
 		is        => 'rw',
 		default   => 0,

@@ -21,7 +21,7 @@ extends 'Reflex::Object';
 use Ttl::TriAnd;
 use Ttl::Not;
 use Reflex::Trait::Observed;
-use Reflex::Trait::Emitter;
+use Reflex::Trait::EmitsOnChange;
 
 has tri_and => (
 	isa     => 'Ttl::TriAnd',
@@ -39,7 +39,7 @@ has not => (
 has out => (
 	isa     => 'Bool',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Emitter'],
+	traits  => ['Reflex::Trait::EmitsOnChange'],
 );
 
 sub BUILD {

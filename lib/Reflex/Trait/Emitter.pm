@@ -1,4 +1,4 @@
-package Reflex::Trait::Emitter;
+package Reflex::Trait::EmitsOnChange;
 use Moose::Role;
 use Scalar::Util qw(weaken);
 
@@ -78,8 +78,8 @@ has event => (
 	},
 );
 
-package Moose::Meta::Attribute::Custom::Trait::Reflex::Trait::Emitter;
-sub register_implementation { 'Reflex::Trait::Emitter' }
+package Moose::Meta::Attribute::Custom::Trait::Reflex::Trait::EmitsOnChange;
+sub register_implementation { 'Reflex::Trait::EmitsOnChange' }
 
 1;
 
@@ -87,7 +87,7 @@ __END__
 
 =head1 NAME
 
-Reflex::Trait::Emitter - Emit an event when an attribute's value changes.
+Reflex::Trait::EmitsOnChange - Emit an event when an attribute's value changes.
 
 =head1 SYNOPSIS
 
@@ -97,10 +97,10 @@ Reflex::Trait::Emitter - Emit an event when an attribute's value changes.
 	package Counter;
 	use Moose;
 	extends 'Reflex::Object';
-	use Reflex::Trait::Emitter;
+	use Reflex::Trait::EmitsOnChange;
 
 	has count   => (
-		traits    => ['Reflex::Trait::Emitter'],
+		traits    => ['Reflex::Trait::EmitsOnChange'],
 		isa       => 'Int',
 		is        => 'rw',
 		default   => 0,
@@ -108,8 +108,8 @@ Reflex::Trait::Emitter - Emit an event when an attribute's value changes.
 
 =head1 DESCRIPTION
 
-An attribute with the Reflex::Trait::Emitter trait emit an event on
-behalf of its object whenever its value changes.  The event will be
+An attribute with the Reflex::Trait::EmitsOnChange trait emit an event
+on behalf of its object whenever its value changes.  The event will be
 named after the attribute by default.  It will be accompanied by a
 "value" parameter, the value of which is the attribute's new value at
 the time of the change.
@@ -120,8 +120,8 @@ to emit "count" events.
 =head2 event
 
 The "default" option can be used to override the default event emitted
-by the Reflex::Trait::Emitter trait.  That default, by the way, is the
-name of the attribute.
+by the Reflex::Trait::EmitsOnChange trait.  That default, by the way,
+is the name of the attribute.
 
 =head2 setup
 
