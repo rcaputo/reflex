@@ -82,9 +82,9 @@ service from a POE component by posting an event.
   }
 
 App's constructor runs within its creator's session, which may not be
-the right one to send the event.  run_within_session() guarantees that
-Reflex::POE::Event is sent from the App, so that responses will reach
-the App later.
+the correct one to be sending the event.  run_within_session()
+guarantees that Reflex::POE::Event is sent from the App, so that
+responses will reach the App later.
 
 An optional context (or continuation) may be stored with the event.
 It will be returned to the callback as its "context" parameter.

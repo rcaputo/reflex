@@ -1,7 +1,7 @@
 package Reflex::Callbacks;
 
 # Reflex::Callbacks is a callback manager.  It encapsulates the
-# callbacks for an object.  Via send(), it maps event names to the
+# callbacks for an object.  Via deliver(), it maps event names to the
 # corresponding callbacks, then invokes them through the underlying
 # callback system.
 #
@@ -169,7 +169,7 @@ sub gather_cb {
 	return Reflex::Callbacks->new( callback_map => \%return );
 }
 
-sub send {
+sub deliver {
 	my ($self, $event, $arg) = @_;
 	$arg //= {};
 
@@ -411,20 +411,20 @@ parameters matching C</^on_/>.
 
 	sub run {
 		my $self = shift;
-		$self->cb()->send( event => {} );
+		$self->cb()->deliver( event => {} );
 	}
 
-=head1 send
+=head1 deliver
 
-send() is a method of Reflex::Callback, not a function.  It takes two
-parameters: the name of an event to send, and a hash reference
+deliver() is a method of Reflex::Callback, not a function.  It takes
+two parameters: the name of an event to deliver, and a hash reference
 containing named values to include with the event.
 
-send() finds the callback that corresponds to its event.  It then
+deliver() finds the callback that corresponds to its event.  It then
 delivers the event to that callback.  The callback must have been
 collected by gather_cb().
 
-See the example for gather_cb(), which also invokes send().
+See the example for gather_cb(), which also invokes deliver().
 
 =head1 SEE ALSO
 

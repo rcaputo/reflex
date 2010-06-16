@@ -694,7 +694,7 @@ may never need it.
 POE consumers often return responses to the sessions that made
 requests.  For Reflex objects to receive these responses, they must
 first send their requests from the right sessions.  call_gate() helps
-by ensuring this.
+by ensuring the proper session is active.
 
 call_gate() takes one required positional parameter: the name of the
 method calling call_gate().  Any other parameters are passed back to
