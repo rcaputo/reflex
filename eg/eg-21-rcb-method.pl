@@ -13,6 +13,8 @@ use warnings;
 use strict;
 use lib qw(../lib);
 
+use Test::More tests => 2;
+
 # Create a thing that will invoke callbacks.  This syntax uses
 # explicitly specified cb_method() callbacks.  There is no
 # nonambiguous implicit syntax at this time.  Suggestions are welcome.
@@ -21,7 +23,6 @@ use lib qw(../lib);
 	package Object;
 	use Moose;
 
-	use ExampleHelpers qw(eg_say);
 	use Reflex::Callbacks qw(cb_method);
 	use ThingWithCallbacks;
 
@@ -39,7 +40,7 @@ use lib qw(../lib);
 
 	sub handle_event {
 		my ($self, $arg) = @_;
-		eg_say("object handled event");
+		Test::More::pass("object handled event");
 	}
 
 	sub run_thing {
@@ -50,3 +51,5 @@ use lib qw(../lib);
 
 my $o = Object->new();
 $o->run_thing();
+
+pass("object ran to completion");

@@ -31,7 +31,8 @@ use warnings;
 use strict;
 use lib qw(../lib);
 
-use ExampleHelpers qw(eg_say);
+use Test::More tests => 4;
+
 use Reflex::Callbacks qw(cb_coderef);
 use ThingWithCallbacks;
 
@@ -39,7 +40,7 @@ use ThingWithCallbacks;
 # contextually specified coderef callbacks.
 
 my $thing_one = ThingWithCallbacks->new(
-	on_event => sub { eg_say("contextual callback invoked") },
+	on_event => sub { pass("contextual callback invoked") },
 );
 
 $thing_one->run();
@@ -48,7 +49,7 @@ $thing_one->run();
 # verbosity.
 
 my $thing_two = ThingWithCallbacks->new(
-	on_event => cb_coderef(sub { eg_say("explicit callback invoked") }),
+	on_event => cb_coderef(sub { pass("explicit callback invoked") }),
 );
 
 $thing_two->run();
@@ -56,9 +57,10 @@ $thing_two->run();
 # cb_coderef is prototyped so it can replace "sub".
 
 my $thing_three = ThingWithCallbacks->new(
-	on_event => cb_coderef { eg_say("explicit callback (no sub) invoked") },
+	on_event => cb_coderef { pass("explicit callback (no sub) invoked") },
 );
 
 $thing_three->run();
+pass("object ran to completion");
 
 exit;

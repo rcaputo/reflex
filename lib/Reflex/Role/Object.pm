@@ -243,6 +243,8 @@ sub BUILD {
 		}
 
 		# TODO - Who is the watcher?
+		# TODO - observe() takes multiple event/callback pairs.  We can
+		# combine them into a hash and call observe() once.
 		$self->observe($self, $1 => $value);
 		next CALLBACK;
 	}
@@ -255,9 +257,9 @@ sub BUILD {
 
 # Self is being observed.  Register the observation with self.
 sub observe {
-	my ($self, $observed, %args) = @_;
+	my ($self, $observed, %callbacks) = @_;
 
-	while (my ($event, $callback) = each %args) {
+	while (my ($event, $callback) = each %callbacks) {
 		$event =~ s/^on_//;
 
 		my $observation = {

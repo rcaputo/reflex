@@ -13,6 +13,8 @@ use warnings;
 use strict;
 use lib qw(../lib);
 
+use Test::More tests => 6;
+
 # Create a thing that will invoke callbacks.  This syntax uses
 # explicitly specified cb_class() callbacks and a scalar for the
 # methods list.  cb_method() would be slightly more efficient in this
@@ -25,7 +27,6 @@ use lib qw(../lib);
 	package ScalarHandlerClass;
 	use Moose;
 
-	use ExampleHelpers qw(eg_say);
 	use Reflex::Callbacks qw(cb_class);
 	use ThingWithCallbacks;
 
@@ -43,7 +44,7 @@ use lib qw(../lib);
 
 	sub event {
 		my ($self, $arg) = @_;
-		eg_say("$self - scalar class handled event");
+		Test::More::pass("$self - scalar class handled event");
 	}
 
 	sub run_thing {
@@ -55,6 +56,8 @@ use lib qw(../lib);
 my $sho = ScalarHandlerClass->new();
 $sho->run_thing();
 
+pass("$sho - scalar handler object ran to completion");
+
 # In this case, a class handles a list of callbacks.  Each callback
 # method is named after the event it handles.
 #
@@ -65,7 +68,6 @@ $sho->run_thing();
 	package ArrayHandlerClass;
 	use Moose;
 
-	use ExampleHelpers qw(eg_say);
 	use Reflex::Callbacks qw(cb_class);
 	use ThingWithCallbacks;
 
@@ -83,7 +85,7 @@ $sho->run_thing();
 
 	sub event {
 		my ($self, $arg) = @_;
-		eg_say("$self - array class handled event");
+		Test::More::pass("$self - array class handled event");
 	}
 
 	sub run_thing {
@@ -94,6 +96,8 @@ $sho->run_thing();
 
 my $aho = ArrayHandlerClass->new();
 $aho->run_thing();
+
+pass("$aho - array handler object ran to completion");
 
 # In this case, a class handles a hash of callbacks.  Hash keys are
 # event names, and the values are the corresponding handler method
@@ -106,7 +110,6 @@ $aho->run_thing();
 	package HashHandlerClass;
 	use Moose;
 
-	use ExampleHelpers qw(eg_say);
 	use Reflex::Callbacks qw(cb_class);
 	use ThingWithCallbacks;
 
@@ -124,7 +127,7 @@ $aho->run_thing();
 
 	sub handle_event {
 		my ($self, $arg) = @_;
-		eg_say("$self - hash class handled event");
+		Test::More::pass("$self - hash class handled event");
 	}
 
 	sub run_thing {
@@ -135,3 +138,7 @@ $aho->run_thing();
 
 my $hho = HashHandlerClass->new();
 $hho->run_thing();
+
+pass("$hho - hash handler object ran to completion");
+
+exit;

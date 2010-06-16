@@ -16,6 +16,8 @@ use warnings;
 use strict;
 use lib qw(../lib);
 
+use Test::More tests => 4;
+
 # Create a thing that will invoke callbacks.  cb_role() defines the
 # thing's role within the RoleHandlerObject.
 #
@@ -26,7 +28,6 @@ use lib qw(../lib);
 	package RoleHandlerObject;
 	use Moose;
 
-	use ExampleHelpers qw(eg_say);
 	use Reflex::Callbacks qw(cb_role);
 	use ThingWithCallbacks;
 
@@ -42,7 +43,7 @@ use lib qw(../lib);
 
 	sub on_thing_event {
 		my ($self, $arg) = @_;
-		eg_say("$self - role object handled event");
+		Test::More::pass("$self - role object handled event");
 	}
 
 	sub run_thing {
@@ -51,8 +52,10 @@ use lib qw(../lib);
 	}
 }
 
-my $sho = RoleHandlerObject->new();
-$sho->run_thing();
+my $rho = RoleHandlerObject->new();
+$rho->run_thing();
+
+pass("$rho - role handler object ran to completion");
 
 # This form invokes a class methods.
 
@@ -60,7 +63,6 @@ $sho->run_thing();
 	package RoleHandlerClass;
 	use Moose;
 
-	use ExampleHelpers qw(eg_say);
 	use Reflex::Callbacks qw(cb_role);
 	use ThingWithCallbacks;
 
@@ -76,7 +78,7 @@ $sho->run_thing();
 
 	sub on_thing_event {
 		my ($self, $arg) = @_;
-		eg_say("$self - role class handled event");
+		Test::More::pass("$self - role class handled event");
 	}
 
 	sub run_thing {
@@ -85,5 +87,7 @@ $sho->run_thing();
 	}
 }
 
-my $shc = RoleHandlerClass->new();
-$shc->run_thing();
+my $rhc = RoleHandlerClass->new();
+$rhc->run_thing();
+
+pass("$rhc - role handler class ran to completion");
