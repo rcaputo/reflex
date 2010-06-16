@@ -11,7 +11,7 @@
 
 use warnings;
 use strict;
-use lib qw(../lib);
+use lib qw(t/lib);
 
 use Test::More tests => 2;
 

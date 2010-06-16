@@ -9,7 +9,7 @@
 
 use warnings;
 use strict;
-use lib qw(../lib);
+use lib qw(t/lib);
 
 use Reflex::Timer;
 use Reflex::Callbacks qw(cb_coderef);
