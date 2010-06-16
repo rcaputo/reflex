@@ -185,7 +185,7 @@ promise.  This incomplte example comes from eg/eg-38-promise-client.pl:
 
 	$stream->put("Hello, world!\n");
 
-	my $event = $stream->wait();
+	my $event = $stream->next();
 	if ($event->{name} eq "data") {
 		print "Got echo response: $event->{arg}{data}";
 	}

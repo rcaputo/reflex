@@ -18,7 +18,7 @@ my $ticker = Reflex::Timer->new(
 my $connector = Reflex::Connector->new(remote_port => 12345);
 
 # Wait for the connection to finish.
-my $event = $connector->wait();
+my $event = $connector->next();
 
 # Failure?  Ok, bye.
 if ($event->{name} eq "failure") {
@@ -39,7 +39,7 @@ my $stream = Reflex::Stream->new(
 $stream->put("Hello, world!\n");
 
 # Handle a response.
-$event = $stream->wait();
+$event = $stream->next();
 if ($event->{name} eq "data") {
 	eg_say("Got echo response: $event->{arg}{data}");
 }

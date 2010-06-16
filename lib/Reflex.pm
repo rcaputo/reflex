@@ -102,7 +102,7 @@ warnings, strict, and base instead.  Reflex::Object provides emit().
 
 The next object uses Echoer.  It creates an Echoer and pings it to get
 started. It also reacts to "pong" events by pinging the Echoer again.
-Reflex::Trait::Observer implicitly observes the object in echoer(),
+Reflex::Trait::Observer implicitly watches the object in echoer(),
 mapping its "pong" event to the on_echoer_pong() method.
 
 	package Pinger;
@@ -181,8 +181,8 @@ Reflex::Timer used differently elsewhere.
 		auto_repeat => 1,
 	);
 
-	while (my $event = $t->wait()) {
-		eg_say("wait() returned an event (@$event)");
+	while (my $event = $t->next()) {
+		eg_say("next() returned an event (@$event)");
 	}
 
 =head1 BUNDLED CLASSES AND DOCUMENTATION INDEX
@@ -213,7 +213,7 @@ Reflex bundles a number of helpful base classes to get things started.
   Reflex::POE::Event - represents POE events in Reflex
   Reflex::POE::Postback - represents POE postbacks in Reflex
   Reflex::Trait::Emitter - emit events when a member's value changes
-  Reflex::Trait::Observer - observe events emitted by a member object
+  Reflex::Trait::Observer - watch events emitted by a member object
   Reflex - helper functions and documentation
 
 =head1 ASSISTANCE

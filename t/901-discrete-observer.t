@@ -8,13 +8,13 @@
 # another to watch for those events.  Receipt of those events is
 # verified, as well as natural program exit when all events are done.
 #
-# While verbose, the observe() syntax allows multiple objects to
+# While verbose, the watch() syntax allows multiple objects to
 # consume events from a single emitter.  Most other event systems only
 # allow one event consumer.
 #
-# In some cases, events can be lost if observe() is called after an
+# In some cases, events can be lost if watch() is called after an
 # event emitter is created.  However, this shouldn't happen if the
-# emitter and observation are created in the same basic block of code.
+# emitter and its watcher are created in the same basic block of code.
 # Under normal circumstances, events are not dispatched in the middle
 # of a basic block of code, so events cannot be lost there.
 #
@@ -43,13 +43,13 @@ ok( (defined $watcher), "started watcher object" );
 
 ### The watcher will now watch the timer for a little while.
 #
-# The watcher only exists so that observe() may be called.  A better
+# The watcher only exists so that watch() may be called.  A better
 # example would have "tick" handled by one of Reflex::Object's
 # methods.  eg-02-observed-new.pl doesn't use a watcher object since
-# no observe() method is called there.
+# no watch() method is called there.
 
 my $countdown = 3;
-$watcher->observe(
+$watcher->watch(
 	$timer,
 	tick => cb_coderef(
 		sub {

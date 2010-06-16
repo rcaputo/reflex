@@ -130,7 +130,7 @@ Reflex objects may also be used in condvar-like ways.  This excerpts
 from eg/eg-38-promise-client.pl in the distribution.
 
 	my $connector = Reflex::Connector->new(remote_port => 12345);
-	my $event = $connector->wait();
+	my $event = $connector->next();
 
 	if ($event->{name} eq "failure") {
 		eg_say("connection error $event->{arg}{errnum}: $event->{arg}{errstr}");

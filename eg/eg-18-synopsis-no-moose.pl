@@ -21,7 +21,7 @@ use lib qw(../lib);
 			auto_repeat => 1,
 		);
 
-		$self->observe($self->{ticker}, cb_role($self, "ticker"));
+		$self->watch($self->{ticker}, cb_role($self, "ticker"));
 	}
 
 	sub on_ticker_tick {

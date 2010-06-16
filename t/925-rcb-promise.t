@@ -54,7 +54,7 @@ my $promise;
 my $pt = PromiseThing->new( cb_promise(\$promise) );
 
 for (1..3) {
-	my $event = $promise->wait();
+	my $event = $promise->next();
 	last unless $event;
-	pass("wait($_) returned an event ($event->{name})");
+	pass("next($_) returned an event ($event->{name})");
 }

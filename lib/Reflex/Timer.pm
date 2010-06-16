@@ -77,7 +77,7 @@ __END__
 
 =head1 NAME
 
-Reflex::Timer - An object that observes the passage of time.
+Reflex::Timer - An object that watches the passage of time.
 
 =head1 SYNOPSIS
 
@@ -95,8 +95,8 @@ Reflex::Timer - An object that observes the passage of time.
 		auto_repeat => 1,
 	);
 
-	while (my $event = $t->wait()) {
-		print "wait() returned an event (@$event)\n";
+	while (my $event = $t->next()) {
+		print "next() returned an event (@$event)\n";
 	}
 
 =head1 DESCRIPTION

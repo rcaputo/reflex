@@ -15,7 +15,7 @@ has objects => (
 
 sub remember {
 	my ($self, $object) = @_;
-	$self->observe($object, stopped => cb_method($self, "cb_forget"));
+	$self->watch($object, stopped => cb_method($self, "cb_forget"));
 	$self->objects()->{$object} = $object;
 }
 

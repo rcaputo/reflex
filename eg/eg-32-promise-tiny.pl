@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 # This is pretty close to the final syntax.
-# TODO - Provide a way to wait() on multiple objects at once.
+# TODO - Provide a way to next() on multiple objects at once.
 # TODO - Clean out all previous promise-like examples.
 
 use warnings;
@@ -17,6 +17,6 @@ my $t = Reflex::Timer->new(
 	auto_repeat => 1,
 );
 
-while (my $event = $t->wait()) {
-	eg_say("wait() returned an event ($event->{name})");
+while (my $event = $t->next()) {
+	eg_say("next() returned an event ($event->{name})");
 }

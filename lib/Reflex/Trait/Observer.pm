@@ -29,7 +29,7 @@ has trigger => (
 
 			return unless defined $value;
 
-			$self->observe(
+			$self->watch(
 				$value,
 				cb_role(
 					$self,
@@ -41,7 +41,7 @@ has trigger => (
 	}
 );
 
-# Initializer seems to catch the observation from default.  Nifty!
+# Initializer seems to catch the interest from default.  Nifty!
 
 has initializer => (
 	is => 'ro',
@@ -50,7 +50,7 @@ has initializer => (
 		return sub {
 			my ($self, $value, $callback, $attr) = @_;
 			if (defined $value) {
-				$self->observe(
+				$self->watch(
 					$value,
 					cb_role(
 						$self,
@@ -84,7 +84,7 @@ has setup => (
 
 # TODO - Clearers don't invoke triggers, because clearing is different
 # from setting.  I would love to support $self->clear_thingy() with
-# the side-effect of unobserving the object, but I don't yet know how
+# the side-effect of ignoring the object, but I don't yet know how
 # to set an "after" method for a clearer that (a) has a dynamic name,
 # and (b) hasn't yet been defined.  I think I can do some meta magic
 # for (a), but (b) remains tough.
@@ -107,7 +107,7 @@ __END__
 
 =head1 NAME
 
-Reflex::Trait::Observer - Automatically observe Reflex objects.
+Reflex::Trait::Observer - Automatically watch Reflex objects.
 
 =head1 SYNOPSIS
 
@@ -124,12 +124,12 @@ Reflex::Trait::Observer - Automatically observe Reflex objects.
 =head1 DESCRIPTION
 
 Reflex::Trait::Observer allows one Reflex::Object to automatically
-observe other another it has stored in an attribute.  In the SYNOPSIS,
+watch other another it has stored in an attribute.  In the SYNOPSIS,
 storing a Reflex::Timer in the clock() attribute allows the owner to
-observe the timer's events.
+watch the timer's events.
 
 This trait is a bit of Moose-based syntactic sugar for
-Reflex::Object's more explict observe() and observe_role() methods.
+Reflex::Object's more explict watch() and watch_role() methods.
 
 =head2 setup
 
@@ -148,7 +148,7 @@ role-based callback convention.  For example, Reflex will look for an
 on_clock_tick() method to handle "tick" events from an object with the
 'clock" role.
 
-The "role" option allows roles to be set or overridden.  An observer
+The "role" option allows roles to be set or overridden.  A watcher
 attribute's name is its default role.
 
 =head1 CAVEATS

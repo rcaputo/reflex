@@ -106,7 +106,7 @@ __END__
 
 =head1 NAME
 
-Reflex::Signal - Generic signal observer and base class for specific ones.
+Reflex::Signal - Generic signal watcher and base class for specific ones.
 
 =head1 SYNOPSIS
 
@@ -123,16 +123,16 @@ As a callback:
 As a promise:
 
 	my $usr2 = Reflex::Signal->new( name => "USR2" );
-	while ($usr2->wait()) {
+	while ($usr2->next()) {
 		print "Got SIGUSR2.\n";
 	}
 
-May also be used with observers, and Reflex::Trait::Observer, but
+May also be used with watchers, and Reflex::Trait::Observer, but
 those use cases aren't shown here.
 
 =head1 DESCRIPTION
 
-Reflex::Signal is a general signal observer.  It may be used to notify
+Reflex::Signal is a general signal watcher.  It may be used to notify
 programs when they are sent a signal via kill.
 
 =head2 Public Attributes

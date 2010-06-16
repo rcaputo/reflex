@@ -6,8 +6,8 @@ use Scalar::Util qw(weaken blessed);
 use Carp qw(croak);
 
 END {
-	#warn join "; ", keys %observers;
-	#warn join "; ", keys %observations;
+	#warn join "; ", keys %watchers;
+	#warn join "; ", keys %watchings;
 }
 
 our @CARP_NOT = (__PACKAGE__);
@@ -129,7 +129,7 @@ has session_id => (
 );
 
 # What's watching me.
-# watchers()->{$observer} = \@callbacks
+# watchers()->{$watcher} = \@callbacks
 has watchers => (
 	isa     => 'HashRef',
 	is      => 'rw',
@@ -137,7 +137,7 @@ has watchers => (
 );
 
 # What's watching me.
-# watchers_by_event()->{$event}->{$observer} = \@callbacks
+# watchers_by_event()->{$event}->{$watcher} = \@callbacks
 has watchers_by_event => (
 	isa     => 'HashRef',
 	is      => 'rw',
@@ -145,7 +145,7 @@ has watchers_by_event => (
 );
 
 # What I'm watching.
-# watched_objects()->{$observed}->{$event} = \@observations
+# watched_objects()->{$watched}->{$event} = \@interests
 has watched_object_events => (
 	isa     => 'HashRef',
 	is      => 'rw',
@@ -187,7 +187,7 @@ has emits_seen => (
 sub BUILD {
 	my ($self, $args) = @_;
 
-	# Set up all emitters and observers.
+	# Set up all emitters and watchers.
 
 	foreach my $setup (
 		grep {
@@ -238,14 +238,14 @@ sub BUILD {
 
 		# There is an object, so we have a watcher.
 		if ($value->object()) {
-			$value->object()->observe($self, $1 => $value);
+			$value->object()->watch($self, $1 => $value);
 			next CALLBACK;
 		}
 
 		# TODO - Who is the watcher?
-		# TODO - observe() takes multiple event/callback pairs.  We can
-		# combine them into a hash and call observe() once.
-		$self->observe($self, $1 => $value);
+		# TODO - watch() takes multiple event/callback pairs.  We can
+		# combine them into a hash and call watch() once.
+		$self->watch($self, $1 => $value);
 		next CALLBACK;
 	}
 
@@ -255,41 +255,41 @@ sub BUILD {
 
 # TODO - Does Moose have sugar for passing named parameters?
 
-# Self is being observed.  Register the observation with self.
-sub observe {
-	my ($self, $observed, %callbacks) = @_;
+# Self is watching something.  Register the interest with self.
+sub watch {
+	my ($self, $watched, %callbacks) = @_;
 
 	while (my ($event, $callback) = each %callbacks) {
 		$event =~ s/^on_//;
 
-		my $observation = {
+		my $interest = {
 			callback  => $callback,
 			event     => $event,
-			observed  => $observed,
+			watched   => $watched,
 		};
 
-		weaken $observation->{observed};
-		unless (exists $self->watched_objects()->{$observed}) {
-			$self->watched_objects()->{$observed} = $observed;
-			weaken $self->watched_objects()->{$observed};
+		weaken $interest->{watched};
+		unless (exists $self->watched_objects()->{$watched}) {
+			$self->watched_objects()->{$watched} = $watched;
+			weaken $self->watched_objects()->{$watched};
 
 			# Keep this object's session alive.
 			$POE::Kernel::poe_kernel->refcount_increment($self->session_id, "in_use");
 		}
 
-		push @{$self->watched_object_events()->{$observed}->{$event}}, $observation;
+		push @{$self->watched_object_events()->{$watched}->{$event}}, $interest;
 
-		# Tell what I'm watching that it's being observed.
+		# Tell what I'm watching that it's being watched.
 
-		$observed->_is_observed($self, $event, $callback);
+		$watched->_is_watched($self, $event, $callback);
 	}
 
 	undef;
 }
 
-# Self is no longer being observed.  Remove observations from self.
-sub _stop_observers {
-	my ($self, $observer, $events) = @_;
+# Self is no longer being watched.  Remove interest from self.
+sub _stop_watchers {
+	my ($self, $watcher, $events) = @_;
 
 	my @events = @{$events || []};
 
@@ -303,30 +303,30 @@ sub _stop_observers {
 	}
 
 	foreach my $event (@events) {
-		delete $self->watchers_by_event()->{$event}->{$observer};
+		delete $self->watchers_by_event()->{$event}->{$watcher};
 		delete $self->watchers_by_event()->{$event} unless (
 			scalar keys %{$self->watchers_by_event()->{$event}}
 		);
-		pop @{$self->watchers()->{$observer}};
+		pop @{$self->watchers()->{$watcher}};
 	}
 
-	delete $self->watchers()->{$observer} unless (
-		@{$self->watchers()->{$observer}}
+	delete $self->watchers()->{$watcher} unless (
+		@{$self->watchers()->{$watcher}}
 	);
 }
 
-sub _is_observed {
-	my ($self, $observer, $event, $callback) = @_;
+sub _is_watched {
+	my ($self, $watcher, $event, $callback) = @_;
 
-	my $observation = {
+	my $interest = {
 		callback  => $callback,
 		event     => $event,
-		observer  => $observer,
+		watcher   => $watcher ,
 	};
-	weaken $observation->{observer};
+	weaken $interest->{watcher};
 
-	push @{$self->watchers_by_event()->{$event}->{$observer}}, $observation;
-	push @{$self->watchers()->{$observer}}, $observation;
+	push @{$self->watchers_by_event()->{$event}->{$watcher}}, $interest;
+	push @{$self->watchers()->{$watcher}}, $interest;
 }
 
 sub emit {
@@ -378,7 +378,7 @@ sub emit {
 		return;
 	}
 
-	# This event isn't observed.
+	# This event isn't watched.
 
 	my $deliver_event = $event;
 	unless (exists $self->watchers_by_event()->{$deliver_event}) {
@@ -392,11 +392,11 @@ sub emit {
 		# Fall through.
 	}
 
-	# This event is observed.  Broadcast it to observers.
+	# This event is watched.  Broadcast it to watchers.
 	# TODO - Accessor calls are expensive.  Optimize them away.
 
 	while (
-		my ($observer, $callbacks) = each %{
+		my ($watcher, $callbacks) = each %{
 			$self->watchers_by_event()->{$deliver_event}
 		}
 	) {
@@ -406,7 +406,7 @@ sub emit {
 			# Same session.  Just deliver it.
 			# TODO - Break recursive callbacks?
 			if (
-				$callback_rec->{observer}->session_id() eq
+				$callback_rec->{watcher}->session_id() eq
 				$POE::Kernel::poe_kernel->get_active_session()->ID
 			) {
 				$callback->deliver($event, $callback_args);
@@ -415,9 +415,9 @@ sub emit {
 
 			# Different session.  Post it through.
 			$poe_kernel->post(
-				$callback_rec->{observer}->session_id(), 'deliver_callback',
+				$callback_rec->{watcher}->session_id(), 'deliver_callback',
 				$callback, $callback_args,
-				$callback_rec->{observer}, $self, # keep objects alive a bit
+				$callback_rec->{watcher}, $self, # keep objects alive a bit
 			);
 		}
 	}
@@ -455,28 +455,28 @@ sub check_args {
 }
 
 # An object is demolished.
-# The filehash should destroy everything it observes.
-# All observations of this object must be manually demolished.
+# The filehash should destroy everything it watches.
+# All interests of this object must be manually demolished.
 
 sub _shutdown {
 	my $self = shift;
 
 	# Anything that was watching us, no longer is.
 
-	my %observers = (
-		map { $_->{observer} => $_->{observer} }
+	my %watchers = (
+		map { $_->{watcher} => $_->{watcher} }
 		map { @$_ }
 		values %{$self->watchers()}
 	);
 
-	foreach my $observer (values %observers) {
-		$observer->ignore($self);
+	foreach my $watcher (values %watchers) {
+		$watcher->ignore($self);
 	}
 
-	# Anything we were observing, no longer is being.
+	# Anything we were watching, no longer is being.
 
-	foreach my $observed (values %{$self->watched_objects()}) {
-		$self->ignore($observed);
+	foreach my $watched (values %{$self->watched_objects()}) {
+		$self->ignore($watched);
 	}
 }
 
@@ -486,26 +486,26 @@ sub DEMOLISH {
 }
 
 sub ignore {
-	my ($self, $observed, @events) = @_;
+	my ($self, $watched, @events) = @_;
 
-	croak "ignore requires at least an object" unless defined $observed;
+	croak "ignore requires at least an object" unless defined $watched;
 
 	if (@events) {
-		delete @{$self->watched_object_events()->{$observed}}{@events};
-		unless (scalar keys %{$self->watched_object_events()->{$observed}}) {
-			delete $self->watched_object_events()->{$observed};
-			delete $self->watched_objects()->{$observed};
+		delete @{$self->watched_object_events()->{$watched}}{@events};
+		unless (scalar keys %{$self->watched_object_events()->{$watched}}) {
+			delete $self->watched_object_events()->{$watched};
+			delete $self->watched_objects()->{$watched};
 
 			# Decrement the session's use count.
 			$POE::Kernel::poe_kernel->refcount_decrement($self->session_id, "in_use");
 		}
-		$observed->_stop_observers($self, \@events);
+		$watched->_stop_watchers($self, \@events);
 	}
 	else {
-		use Carp qw(cluck); cluck "whaaaa" unless defined $observed;
-		delete $self->watched_object_events()->{$observed};
-		delete $self->watched_objects()->{$observed};
-		$observed->_stop_observers($self);
+		use Carp qw(cluck); cluck "whaaaa" unless defined $watched;
+		delete $self->watched_object_events()->{$watched};
+		delete $self->watched_objects()->{$watched};
+		$watched->_stop_watchers($self);
 
 		# Decrement the session's use count.
 		$POE::Kernel::poe_kernel->refcount_decrement($self->session_id, "in_use");
@@ -554,11 +554,11 @@ sub run_all {
 	POE::Kernel->run();
 }
 
-sub wait {
+sub next {
 	my $self = shift;
 
 	$self->promise() || $self->promise(Reflex::Callback::Promise->new());
-	return $self->promise()->wait();
+	return $self->promise()->next();
 }
 
 1;
@@ -615,19 +615,19 @@ L<Reflex::POE::Wheel::Run>.
 		);
 	}
 
-=head2 observe
+=head2 watch
 
-observe() allows one object (the observer) to register interest in
+watch() allows one object (the watcher) to register interest in
 events emitted by another.  It takes three named parameters:
-"observed" must contain a Reflex object (either a Reflex::Role::Object
+"watched" must contain a Reflex object (either a Reflex::Role::Object
 consumer, or a Reflex::Object subclass).  "event" contains the name of
-an event that the observed object emits.  Finally, "callback" contains
+an event that the watched object emits.  Finally, "callback" contains
 a Reflex::Callback that will be invoked when the event occurs.
 
 	use Reflex::Callbacks(cb_method);
 
-	$self->observe(
-		observed  => $an_object_maybe_myself,
+	$self->watch(
+		watched   => $an_object_maybe_myself,
 		event     => "occurrence",
 		callback  => cb_method($self, "method_name"),
 	);
@@ -747,16 +747,16 @@ where to send its responses:
 		)
 	}
 
-=head2 wait
+=head2 next
 
-Wait for an object to emit() a promised event.  Requires the object to
+Wait for the next event promised by an object.  Requires the object to
 emit an event that isn't already explicitly handled.  All Reflex
-objects will run in the background while wait() blocks.
+objects will run in the background while next() blocks.
 
-wait() returns the next event emitted by an object.  Objects cease to
+next() returns the next event emitted by an object.  Objects cease to
 run while your code processes the event, so be quick about it.
 
-Here's most of eg/eg-32-promise-tiny.pl, which shows how to wait() on
+Here's most of eg/eg-32-promise-tiny.pl, which shows how to next() on
 events from a Reflex::Timer.
 
 	use Reflex::Timer;
@@ -766,8 +766,8 @@ events from a Reflex::Timer.
 		auto_repeat => 1,
 	);
 
-	while (my $event = $t->wait()) {
-		print "wait() returned event '$event->{name}'...\n";
+	while (my $event = $t->next()) {
+		print "next() returned event '$event->{name}'...\n";
 	}
 
 It's tempting to rename this method next().
@@ -775,10 +775,10 @@ It's tempting to rename this method next().
 =head2 run_all
 
 Run all active Reflex objects until they destruct.  This will not
-return discrete events, like wait() does.  It will not return at all
+return discrete events, like next() does.  It will not return at all
 before the program is done.  It returns no meaningful value yet.
 
-run_all() is useful when you don't care to wait() on objects
+run_all() is useful when you don't care to next() on objects
 individually.  You just want the program to run 'til it's done.
 
 =head1 EXAMPLES

@@ -16,6 +16,6 @@ my $usr1 = Reflex::Signal->new(
 );
 
 my $usr2 = Reflex::Signal->new( name => "USR2" );
-while ($usr2->wait()) {
+while ($usr2->next()) {
 	eg_say("Got SIGUSR2.");
 }

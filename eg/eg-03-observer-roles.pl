@@ -10,8 +10,8 @@
 # "waitron".  It emits "tick" events that are handled by the watcher's
 # on_waitron_tick() method.
 #
-# An object may observe another in more than one role.  In this test
-# case, the Reflex::Timer is also observed in the "waitroff" role.
+# An object may watch another in more than one role.  In this test
+# case, the Reflex::Timer is also watched in the "waitroff" role.
 # The on_waitroff_tick() method is also invoked.
 
 use warnings;
@@ -51,8 +51,8 @@ use Test::More tests => 10;
 		ok( (defined $self->timer()), "started timer object in waitron role" );
 
 		# It's possible to mix and match.
-		pass("also observing timer as the waitroff role");
-		$self->observe($self->timer() => cb_role($self, "waitroff"));
+		pass("also watching timer as the waitroff role");
+		$self->watch($self->timer() => cb_role($self, "waitroff"));
 	}
 
 	my $countdown = 3;

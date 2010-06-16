@@ -1,8 +1,8 @@
 #!/usr/bin/env perl
 
 # This test attaches an event emitter to its watcher at the time the
-# emitter is created.  This is more concise than discrete observe()
-# calls, and it can be combined with observe() to support multiple
+# emitter is created.  This is more concise than discrete watch()
+# calls, and it can be combined with watch() to support multiple
 # event consumers per emitter.
 #
 # Moose provides opportunities for more concise APIs, as we'll see.
@@ -18,8 +18,8 @@ use Test::More tests => 5;
 
 ### Create a timer with callbacks.
 #
-# We don't need a discrete observer since we're not explicitly calling
-# observe() on anything.
+# We don't need a discrete watcher since we're not explicitly calling
+# watch() on anything.
 
 my $countdown = 3;
 my $timer;

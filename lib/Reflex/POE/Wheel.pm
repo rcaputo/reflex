@@ -109,7 +109,7 @@ L<Reflex::POE::Wheel::Run> may serve as an example.
 =head1 DESCRIPTION
 
 Reflex::POE::Wheel is a base class for Reflex objects that wrap and
-observe POE::Wheel objects.  Subclasses define a handful of methods
+watch POE::Wheel objects.  Subclasses define a handful of methods
 that describe the wheels they wrap.  Reflex::POE::Wheel will use the
 configuration to validate constructor parameters, map wheel events to
 Reflex events, and map positional callback parameters to named ones.

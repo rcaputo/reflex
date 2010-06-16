@@ -15,7 +15,7 @@ sub deliver {
 	push @{$self->queue()}, { name => $event, arg => $arg };
 }
 
-sub wait {
+sub next {
 	my $self = shift;
 
 	my $queue = $self->queue();
@@ -46,7 +46,7 @@ Used within Reflex:
 		auto_repeat => 1,
 	);
 
-	while (my $event = $pt->wait()) {
+	while (my $event = $pt->next()) {
 		eg_say("promise timer returned an event (@$event)");
 	}
 
@@ -57,7 +57,7 @@ Low-level usage:
 	my $cb = Reflex::Callback::Promise->new();
 	$cb->deliver( greet => { name => "world" } );
 
-	my $event = $cb->wait();
+	my $event = $cb->next();
 	print "event '$event->{name}': hello, $event->{arg}{name}\n";
 
 =head1 DESCRIPTION
@@ -71,16 +71,16 @@ will be used instead of raw Reflex::Callback::Promise objects.
 
 Reflex::Callback::Promise's constructor takes no parameters.  It
 creates a promise queue that is populated by deliver() and drained by
-wait().  Furthermore, wait() will block as necessary until it can
+next().  Furthermore, next() will block as necessary until it can
 return an event.  This requires the help of some form of concurrency,
 currently hardcoded to use POE.
 
 A future version may delegate the POE dependency to a subclass.
 
-=head2 wait
+=head2 next
 
-Reflex::Callback::Promise's wait() method retrieves the next pending
-event held in the object's queue.  If the queue is empty, wait() will
+Reflex::Callback::Promise's next() method retrieves the next pending
+event held in the object's queue.  If the queue is empty, next() will
 dispatch other events until some asynchronous code enqueues a new event
 in the promise's queue.
 
