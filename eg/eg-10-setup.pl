@@ -4,14 +4,14 @@ use warnings;
 use strict;
 use lib qw(../lib);
 
-# Exercise the new "setup" option for Emitter and Observer traits.
+# Exercise the new "setup" option for Emitter and Observed traits.
 
 {
 	package Counter;
 	use Moose;
 	extends 'Reflex::Object';
 	use Reflex::Timer;
-	use Reflex::Trait::Observer;
+	use Reflex::Trait::Observed;
 	use Reflex::Trait::Emitter;
 
 	has count   => (
@@ -22,7 +22,7 @@ use lib qw(../lib);
 	);
 
 	has ticker  => (
-		traits    => ['Reflex::Trait::Observer'],
+		traits    => ['Reflex::Trait::Observed'],
 		isa       => 'Reflex::Timer',
 		is        => 'rw',
 		setup     => sub {
@@ -42,7 +42,7 @@ use lib qw(../lib);
 	extends 'Reflex::Object';
 
 	has counter => (
-		traits  => ['Reflex::Trait::Observer'],
+		traits  => ['Reflex::Trait::Observed'],
 		isa     => 'Counter|Undef',
 		is      => 'rw',
 		setup   => sub { Counter->new() },

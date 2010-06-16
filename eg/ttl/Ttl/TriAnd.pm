@@ -20,20 +20,20 @@ package Ttl::TriAnd;
 use Moose;
 extends 'Reflex::Object';
 use Ttl::And;
-use Reflex::Trait::Observer;
+use Reflex::Trait::Observed;
 use Reflex::Trait::Emitter;
 
 has and_ab => (
   isa     => 'Ttl::And',
   is      => 'rw',
-  traits  => ['Reflex::Trait::Observer'],
+  traits  => ['Reflex::Trait::Observed'],
   handles => [qw(a b)],
 );
 
 has and_c => (
   isa     => 'Ttl::And',
   is      => 'rw',
-  traits  => ['Reflex::Trait::Observer'],
+  traits  => ['Reflex::Trait::Observed'],
   handles => { c => 'b' },
 );
 

@@ -17,7 +17,7 @@ use lib qw(../lib);
 	has handle => (
 		isa     => 'Reflex::Handle|Undef',
 		is      => 'rw',
-		traits  => ['Reflex::Trait::Observer'],
+		traits  => ['Reflex::Trait::Observed'],
 		role    => 'remote',
 	);
 

@@ -11,7 +11,7 @@ use lib qw(lib);
 	use Ttl::FlipFlop::T;
 	use Ttl::HexDecoder;
 	use Reflex::Trait::Emitter;
-	use Reflex::Trait::Observer;
+	use Reflex::Trait::Observed;
 
 	# Create a four-bit counter using T flip-flops.
 	# The counter schematic comes from Don Lancaster's _TTL Cookbook_.
@@ -20,32 +20,32 @@ use lib qw(lib);
 	has t1 => (
 		isa     => 'Ttl::FlipFlop::T',
 		is      => 'rw',
-		traits  => ['Reflex::Trait::Observer'],
+		traits  => ['Reflex::Trait::Observed'],
 		handles => ['clock'],
 	);
 
 	has t2 => (
 		isa     => 'Ttl::FlipFlop::T',
 		is      => 'rw',
-		traits  => ['Reflex::Trait::Observer'],
+		traits  => ['Reflex::Trait::Observed'],
 	);
 
 	has t4 => (
 		isa     => 'Ttl::FlipFlop::T',
 		is      => 'rw',
-		traits  => ['Reflex::Trait::Observer'],
+		traits  => ['Reflex::Trait::Observed'],
 	);
 
 	has t8 => (
 		isa     => 'Ttl::FlipFlop::T',
 		is      => 'rw',
-		traits  => ['Reflex::Trait::Observer'],
+		traits  => ['Reflex::Trait::Observed'],
 	);
 
 	has decoder => (
 		isa     => 'Ttl::HexDecoder',
 		is      => 'rw',
-		traits  => ['Reflex::Trait::Observer'],
+		traits  => ['Reflex::Trait::Observed'],
 	);
 
 	has out => (
@@ -110,13 +110,13 @@ use lib qw(lib);
 	has counter => (
 		isa     => 'Counter',
 		is      => 'rw',
-		traits  => ['Reflex::Trait::Observer'],
+		traits  => ['Reflex::Trait::Observed'],
 	);
 
 	has clock => (
 		isa     => 'Reflex::Timer',
 		is      => 'rw',
-		traits  => ['Reflex::Trait::Observer'],
+		traits  => ['Reflex::Trait::Observed'],
 	);
 
 	sub BUILD {

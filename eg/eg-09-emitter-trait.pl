@@ -11,7 +11,7 @@ use lib qw(../lib);
 	use Moose;
 	extends 'Reflex::Object';
 	use Reflex::Timer;
-	use Reflex::Trait::Observer;
+	use Reflex::Trait::Observed;
 	use Reflex::Trait::Emitter;
 
 	has count   => (
@@ -22,7 +22,7 @@ use lib qw(../lib);
 	);
 
 	has ticker  => (
-		traits    => ['Reflex::Trait::Observer'],
+		traits    => ['Reflex::Trait::Observed'],
 		isa       => 'Reflex::Timer|Undef',
 		is        => 'rw',
 	);
@@ -50,7 +50,7 @@ use lib qw(../lib);
 	extends 'Reflex::Object';
 
 	has counter => (
-		traits  => ['Reflex::Trait::Observer'],
+		traits  => ['Reflex::Trait::Observed'],
 		isa     => 'Counter',
 		is      => 'rw',
 	);

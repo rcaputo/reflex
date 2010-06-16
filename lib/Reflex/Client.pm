@@ -19,7 +19,7 @@ has protocol => (
 has connection => (
 	is      => 'rw',
 	isa     => 'Maybe[Reflex::Stream]',
-	traits  => ['Reflex::Trait::Observer'],
+	traits  => ['Reflex::Trait::Observed'],
 	# Maps $self->put() to $self->connection()->put().
 	# TODO - Would be nice to have something like this for outbout
 	# events.  See on_connection_data() later in this module for more.

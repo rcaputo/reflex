@@ -58,7 +58,7 @@ Use it as a helper.
 	has peer => (
 		isa     => 'Reflex::UdpPeer|Undef',
 		is      => 'rw',
-		traits  => ['Reflex::Trait::Observer'],
+		traits  => ['Reflex::Trait::Observed'],
 		setup   => sub {
 			my $self = shift;
 			Reflex::UdpPeer->new(port => $self->port());

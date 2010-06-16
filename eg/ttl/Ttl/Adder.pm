@@ -52,31 +52,31 @@ has cin => (
 has xor_ab => (
   isa     => 'Ttl::Xor',
   is      => 'rw',
-  traits  => ['Reflex::Trait::Observer'],
+  traits  => ['Reflex::Trait::Observed'],
 );
 
 has xor_cin => (
   isa     => 'Ttl::Xor',
   is      => 'rw',
-  traits  => ['Reflex::Trait::Observer'],
+  traits  => ['Reflex::Trait::Observed'],
 );
 
 has and_ab => (
   isa     => 'Ttl::And',
   is      => 'rw',
-  traits  => ['Reflex::Trait::Observer'],
+  traits  => ['Reflex::Trait::Observed'],
 );
 
 has and_cin => (
   isa     => 'Ttl::And',
   is      => 'rw',
-  traits  => ['Reflex::Trait::Observer'],
+  traits  => ['Reflex::Trait::Observed'],
 );
 
 has or_cout => (
   isa     => 'Ttl::Or',
   is      => 'rw',
-  traits  => ['Reflex::Trait::Observer'],
+  traits  => ['Reflex::Trait::Observed'],
 );
 
 has sum => (

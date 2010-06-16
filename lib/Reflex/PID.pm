@@ -47,7 +47,7 @@ Reflex::PID - Observe the exit of a subprocess by its SIGCHLD signal.
 	has sigchild_watcher => (
 		isa    => 'Reflex::PID|Undef',
 		is     => 'rw',
-		traits => ['Reflex::Trait::Observer'],
+		traits => ['Reflex::Trait::Observed'],
 		role   => 'sigchld',
 	);
 

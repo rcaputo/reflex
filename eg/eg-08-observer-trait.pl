@@ -12,10 +12,10 @@ use lib qw(../lib);
 	use Moose;
 	extends 'Reflex::Object';
 	use Reflex::POE::Wheel::Run;
-	use Reflex::Trait::Observer;
+	use Reflex::Trait::Observed;
 
 	has child => (
-		traits  => ['Reflex::Trait::Observer'],
+		traits  => ['Reflex::Trait::Observed'],
 		isa     => 'Maybe[Reflex::POE::Wheel::Run]',
 		is      => 'rw',
 	);

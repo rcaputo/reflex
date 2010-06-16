@@ -18,20 +18,20 @@ package Ttl::Latch::NorRS;
 use Moose;
 extends 'Reflex::Object';
 use Ttl::Nor;
-use Reflex::Trait::Observer;
+use Reflex::Trait::Observed;
 use Reflex::Trait::Emitter;
 
 has nor_r => (
 	isa     => 'Ttl::Nor',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Observer'],
+	traits  => ['Reflex::Trait::Observed'],
 	handles => { r => 'a' },
 );
 
 has nor_s => (
 	isa     => 'Ttl::Nor',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Observer'],
+	traits  => ['Reflex::Trait::Observed'],
 	handles => { s => 'b' },
 );
 

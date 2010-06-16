@@ -20,20 +20,20 @@ use Moose;
 extends 'Reflex::Object';
 use Ttl::TriAnd;
 use Ttl::Not;
-use Reflex::Trait::Observer;
+use Reflex::Trait::Observed;
 use Reflex::Trait::Emitter;
 
 has tri_and => (
 	isa     => 'Ttl::TriAnd',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Observer'],
+	traits  => ['Reflex::Trait::Observed'],
 	handles => [qw(a b c)],
 );
 
 has not => (
   isa     => 'Ttl::Not',
   is      => 'rw',
-  traits  => ['Reflex::Trait::Observer'],
+  traits  => ['Reflex::Trait::Observed'],
 );
 
 has out => (

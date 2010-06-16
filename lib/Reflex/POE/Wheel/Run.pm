@@ -86,7 +86,7 @@ use Reflex::PID;
 has sigchild_watcher => (
 	isa    => 'Reflex::PID|Undef',
 	is     => 'rw',
-	traits => ['Reflex::Trait::Observer'],
+	traits => ['Reflex::Trait::Observed'],
 	role   => 'sigchld',
 );
 
@@ -128,7 +128,7 @@ eg-08-observer-trait.pl in the distribution's eg directory for longer
 but fully executable ones.
 
 	has child => (
-		traits  => ['Reflex::Trait::Observer'],
+		traits  => ['Reflex::Trait::Observed'],
 		isa     => 'Reflex::POE::Wheel::Run|Undef',
 		is      => 'rw',
 	);

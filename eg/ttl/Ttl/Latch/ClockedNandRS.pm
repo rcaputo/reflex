@@ -17,20 +17,20 @@ use Moose;
 extends 'Reflex::Object';
 use Ttl::Nand;
 use Ttl::Latch::NandRS;
-use Reflex::Trait::Observer;
+use Reflex::Trait::Observed;
 use Reflex::Trait::Emitter;
 
 has nand_not_r => (
 	isa     => 'Ttl::Nand',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Observer'],
+	traits  => ['Reflex::Trait::Observed'],
 	handles => { not_r => 'b' },
 );
 
 has nand_s => (
 	isa     => 'Ttl::Nand',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Observer'],
+	traits  => ['Reflex::Trait::Observed'],
 	handles => { s => 'a' },
 );
 
@@ -49,7 +49,7 @@ sub on_my_clk {
 has latch => (
 	isa     => 'Ttl::Latch::NandRS',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Observer'],
+	traits  => ['Reflex::Trait::Observed'],
 );
 
 sub BUILD {

@@ -23,7 +23,7 @@ use lib qw(../lib);
 		is      => 'ro',
 		isa     => 'Echoer',
 		default => sub { Echoer->new() },
-		traits  => ['Reflex::Trait::Observer'],
+		traits  => ['Reflex::Trait::Observed'],
 	);
 
 	sub BUILD {

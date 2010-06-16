@@ -14,7 +14,7 @@ use lib qw(../lib);
 		isa     => 'Reflex::Timer',
 		is      => 'rw',
 		setup   => { interval => 1, auto_repeat => 1 },
-		traits  => [ 'Reflex::Trait::Observer' ],
+		traits  => [ 'Reflex::Trait::Observed' ],
 	);
 
 	sub on_ticker_tick {

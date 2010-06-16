@@ -56,7 +56,7 @@ Reflex - Class library for flexible, reactive programs.
 			isa     => 'Reflex::Timer',
 			is      => 'rw',
 			setup   => { interval => 1, auto_repeat => 1 },
-			traits  => [ 'Reflex::Trait::Observer' ],
+			traits  => [ 'Reflex::Trait::Observed' ],
 		);
 
 		sub on_ticker_tick {
@@ -102,7 +102,7 @@ warnings, strict, and base instead.  Reflex::Object provides emit().
 
 The next object uses Echoer.  It creates an Echoer and pings it to get
 started. It also reacts to "pong" events by pinging the Echoer again.
-Reflex::Trait::Observer implicitly watches the object in echoer(),
+Reflex::Trait::Observed implicitly watches the object in echoer(),
 mapping its "pong" event to the on_echoer_pong() method.
 
 	package Pinger;
@@ -113,7 +113,7 @@ mapping its "pong" event to the on_echoer_pong() method.
 		is      => 'ro',
 		isa     => 'Echoer',
 		default => sub { Echoer->new() },
-		traits  => ['Reflex::Trait::Observer'],
+		traits  => ['Reflex::Trait::Observed'],
 	);
 
 	sub BUILD {
@@ -213,7 +213,7 @@ Reflex bundles a number of helpful base classes to get things started.
   Reflex::POE::Event - represents POE events in Reflex
   Reflex::POE::Postback - represents POE postbacks in Reflex
   Reflex::Trait::Emitter - emit events when a member's value changes
-  Reflex::Trait::Observer - watch events emitted by a member object
+  Reflex::Trait::Observed - watch events emitted by a member object
   Reflex - helper functions and documentation
 
 =head1 ASSISTANCE

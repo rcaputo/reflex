@@ -141,7 +141,7 @@ It will be deprecated if default can be made to work instead.
 =head1 SEE ALSO
 
 L<Reflex>
-L<Reflex::Trait::Observer>
+L<Reflex::Trait::Observed>
 
 L<Reflex/ACKNOWLEDGEMENTS>
 L<Reflex/ASSISTANCE>

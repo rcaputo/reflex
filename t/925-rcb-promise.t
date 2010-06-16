@@ -32,7 +32,7 @@ use Test::More tests => 3;
 		isa     => 'Reflex::Timer',
 		is      => 'rw',
 		setup   => { interval => 1, auto_repeat => 1 },
-		traits  => [ 'Reflex::Trait::Observer' ],
+		traits  => [ 'Reflex::Trait::Observed' ],
 	);
 
 	has cb => ( is => 'rw', isa => 'Reflex::Callbacks' );

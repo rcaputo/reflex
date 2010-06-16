@@ -17,26 +17,26 @@ use Moose;
 extends 'Reflex::Object';
 use Ttl::Latch::ClockedNandRS;
 use Ttl::Not;
-use Reflex::Trait::Observer;
+use Reflex::Trait::Observed;
 use Reflex::Trait::Emitter;
 
 has cnrs1 => (
 	isa     => 'Ttl::Latch::ClockedNandRS',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Observer'],
+	traits  => ['Reflex::Trait::Observed'],
 	handles => ['r', 's'],
 );
 
 has cnrs2 => (
 	isa     => 'Ttl::Latch::ClockedNandRS',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Observer'],
+	traits  => ['Reflex::Trait::Observed'],
 );
 
 has not => (
 	isa     => 'Ttl::Not',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Observer'],
+	traits  => ['Reflex::Trait::Observed'],
 );
 
 sub BUILD {

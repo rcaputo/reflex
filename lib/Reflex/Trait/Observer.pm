@@ -1,4 +1,4 @@
-package Reflex::Trait::Observer;
+package Reflex::Trait::Observed;
 use Moose::Role;
 use Scalar::Util qw(weaken);
 use Reflex::Callbacks qw(cb_role);
@@ -98,8 +98,8 @@ has setup => (
 #	},
 #);
 
-package Moose::Meta::Attribute::Custom::Trait::Reflex::Trait::Observer;
-sub register_implementation { 'Reflex::Trait::Observer' }
+package Moose::Meta::Attribute::Custom::Trait::Reflex::Trait::Observed;
+sub register_implementation { 'Reflex::Trait::Observed' }
 
 1;
 
@@ -107,7 +107,7 @@ __END__
 
 =head1 NAME
 
-Reflex::Trait::Observer - Automatically watch Reflex objects.
+Reflex::Trait::Observed - Automatically watch Reflex objects.
 
 =head1 SYNOPSIS
 
@@ -117,16 +117,16 @@ Reflex::Trait::Observer - Automatically watch Reflex objects.
 	has clock => (
 		isa     => 'Reflex::Timer',
 		is      => 'rw',
-		traits  => [ 'Reflex::Trait::Observer' ],
+		traits  => [ 'Reflex::Trait::Observed' ],
 		setup   => { interval => 1, auto_repeat => 1 },
 	);
 
 =head1 DESCRIPTION
 
-Reflex::Trait::Observer allows one Reflex::Object to automatically
-watch other another it has stored in an attribute.  In the SYNOPSIS,
-storing a Reflex::Timer in the clock() attribute allows the owner to
-watch the timer's events.
+Reflex::Trait::Observed modifies a member to automatically observe any
+Reflex::Object stored within it.  In the SYNOPSIS, storing a
+Reflex::Timer in the clock() attribute allows the owner to watch the
+timer's events.
 
 This trait is a bit of Moose-based syntactic sugar for
 Reflex::Object's more explict watch() and watch_role() methods.

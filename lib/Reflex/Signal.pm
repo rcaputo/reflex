@@ -127,7 +127,7 @@ As a promise:
 		print "Got SIGUSR2.\n";
 	}
 
-May also be used with watchers, and Reflex::Trait::Observer, but
+May also be used with watchers, and Reflex::Trait::Observed, but
 those use cases aren't shown here.
 
 =head1 DESCRIPTION

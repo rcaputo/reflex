@@ -9,7 +9,7 @@ package Ttl::FlipFlop::D;
 use Moose;
 extends 'Reflex::Object';
 use Ttl::TriNand;
-use Reflex::Trait::Observer;
+use Reflex::Trait::Observed;
 use Reflex::Trait::Emitter;
 
 has clear => (
@@ -132,37 +132,37 @@ sub on_tri6_out {
 has tri1 => (
   isa     => 'Ttl::TriNand',
   is      => 'rw',
-  traits  => ['Reflex::Trait::Observer'],
+  traits  => ['Reflex::Trait::Observed'],
 );
 
 has tri2 => (
   isa     => 'Ttl::TriNand',
   is      => 'rw',
-  traits  => ['Reflex::Trait::Observer'],
+  traits  => ['Reflex::Trait::Observed'],
 );
 
 has tri3 => (
   isa     => 'Ttl::TriNand',
   is      => 'rw',
-  traits  => ['Reflex::Trait::Observer'],
+  traits  => ['Reflex::Trait::Observed'],
 );
 
 has tri4 => (
   isa     => 'Ttl::TriNand',
   is      => 'rw',
-  traits  => ['Reflex::Trait::Observer'],
+  traits  => ['Reflex::Trait::Observed'],
 );
 
 has tri5 => (
   isa     => 'Ttl::TriNand',
   is      => 'rw',
-  traits  => ['Reflex::Trait::Observer'],
+  traits  => ['Reflex::Trait::Observed'],
 );
 
 has tri6 => (
   isa     => 'Ttl::TriNand',
   is      => 'rw',
-  traits  => ['Reflex::Trait::Observer'],
+  traits  => ['Reflex::Trait::Observed'],
 );
 
 1;

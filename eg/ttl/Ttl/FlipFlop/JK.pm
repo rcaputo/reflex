@@ -22,34 +22,34 @@ package Ttl::FlipFlop::JK;
 use Moose;
 extends 'Reflex::Object';
 use Ttl::Latch::ClockedNandRS;
-use Reflex::Trait::Observer;
+use Reflex::Trait::Observed;
 use Reflex::Trait::Emitter;
 
 has nand_j => (
 	isa     => 'Ttl::Nand',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Observer'],
+	traits  => ['Reflex::Trait::Observed'],
 	handles => { j => 'a' },
 );
 
 has nand_k => (
 	isa     => 'Ttl::Nand',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Observer'],
+	traits  => ['Reflex::Trait::Observed'],
 	handles => { k => 'b' },
 );
 
 has trinand_preset => (
 	isa     => 'Ttl::TriNand',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Observer'],
+	traits  => ['Reflex::Trait::Observed'],
 	handles => { preset => 'a' },
 );
 
 has trinand_clear => (
 	isa     => 'Ttl::TriNand',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Observer'],
+	traits  => ['Reflex::Trait::Observed'],
 	handles => { clear => 'c' },
 );
 

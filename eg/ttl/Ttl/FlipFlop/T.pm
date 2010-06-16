@@ -6,13 +6,13 @@ package Ttl::FlipFlop::T;
 use Moose;
 extends 'Reflex::Object';
 use Ttl::FlipFlop::D;
-use Reflex::Trait::Observer;
+use Reflex::Trait::Observed;
 use Reflex::Trait::Emitter;
 
 has dff => (
 	isa     => 'Ttl::FlipFlop::D',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Observer'],
+	traits  => ['Reflex::Trait::Observed'],
 	handles => ['preset','clear','clock'],
 );
 

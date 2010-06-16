@@ -12,20 +12,20 @@ use Moose;
 extends 'Ttl::Bin';
 use Ttl::Not;
 use Ttl::Or;
-use Reflex::Trait::Observer;
+use Reflex::Trait::Observed;
 
 # Ttl::Or handles a and b input for Ttl::Nor.
 has or => (
   isa     => 'Ttl::Or',
   is      => 'rw',
-  traits  => ['Reflex::Trait::Observer'],
+  traits  => ['Reflex::Trait::Observed'],
   handles => [qw(a b)],
 );
 
 has not => (
   isa     => 'Ttl::Not',
   is      => 'rw',
-  traits  => ['Reflex::Trait::Observer'],
+  traits  => ['Reflex::Trait::Observed'],
 );
 
 sub BUILD {

@@ -8,14 +8,14 @@ use lib qw(lib);
 	package Breadboard;
 	use Moose;
 	extends 'Reflex::Object';
-	use Reflex::Trait::Observer;
+	use Reflex::Trait::Observed;
 
 	use Ttl::And;
 
 	has ander => (
 		isa => 'Ttl::And',
 		is  => 'rw',
-		traits => ['Reflex::Trait::Observer'],
+		traits => ['Reflex::Trait::Observed'],
 	);
 
 	sub BUILD {

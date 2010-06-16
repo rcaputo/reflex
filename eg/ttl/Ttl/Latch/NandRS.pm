@@ -18,20 +18,20 @@ package Ttl::Latch::NandRS;
 use Moose;
 extends 'Reflex::Object';
 use Ttl::Nand;
-use Reflex::Trait::Observer;
+use Reflex::Trait::Observed;
 use Reflex::Trait::Emitter;
 
 has nand_r => (
 	isa     => 'Ttl::Nand',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Observer'],
+	traits  => ['Reflex::Trait::Observed'],
 	handles => { r => 'b' },
 );
 
 has nand_s => (
 	isa     => 'Ttl::Nand',
 	is      => 'rw',
-	traits  => ['Reflex::Trait::Observer'],
+	traits  => ['Reflex::Trait::Observed'],
 	handles => { s => 'a' },
 );
 
