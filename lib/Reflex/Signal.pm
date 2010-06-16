@@ -51,7 +51,7 @@ sub stop_watching {
 	$self->name(undef);
 }
 
-sub _deliver {
+sub deliver {
 	my ($class, $signal_name, @signal_args) = @_;
 
 	# If nobody's watching us, then why did we do it in the road?

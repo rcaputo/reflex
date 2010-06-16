@@ -45,20 +45,20 @@ my $singleton_session_id = POE::Session->create(
 
 		timer_due => sub {
 			my $envelope = $_[ARG0];
-			$envelope->[0]->_deliver();
+			$envelope->[0]->deliver();
 		},
 
 		### I/O manipulators and callbacks.
 
 		select_ready => sub {
 			my ($handle, $envelope, $mode) = @_[ARG0, ARG2, ARG3];
-			$envelope->[0]->_deliver($handle, $mode, @_[ARG4..$#_]);
+			$envelope->[0]->deliver($handle, $mode, @_[ARG4..$#_]);
 		},
 
 		### Signals.
 
 		signal_happened => sub {
-			Reflex::Signal->_deliver(@_[ARG0..$#_]);
+			Reflex::Signal->deliver(@_[ARG0..$#_]);
 		},
 
 		### Cross-session emit() is converted into these events.
@@ -101,23 +101,23 @@ my $singleton_session_id = POE::Session->create(
 		# their IDs in different ARGn offsets, so we need a few of these.
 		wheel_event_0 => sub {
 			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
-			"Reflex::POE::Wheel:\:$1"->_deliver(0, @_[ARG0..$#_]);
+			"Reflex::POE::Wheel:\:$1"->deliver(0, @_[ARG0..$#_]);
 		},
 		wheel_event_1 => sub {
 			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
-			"Reflex::POE::Wheel:\:$1"->_deliver(1, @_[ARG0..$#_]);
+			"Reflex::POE::Wheel:\:$1"->deliver(1, @_[ARG0..$#_]);
 		},
 		wheel_event_2 => sub {
 			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
-			"Reflex::POE::Wheel:\:$1"->_deliver(2, @_[ARG0..$#_]);
+			"Reflex::POE::Wheel:\:$1"->deliver(2, @_[ARG0..$#_]);
 		},
 		wheel_event_3 => sub {
 			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
-			"Reflex::POE::Wheel:\:$1"->_deliver(3, @_[ARG0..$#_]);
+			"Reflex::POE::Wheel:\:$1"->deliver(3, @_[ARG0..$#_]);
 		},
 		wheel_event_4 => sub {
 			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
-			"Reflex::POE::Wheel:\:$1"->_deliver(4, @_[ARG0..$#_]);
+			"Reflex::POE::Wheel:\:$1"->deliver(4, @_[ARG0..$#_]);
 		},
 	},
 )->ID();
@@ -423,7 +423,7 @@ sub emit {
 	}
 }
 
-sub _deliver {
+sub deliver {
 	die "@_";
 }
 

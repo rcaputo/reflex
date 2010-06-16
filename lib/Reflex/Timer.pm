@@ -49,7 +49,7 @@ sub repeat {
 }
 
 #overriden method from Reflex::Object
-sub _deliver {
+sub deliver {
 	my $self = shift;
 	$self->alarm_id(0);
 	$self->emit( event => "tick" );

@@ -64,7 +64,7 @@ sub demolish_wheel {
 	$self->wheel(undef);
 }
 
-sub _deliver {
+sub deliver {
 	my ($class, $event_idx, @event_args) = @_;
 
 	# Map parameter offsets to named parameters.

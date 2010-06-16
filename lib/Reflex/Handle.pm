@@ -116,7 +116,7 @@ sub stop {
 }
 
 # Part of the POE/Reflex contract.
-sub _deliver {
+sub deliver {
 	my ($self, $handle, $mode) = @_;
 	$self->emit(
 		event => $mode,

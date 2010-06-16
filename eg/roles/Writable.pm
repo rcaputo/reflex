@@ -67,7 +67,7 @@ role {
 	};
 
 	# Part of the POE/Reflex contract.
-	method _deliver => sub {
+	method deliver => sub {
 		my ($self, $handle, $cb_member) = @_;
 		$self->$cb_member( { handle => $handle, } );
 	};
