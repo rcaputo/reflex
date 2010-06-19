@@ -6,12 +6,12 @@ use strict;
 use Exporter;
 use base 'Exporter';
 
-our @EXPORT_OK = qw(default_emit);
+our @EXPORT_OK = qw(emit_by_default);
 
 # Helper function.  Returns a role method that emits an event.  Used
 # as the default callback for many things.
 
-sub default_emit {
+sub emit_by_default {
 	my ($cb_name, $event) = @_;
 	return(
 		$cb_name => sub {

@@ -1,6 +1,6 @@
 package Streamable;
 use MooseX::Role::Parameterized;
-use EmitHelper qw(default_emit);
+use EmitHelper qw(emit_by_default);
 
 use Scalar::Util qw(weaken);
 
@@ -116,8 +116,8 @@ role {
 	};
 
 	# Default callbacks that re-emit their parameters.
-	method default_emit($cb_data,  "data");
-	method default_emit($cb_error, "error");
+	method emit_by_default($cb_data,  "data");
+	method emit_by_default($cb_error, "error");
 };
 
 1;
