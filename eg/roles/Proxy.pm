@@ -5,8 +5,8 @@ extends 'Reflex::Object';
 has handle_a => ( is => 'rw', isa => 'FileHandle', required => 1 );
 has handle_b => ( is => 'rw', isa => 'FileHandle', required => 1 );
 
-with 'Streamable' => { handle => 'handle_a' };
-with 'Streamable' => { handle => 'handle_b' };
+with 'Reflex::Role::Streaming' => { handle => 'handle_a' };
+with 'Reflex::Role::Streaming' => { handle => 'handle_b' };
 
 sub on_handle_a_data {
 	my ($self, $arg) = @_;

@@ -1,4 +1,4 @@
-package Streamable;
+package Reflex::Role::Streaming;
 use MooseX::Role::Parameterized;
 use EmitHelper qw(emit_by_default);
 
@@ -34,12 +34,12 @@ role {
 	my $cb_data   = $p->cb_data();
 	my $cb_error  = $p->cb_error();
 
-	with Readable => {
+	with 'Reflex::Role::Readable' => {
 		handle  => $h,
 		active  => 1,
 	};
 
-	with Writable => {
+	with 'Reflex::Role::Writable' => {
 		handle  => $h,
 	};
 

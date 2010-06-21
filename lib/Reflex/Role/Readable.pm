@@ -1,5 +1,8 @@
-package Readable;
+package Reflex::Role::Readable;
 use MooseX::Role::Parameterized;
+
+# TODO - Reflex::Role::Readable and Writable are nearly identical.
+# Can they be abstracted further?
 
 use Scalar::Util qw(weaken);
 

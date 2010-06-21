@@ -4,7 +4,7 @@ extends 'Reflex::Object';
 
 has handle => ( is => 'rw', isa => 'FileHandle', required => 1 );
 
-with 'Streamable' => {
+with 'Reflex::Role::Streaming' => {
 	handle => 'handle',
 
 	# Expose put_handle() as put().

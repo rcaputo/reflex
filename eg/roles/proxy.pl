@@ -29,4 +29,4 @@ $s1->put("test request\n");
 
 # Wait for it to arrive on Stream 2 (socket 2a).
 my $e = $s2->next();
-warn $e->{name}, ": ", $e->{arg}{data};
+warn "Got: ", $e->{name}, ": ", $e->{arg}{data};

@@ -1,5 +1,8 @@
-package Writable;
+package Reflex::Role::Writable;
 use MooseX::Role::Parameterized;
+
+# TODO - Reflex::Role::Readable and Writable are nearly identical.
+# Can they be abstracted further?
 
 use Scalar::Util qw(weaken);
 
@@ -58,6 +61,11 @@ role {
 	method $resume_name => sub {
 		my $self = shift;
 		$POE::Kernel::poe_kernel->select_resume_read($self->$h());
+	};
+
+	after BUILD => sub {
+		my ($self, $arg) = @_;
+		$self->$setup_name($arg);
 	};
 
 	# Turn off watcher during destruction.
