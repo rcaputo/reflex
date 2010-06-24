@@ -1,86 +1,121 @@
-package Reflex::Role::UdpPeer;
-use Moose::Role;
-with 'Reflex::Role::Object';
-use Reflex::Handle;
+package Reflex::Role::Recving;
+use MooseX::Role::Parameterized;
+use Reflex::Util::Methods qw(emit_an_event);
 
-has port => (
-	isa => 'Int',
-	is  => 'ro',
+parameter handle => (
+	isa     => 'Str',
+	default => 'handle',
 );
 
-has handle => (
-	isa     => 'Reflex::Handle|Undef',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::Observed'],
-	role    => 'remote',
+parameter cb_datagram => (
+	isa       => 'Str',
+	default   => sub {
+		my $self = shift;
+		"on_" . $self->handle() . "_datagram";
+	},
+	lazy      => 1,
 );
 
-has max_datagram_size => (
+parameter cb_error => (
+	isa       => 'Str',
+	default   => sub {
+		my $self = shift;
+		"on_" . $self->handle() . "_error";
+	},
+	lazy      => 1,
+);
+
+parameter method_send => (
+	isa       => 'Str',
+	default   => sub {
+		my $self = shift;
+		"send_" . $self->handle();
+	},
+	lazy      => 1,
+);
+
+parameter max_datagram_size => (
 	isa     => 'Int',
 	is      => 'rw',
 	default => 16384,
 );
 
-after 'BUILD' => sub {
-	my $self = shift;
+role {
+	my $p = shift;
 
-	$self->handle(
-		Reflex::Handle->new(
-			handle => IO::Socket::INET->new(
-				Proto     => 'udp',
-				LocalPort => $self->port(),
-			),
-			rd => 1,
-		)
-	);
-	undef;
+	my $h           = $p->handle();
+	my $cb_datagram = $p->cb_datagram();
+	my $cb_error    = $p->cb_error();
+	my $max_dg_size = $p->max_datagram_size();
+
+	with 'Reflex::Role::Readable' => {
+		handle => $h,
+	};
+
+	method "on_${h}_readable" => sub {
+		my ($self, $args) = @_;
+
+		my $remote_address = recv(
+			$args->{handle},
+			my $datagram = "",
+			$max_dg_size,
+			0
+		);
+
+		unless (defined $remote_address) {
+			$self->$cb_error(
+				{
+					errfun  => "recv",
+					errnum  => $! + 0,
+					errstr  => "$!",
+				},
+			);
+			return;
+		}
+
+		$self->$cb_datagram(
+			{
+				datagram    => $datagram,
+				remote_addr => $remote_address,
+			},
+		);
+	};
+
+	method $p->method_send() => sub {
+		my ($self, @args) = @_;
+
+		my $args = $self->check_args(
+			\@args,
+			[ 'datagram', 'remote_addr' ],
+			[ ],
+		);
+
+		# Success!
+		return if send(
+			$self->$h,
+			$args->{datagram},
+			0,
+			$args->{remote_addr},
+		) == length($args->{datagram});
+
+		$self->$cb_error(
+			{
+				errfun  => "send",
+				errnum  => $! + 0,
+				errstr  => "$!",
+			},
+		);
+	};
+
+	# Default callbacks that re-emit their parameters.
+	method $cb_datagram => emit_an_event("${h}_data");
+	method $cb_error    => emit_an_event("${h}_error");
 };
 
-sub on_remote_readable {
-	my ($self, $args) = @_;
+1;
 
-	my $remote_address = recv(
-		$args->{handle},
-		my $datagram = "",
-		$self->max_datagram_size(),
-		0
-	);
+__END__
 
-	$self->emit(
-		event => "datagram",
-		args => {
-			datagram    => $datagram,
-			remote_addr => $remote_address,
-		},
-	);
-}
-
-sub send {
-	my ($self, @args) = @_;
-
-	my $args = $self->check_args(
-		\@args,
-		[ 'datagram', 'remote_addr' ],
-		[ ],
-	);
-
-	# Success!
-	return if send(
-		$self->handle()->handle(), # TODO - Ugh!
-		$args->{datagram},
-		0,
-		$args->{remote_addr},
-	) == length($args->{datagram});
-
-	$self->emit(
-		event => "error",
-		args  => {
-			errfun  => "send",
-			errnum  => $! + 0,
-			errstr  => "$!",
-		},
-	);
-}
 
 sub destruct {
 	my $self = shift;

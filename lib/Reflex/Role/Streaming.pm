@@ -1,6 +1,6 @@
 package Reflex::Role::Streaming;
 use MooseX::Role::Parameterized;
-use EmitHelper qw(emit_by_default);
+use Reflex::Util::Methods qw(emit_an_event);
 
 use Scalar::Util qw(weaken);
 
@@ -125,8 +125,8 @@ role {
 	};
 
 	# Default callbacks that re-emit their parameters.
-	method emit_by_default($cb_data,  "${h}_data");
-	method emit_by_default($cb_error, "${h}_error");
+	method $cb_data   => emit_an_event("${h}_data");
+	method $cb_error  => emit_an_event("${h}_error");
 };
 
 1;

@@ -1,5 +1,6 @@
 package Reflex::Role::Writable;
 use MooseX::Role::Parameterized;
+use Reflex::Util::Methods qw(emit_an_event);
 
 # TODO - Reflex::Role::Readable and Writable are nearly identical.
 # Can they be abstracted further?
@@ -99,7 +100,7 @@ role {
 	};
 
 	# Default callbacks that re-emit their parameters.
-	method emit_by_default($cb_name, "${h}_writable");
+	method $cb_name => emit_an_event("${h}_writable");
 };
 
 1;
