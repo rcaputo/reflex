@@ -22,6 +22,7 @@ our @CARP_NOT = (__PACKAGE__);
 #
 #sub POE::Kernel::ASSERT_DEFAULT () { 1 }
 #sub POE::Kernel::CATCH_EXCEPTIONS () { 0 }
+#sub POE::Kernel::USE_SIGCHLD () { 1 }
 
 use POE;
 use Reflex::POE::Session;
