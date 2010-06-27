@@ -18,7 +18,7 @@
 
 package Ttl::TriAnd;
 use Moose;
-extends 'Reflex::Object';
+extends 'Reflex::Base';
 use Ttl::And;
 use Reflex::Trait::Observed;
 use Reflex::Trait::EmitsOnChange;

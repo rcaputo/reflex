@@ -24,7 +24,7 @@ use Test::More tests => 3;
 {
 	package PromiseThing;
 	use Moose;
-	extends 'Reflex::Object';
+	extends 'Reflex::Base';
 	use Reflex::Timer;
 	use Reflex::Callbacks qw(gather_cb);
 

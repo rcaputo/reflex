@@ -4,7 +4,7 @@
 
 package Ttl::Un;
 use Moose;
-extends 'Reflex::Object';
+extends 'Reflex::Base';
 use Reflex::Trait::EmitsOnChange;
 
 has in => (

@@ -216,7 +216,7 @@ directory in Reflex's distribution.
 
 cb_object() converts the specification of multiple callbacks into a
 list of callback parameter names and their Reflex::Callback::Method
-objects.  The returned list is in a form suitable for a Reflex::Object
+objects.  The returned list is in a form suitable for a Reflex::Base
 constructor.
 
 cb_object() takes two positional parameters.  The first is the object
@@ -343,8 +343,8 @@ cb_promise() takes a scalar reference.  This reference will be
 populated with a Reflex::Callback::Promise object.
 
 cb_promise() returns two values that are suitable to insert onto a
-Reflex::Object's constructor.  The first value is a special event
-name, "on_promise", that tells Reflex::Object objects they may be used
+Reflex::Base's constructor.  The first value is a special event
+name, "on_promise", that tells Reflex::Base objects they may be used
 as promises or in a condvar-like context.  The second return value is
 the same Reflex::Callback::Promise object that was inserted into
 cb_promise()'s parameter.
@@ -366,7 +366,7 @@ returns a single value: a Reflex::Callback::Coderef object that will
 deliver events to the callback.
 
 cb_coderef() neither takes nor returns an event name.  As such, the
-Reflex::Object parameter name must be supplied outside cb_coderef().
+Reflex::Base parameter name must be supplied outside cb_coderef().
 
 	my $timer = Reflex::Timer->new(
 		interval    => 1,

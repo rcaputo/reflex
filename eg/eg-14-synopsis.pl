@@ -7,7 +7,7 @@ use lib qw(../lib);
 {
 	package App;
 	use Moose;
-	extends 'Reflex::Object';
+	extends 'Reflex::Base';
 	use Reflex::Timer;
 
 	has ticker => (

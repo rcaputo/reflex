@@ -15,7 +15,7 @@ my $timer = Reflex::Timer->new(
 );
 
 my $promise;
-my $watcher = Reflex::Object->new();
+my $watcher = Reflex::Base->new();
 $watcher->watch($timer, cb_promise(\$promise));
 
 while (my $event = $promise->next()) {

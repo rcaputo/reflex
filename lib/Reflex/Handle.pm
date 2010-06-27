@@ -3,7 +3,7 @@
 package Reflex::Handle;
 
 use Moose;
-extends 'Reflex::Object';
+extends 'Reflex::Base';
 use Scalar::Util qw(weaken);
 
 has handle => (

@@ -14,7 +14,7 @@
 
 package Ttl::FlipFlop::MasterSlave;
 use Moose;
-extends 'Reflex::Object';
+extends 'Reflex::Base';
 use Ttl::Latch::ClockedNandRS;
 use Ttl::Not;
 use Reflex::Trait::Observed;

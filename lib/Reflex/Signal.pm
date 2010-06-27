@@ -1,7 +1,7 @@
 package Reflex::Signal;
 
 use Moose;
-extends qw(Reflex::Object);
+extends qw(Reflex::Base);
 use Scalar::Util qw(weaken);
 
 # A session may only watch a distinct signal once.

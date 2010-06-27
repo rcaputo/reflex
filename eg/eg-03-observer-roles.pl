@@ -26,7 +26,7 @@ use Test::More tests => 10;
 	package Watcher;
 
 	use Moose;
-	extends 'Reflex::Object';
+	extends 'Reflex::Base';
 
 	use Reflex::Timer;
 	use Reflex::Callbacks qw(cb_role);
@@ -74,7 +74,7 @@ use Test::More tests => 10;
 my $watcher = Watcher->new();
 ok( (defined $watcher), "started watcher object" );
 
-Reflex::Object->run_all();
+Reflex->run_all();
 pass("run_all() returned");
 
 exit;

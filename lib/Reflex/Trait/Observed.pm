@@ -124,12 +124,12 @@ Reflex::Trait::Observed - Automatically watch Reflex objects.
 =head1 DESCRIPTION
 
 Reflex::Trait::Observed modifies a member to automatically observe any
-Reflex::Object stored within it.  In the SYNOPSIS, storing a
+Reflex::Base object stored within it.  In the SYNOPSIS, storing a
 Reflex::Timer in the clock() attribute allows the owner to watch the
 timer's events.
 
-This trait is a bit of Moose-based syntactic sugar for
-Reflex::Object's more explict watch() and watch_role() methods.
+This trait is a bit of Moose-based syntactic sugar for Reflex::Base's
+more explict watch() and watch_role() methods.
 
 =head2 setup
 

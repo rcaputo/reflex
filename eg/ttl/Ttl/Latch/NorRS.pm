@@ -16,7 +16,7 @@
 
 package Ttl::Latch::NorRS;
 use Moose;
-extends 'Reflex::Object';
+extends 'Reflex::Base';
 use Ttl::Nor;
 use Reflex::Trait::Observed;
 use Reflex::Trait::EmitsOnChange;

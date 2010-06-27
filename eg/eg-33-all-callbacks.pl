@@ -27,7 +27,7 @@ my $ct = Reflex::Timer->new(
 {
 	package MethodHandler;
 	use Moose;
-	extends 'Reflex::Object';
+	extends 'Reflex::Base';
 	use Reflex::Callbacks qw(cb_method);
 	use ExampleHelpers qw(eg_say);
 
@@ -61,7 +61,7 @@ my $mh = MethodHandler->new();
 {
 	package ObjectHandler;
 	use Moose;
-	extends 'Reflex::Object';
+	extends 'Reflex::Base';
 	use Reflex::Callbacks qw(cb_object);
 	use ExampleHelpers qw(eg_say);
 
@@ -93,7 +93,7 @@ my $oh = ObjectHandler->new();
 {
 	package RoleHandler;
 	use Moose;
-	extends 'Reflex::Object';
+	extends 'Reflex::Base';
 	use Reflex::Callbacks qw(cb_role);
 	use ExampleHelpers qw(eg_say);
 

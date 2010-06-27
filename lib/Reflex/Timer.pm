@@ -1,7 +1,7 @@
 package Reflex::Timer;
 
 use Moose;
-extends qw(Reflex::Object);
+extends qw(Reflex::Base);
 use Scalar::Util qw(weaken);
 
 has interval => (
@@ -48,7 +48,7 @@ sub repeat {
 	);
 }
 
-#overriden method from Reflex::Object
+# Overriden method from Reflex::Base.
 sub deliver {
 	my $self = shift;
 	$self->alarm_id(0);

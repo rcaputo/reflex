@@ -1,12 +1,12 @@
 package ReflexPromise;
 
 use Moose;
-extends 'Reflex::Object';
+extends 'Reflex::Base';
 
 use Reflex::Callbacks qw(cb_promise);
 
 has object => (
-	isa => 'Reflex::Object',
+	isa => 'Reflex::Base',
 	is  => 'ro',
 );
 

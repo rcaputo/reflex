@@ -1,6 +1,6 @@
 package Reflex::UdpPeer;
 use Moose;
-extends 'Reflex::Object';
+extends 'Reflex::Base';
 
 has socket => (
 	is        => 'rw',
@@ -62,7 +62,7 @@ Use it as a helper.
 
 	package Reflex::Udp::Echo;
 	use Moose;
-	extends 'Reflex::Object';
+	extends 'Reflex::Base';
 	use Reflex::UdpPeer;
 
 	has port => ( isa => 'Int', is => 'ro' );
@@ -129,7 +129,7 @@ you know.
 L<Moose::Manual::Concepts>
 
 L<Reflex>
-L<Reflex::Object>
+L<Reflex::Base>
 L<Reflex::Role::UdpPeer>
 
 L<Reflex/ACKNOWLEDGEMENTS>

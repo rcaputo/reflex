@@ -8,10 +8,10 @@ use lib qw(../lib);
 
 {
 	package App;
-	use Reflex::Object;
+	use Reflex::Base;
 	use Reflex::Timer;
 	use Reflex::Callbacks qw(cb_role);
-	use base qw(Reflex::Object);
+	use base qw(Reflex::Base);
 
 	sub BUILD {
 		my $self = shift;

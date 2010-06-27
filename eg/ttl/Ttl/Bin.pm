@@ -4,7 +4,7 @@
 
 package Ttl::Bin;
 use Moose;
-extends 'Reflex::Object';
+extends 'Reflex::Base';
 use Reflex::Trait::EmitsOnChange;
 
 has a => (

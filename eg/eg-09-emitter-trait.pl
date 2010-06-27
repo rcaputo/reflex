@@ -9,7 +9,7 @@ use lib qw(../lib);
 {
 	package Counter;
 	use Moose;
-	extends 'Reflex::Object';
+	extends 'Reflex::Base';
 	use Reflex::Timer;
 	use Reflex::Trait::Observed;
 	use Reflex::Trait::EmitsOnChange;
@@ -47,7 +47,7 @@ use lib qw(../lib);
 {
 	package Watcher;
 	use Moose;
-	extends 'Reflex::Object';
+	extends 'Reflex::Base';
 
 	has counter => (
 		traits  => ['Reflex::Trait::Observed'],
@@ -69,5 +69,5 @@ use lib qw(../lib);
 # Main.
 
 my $w = Watcher->new();
-Reflex::Object->run_all();
+Reflex->run_all();
 exit;

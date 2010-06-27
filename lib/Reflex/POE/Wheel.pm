@@ -1,6 +1,6 @@
 package Reflex::POE::Wheel;
 use Moose;
-extends 'Reflex::Object';
+extends 'Reflex::Base';
 use Scalar::Util qw(weaken);
 use POE::Wheel;
 
@@ -77,7 +77,7 @@ sub deliver {
 
 	my $wheel_id = $event_args{wheel_id};
 
-	# Get the Reflex::Object that owns this wheel.
+	# Get the Reflex::Base object that owns this wheel.
 
 	my $self = $wheel_id_to_object{$wheel_id};
 	die unless $self;
@@ -261,7 +261,7 @@ something shorter and more widely recognized, perhaps stop().  The
 jury is still out, however.
 
 Methods are not yet converted automatically.  It seems more sensible
-to provide a native Reflex::Object interface.  On the other hand, it
+to provide a native Reflex::Base interface.  On the other hand, it
 may be possible for Moose's "handles" attribute option to pass the
 wheel's methods through the wrapper.  More investigation is required.
 

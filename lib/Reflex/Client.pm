@@ -121,7 +121,7 @@ eg/eg-35-tcp-client.pl available at the time of this writing.
 =head1 DESCRIPTION
 
 Reflex::Client is a high-level base class for non-blocking socket
-clients.  As with other Reflex::Object classes, this one may be
+clients.  As with other Reflex::Base classes, this one may be
 subclassed, composed with "has", or driven with condvar-like syntax.
 
 =head2 Attributes

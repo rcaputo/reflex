@@ -6,7 +6,7 @@ use lib qw(../lib);
 	package UdpPeer;
 
 	use Moose;
-	extends 'Reflex::Object';
+	extends 'Reflex::Base';
 	use Reflex::Handle;
 
 	has port => (

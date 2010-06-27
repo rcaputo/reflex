@@ -7,7 +7,7 @@
 
 package Ttl::FlipFlop::D;
 use Moose;
-extends 'Reflex::Object';
+extends 'Reflex::Base';
 use Ttl::TriNand;
 use Reflex::Trait::Observed;
 use Reflex::Trait::EmitsOnChange;

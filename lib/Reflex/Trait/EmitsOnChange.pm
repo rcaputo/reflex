@@ -96,7 +96,7 @@ Reflex::Trait::EmitsOnChange - Emit an event when an attribute's value changes.
 
 	package Counter;
 	use Moose;
-	extends 'Reflex::Object';
+	extends 'Reflex::Base';
 	use Reflex::Trait::EmitsOnChange;
 
 	has count   => (

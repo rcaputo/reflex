@@ -1,7 +1,7 @@
 package Reflex::Stream;
 
 use Moose;
-extends 'Reflex::Object';
+extends 'Reflex::Base';
 
 has handle => (
 	is => 'rw',
@@ -57,7 +57,7 @@ Reflex::Collection.
 
 	1;
 
-Since it extends Reflex::Object, it may also be used like a condavr or
+Since it extends Reflex::Base, it may also be used like a condavr or
 promise.  This incomplte example comes from eg/eg-38-promise-client.pl:
 
 	my $stream = Reflex::Stream->new(

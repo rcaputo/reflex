@@ -26,7 +26,7 @@
 
 package Ttl::Adder;
 use Moose;
-extends 'Reflex::Object';
+extends 'Reflex::Base';
 use Ttl::Xor;
 use Ttl::And;
 use Ttl::Or;

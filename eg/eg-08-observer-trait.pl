@@ -10,7 +10,7 @@ use lib qw(../lib);
 {
 	package Runner;
 	use Moose;
-	extends 'Reflex::Object';
+	extends 'Reflex::Base';
 	use Reflex::POE::Wheel::Run;
 	use Reflex::Trait::Observed;
 
@@ -67,5 +67,5 @@ use lib qw(../lib);
 # Main.
 
 my $runner = Runner->new();
-Reflex::Object->run_all();
+Reflex->run_all();
 exit;

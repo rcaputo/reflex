@@ -3,13 +3,13 @@ package Reflex::Collection;
 use Moose;
 use Reflex::Callbacks qw(cb_method);
 
-extends 'Reflex::Object';
+extends 'Reflex::Base';
 
 # TODO - Validate that collected objects satsify a complementary role.
 
 has objects => (
 	is      => 'rw',
-	isa     => 'HashRef[Reflex::Object]',
+	isa     => 'HashRef[Reflex::Base]',
 	default => sub { {} },
 );
 

@@ -7,6 +7,8 @@ use Carp qw(croak);
 
 sub import {
 	my $class = shift;
+	return unless @_;
+
 	my $caller_package = caller();
 
 	# Use the packages in the caller's package.
@@ -29,7 +31,7 @@ sub import {
 }
 
 sub run_all {
-	Reflex::Object->run_all();
+	Reflex::Base->run_all();
 }
 
 1;
@@ -49,7 +51,7 @@ Reflex - Class library for flexible, reactive programs.
 	{
 		package App;
 		use Moose;
-		extends 'Reflex::Object';
+		extends 'Reflex::Base';
 		use Reflex::Timer;
 
 		has ticker => (
@@ -88,11 +90,11 @@ generates console messages in response to those timer ticks.
 
 Here an Echoer class emits "pong" events in response to ping()
 commands.  It uses Moose's extends(), but it could about as easily use
-warnings, strict, and base instead.  Reflex::Object provides emit().
+warnings, strict, and base instead.  Reflex::Base provides emit().
 
 	package Echoer;
 	use Moose;
-	extends 'Reflex::Object';
+	extends 'Reflex::Base';
 
 	sub ping {
 		my ($self, $args) = @_;
@@ -107,7 +109,7 @@ mapping its "pong" event to the on_echoer_pong() method.
 
 	package Pinger;
 	use Moose;
-	extends 'Reflex::Object';
+	extends 'Reflex::Base';
 
 	has echoer => (
 		is      => 'ro',
@@ -185,12 +187,25 @@ Reflex::Timer used differently elsewhere.
 		eg_say("next() returned an event (@$event)");
 	}
 
+=head1 PUBLIC METHODS
+
+Reflex itself contains some convenience methods for cleaner semantics.
+
+=head2 run_all
+
+Run all active Reflex objects until they destruct.
+
+	# (omitted: create some Reflex objects)
+
+	Reflex->run_all();
+	exit;
+
 =head1 BUNDLED CLASSES AND DOCUMENTATION INDEX
 
 Reflex bundles a number of helpful base classes to get things started.
 
-  Reflex::Role::Object - Reflex object role
-  | Reflex::Object - Base class for Reflex objects
+  Reflex::Role::Reactive - Reflex reactive role
+  | Reflex::Base - Base class for reactive Reflex objects
   | | Reflex::Handle - filehandle watcher
   | | | Reflex::Connector - client socket connector
   | | | | Reflex::Client - socket client with buffered I/O

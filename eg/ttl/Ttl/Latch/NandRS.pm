@@ -16,7 +16,7 @@
 
 package Ttl::Latch::NandRS;
 use Moose;
-extends 'Reflex::Object';
+extends 'Reflex::Base';
 use Ttl::Nand;
 use Reflex::Trait::Observed;
 use Reflex::Trait::EmitsOnChange;

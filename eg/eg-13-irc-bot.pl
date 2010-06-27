@@ -11,7 +11,7 @@ use lib qw(../lib);
 {
 	package Bot;
 	use Moose;
-	extends 'Reflex::Object';
+	extends 'Reflex::Base';
 	use Reflex::Trait::Observed;
 	use Reflex::POE::Session;
 

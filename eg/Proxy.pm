@@ -1,6 +1,6 @@
 package Proxy;
 use Moose;
-extends 'Reflex::Object';
+extends 'Reflex::Base';
 
 has handle_a => ( is => 'rw', isa => 'FileHandle', required => 1 );
 has handle_b => ( is => 'rw', isa => 'FileHandle', required => 1 );

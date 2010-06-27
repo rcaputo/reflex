@@ -3,7 +3,7 @@
 
 package Ttl::HexDecoder;
 use Moose;
-extends 'Reflex::Object';
+extends 'Reflex::Base';
 
 has ones => (
 	isa     => 'Bool',

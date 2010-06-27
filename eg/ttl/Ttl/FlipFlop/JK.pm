@@ -20,7 +20,7 @@
 
 package Ttl::FlipFlop::JK;
 use Moose;
-extends 'Reflex::Object';
+extends 'Reflex::Base';
 use Ttl::Latch::ClockedNandRS;
 use Reflex::Trait::Observed;
 use Reflex::Trait::EmitsOnChange;

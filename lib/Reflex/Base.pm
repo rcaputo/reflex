@@ -1,9 +1,9 @@
-package Reflex::Object;
+package Reflex::Base;
 
 use Moose;
-with 'Reflex::Role::Object';
+with 'Reflex::Role::Reactive';
 
-# Composes the Reflex::Role::Object into a class.
+# Composes the Reflex::Role::Reactive into a class.
 # Does nothing of its own.
 
 1;
@@ -12,7 +12,7 @@ __END__
 
 =head1 NAME
 
-Reflex::Object - Base class for reactive (aka, event driven) objects.
+Reflex::Base - Base class for reactive (aka, event driven) objects.
 
 =head1 SYNOPSIS
 
@@ -20,7 +20,7 @@ Using Moose:
 
 	package Object;
 	use Moose;
-	extends 'Reflex::Object';
+	extends 'Reflex::Base';
 
 	...;
 
@@ -31,7 +31,7 @@ Not using Moose:
 	package Object;
 	use warnings;
 	use strict;
-	use base 'Reflex::Object';
+	use base 'Reflex::Base';
 
 	...;
 
@@ -39,11 +39,11 @@ Not using Moose:
 
 =head1 DESCRIPTION
 
-Reflex::Object is a base class for all Reflex objects, including many
-of the ones that notify programs of external events.
+Reflex::Base is a base class for all reactive Reflex objects,
+including many of the ones that notify programs of external events.
 
-Please see L<Reflex::Role::Object> for actual documentation.
-Everything that Reflex::Object does comes from that role.  The
+Please see L<Reflex::Role::Reactive>, which contains the
+implementation and detailed documentation for this class.  The
 documentation is kept with the role in order for them to be near each
 other.  It's so romantic!
 
@@ -52,7 +52,7 @@ other.  It's so romantic!
 L<Moose::Manual::Concepts>
 
 L<Reflex>
-L<Reflex::Role::Object>
+L<Reflex::Role::Reactive>
 
 L<Reflex/ACKNOWLEDGEMENTS>
 L<Reflex/ASSISTANCE>

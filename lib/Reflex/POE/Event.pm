@@ -5,7 +5,7 @@ use Carp qw(croak);
 
 has object => (
 	is        => 'ro',
-	isa       => 'Reflex::Object',
+	isa       => 'Reflex::Base',
 	required  => 1,
 );
 
@@ -31,7 +31,7 @@ sub BUILD {
 	) {
 		croak(
 			"When interfacing with POE at large, ", __PACKAGE__, " must\n",
-			"be created within a Reflex::Object's session.  Perhaps invoke it\n",
+			"be created within a Reflex::Base's session.  Perhaps invoke it\n",
 			"within the object's run_within_session() method",
 		);
 	}

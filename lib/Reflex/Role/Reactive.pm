@@ -1,9 +1,10 @@
-package Reflex::Role::Object;
+package Reflex::Role::Reactive;
 
 use Moose::Role;
 
 use Scalar::Util qw(weaken blessed);
 use Carp qw(croak);
+use Reflex;
 
 END {
 	#warn join "; ", keys %watchers;
@@ -571,7 +572,7 @@ __END__
 
 =head1 NAME
 
-Reflex::Role::Object - Make an object reactive (aka, event driven).
+Reflex::Role::Reactive - Make an object reactive (aka, event driven).
 
 =head1 SYNOPSIS
 
@@ -579,7 +580,7 @@ With Moose:
 
 	package Object;
 	use Moose;
-	with 'Reflex::Role::Object';
+	with 'Reflex::Role::Reactive';
 
 	...;
 
@@ -588,13 +589,13 @@ With Moose:
 Without Moose:
 
 	# Sorry, roles are defined and composed using Moose.
-	# However, Reflex::Object may be used the old fashioned way.
+	# However, Reflex::Base may be used the old fashioned way.
 
 =head1 DESCRIPTION
 
-Reflex::Role::Object provides Reflex's event-driven features to other
-objects.  It provides public methods that help use reactive objects
-and to write them.
+Reflex::Role::Reactive provides Reflex's event-driven features to
+other objects.  It provides public methods that help use reactive
+objects and to write them.
 
 =head1 Public Attributes
 
@@ -623,8 +624,8 @@ L<Reflex::POE::Wheel::Run>.
 
 watch() allows one object (the watcher) to register interest in
 events emitted by another.  It takes three named parameters:
-"watched" must contain a Reflex object (either a Reflex::Role::Object
-consumer, or a Reflex::Object subclass).  "event" contains the name of
+"watched" must contain a Reflex object (either a Reflex::Role::Reactive
+consumer, or a Reflex::Base subclass).  "event" contains the name of
 an event that the watched object emits.  Finally, "callback" contains
 a Reflex::Callback that will be invoked when the event occurs.
 
@@ -795,7 +796,7 @@ objects.  Explore and enjoy!
 L<Moose::Manual::Concepts>
 
 L<Reflex>
-L<Reflex::Object>
+L<Reflex::Base>
 
 L<Reflex/ACKNOWLEDGEMENTS>
 L<Reflex/ASSISTANCE>

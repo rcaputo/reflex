@@ -29,7 +29,7 @@ Used within Reflex:
 
 	package MethodHandler;
 	use Moose;
-	extends 'Reflex::Object';
+	extends 'Reflex::Base';
 	use Reflex::Callbacks qw(cb_method);
 	use ExampleHelpers qw(eg_say);
 

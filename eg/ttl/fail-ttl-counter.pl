@@ -7,7 +7,7 @@ use lib qw(lib);
 {
 	package Counter;
 	use Moose;
-	extends 'Reflex::Object';
+	extends 'Reflex::Base';
 	use Ttl::FlipFlop::T;
 	use Ttl::HexDecoder;
 	use Reflex::Trait::EmitsOnChange;
@@ -104,7 +104,7 @@ use lib qw(lib);
 {
 	package Driver;
 	use Moose;
-	extends 'Reflex::Object';
+	extends 'Reflex::Base';
 	use Reflex::Timer;
 
 	has counter => (
@@ -140,5 +140,5 @@ use lib qw(lib);
 ### Main.
 
 my $counter = Driver->new();
-Reflex::Object->run_all();
+Reflex->run_all();
 exit;

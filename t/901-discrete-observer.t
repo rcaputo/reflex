@@ -25,7 +25,7 @@ use warnings;
 use strict;
 use lib qw(t/lib);
 
-use Reflex::Object;
+use Reflex::Base;
 use Reflex::Timer;
 use Reflex::Callbacks qw(cb_coderef);
 
@@ -38,15 +38,15 @@ ok( (defined $timer), "started timer object" );
 
 ### Create an object to watch the timer.
 
-my $watcher = Reflex::Object->new();
+my $watcher = Reflex::Base->new();
 ok( (defined $watcher), "started watcher object" );
 
 ### The watcher will now watch the timer for a little while.
 #
 # The watcher only exists so that watch() may be called.  A better
-# example would have "tick" handled by one of Reflex::Object's
-# methods.  eg-02-observed-new.pl doesn't use a watcher object since
-# no watch() method is called there.
+# example would have "tick" handled by one of Reflex::Base's methods.
+# eg-02-observed-new.pl doesn't use a watcher object since no watch()
+# method is called there.
 
 my $countdown = 3;
 $watcher->watch(
@@ -61,7 +61,7 @@ $watcher->watch(
 
 ### Allow the timer and its watcher to run until they are done.
 
-Reflex::Object->run_all();
+Reflex->run_all();
 pass("run_all() returned");
 
 exit;

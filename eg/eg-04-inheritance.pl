@@ -45,5 +45,5 @@ my $peer = Reflex::Udp::Echo->new(
 	)
 );
 print "UDP echo service is listening on port $port.\n";
-Reflex::Object->run_all();
+Reflex->run_all();
 exit;

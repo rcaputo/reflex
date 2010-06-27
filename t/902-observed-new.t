@@ -37,7 +37,7 @@ ok( (defined $timer), "started timer object" );
 
 ### Allow the timer and its watcher to run until they are done.
 
-Reflex::Object->run_all();
+Reflex->run_all();
 pass("run_all() returned");
 
 exit;

@@ -17,7 +17,7 @@
 
 package Ttl::TriNand;
 use Moose;
-extends 'Reflex::Object';
+extends 'Reflex::Base';
 use Ttl::TriAnd;
 use Ttl::Not;
 use Reflex::Trait::Observed;

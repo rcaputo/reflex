@@ -264,7 +264,7 @@ eg/eg-06-moose-roles.pl composes an ojbect with Reflex::Role::UdpPeer.
 L<Moose::Manual::Concepts>
 
 L<Reflex>
-L<Reflex::Object>
+L<Reflex::Base>
 L<Reflex::UdpPeer>
 
 L<Reflex/ACKNOWLEDGEMENTS>

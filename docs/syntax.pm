@@ -2,7 +2,7 @@ Documenting Reflex syntax evolution.
 
 =head1 Gathering callbacks.
 
-Reflex::Role::Object
+Reflex::Role::Reactive
 	Has the cb() member.
 	BUILD
 		Maps constructor parameters to callbacks.
@@ -11,10 +11,10 @@ Reflex::Role::Object
 			role callbacks = role watchers
 			no callbacks = unwatched (promise?)
 
-=head1 Reflex::Role::Object::BUILD calls cb_gather()
+=head1 Reflex::Role::Reactive::BUILD calls cb_gather()
 
 emit() syntax is preserved.
-1. Role::Object handles it normally.
+1. Role::Reactive handles it normally.
 2. Local delivery is through the callback object.
 
 $self->emit( event => \%args );
@@ -104,7 +104,7 @@ use Reflex::Timer;
 use Reflex::Callbacks qw(cb_promise);
 use ExampleHelpers qw(eg_say);
 
-my $watcher = Reflex::Object->new();
+my $watcher = Reflex::Base->new();
 
 my $promise;
 my $timer = Reflex::Timer->new(

@@ -11,7 +11,7 @@ use lib qw(../lib);
 {
 	package Reflex::Udp::Echo;
 	use Moose;
-	extends 'Reflex::Object';
+	extends 'Reflex::Base';
 	use Reflex::UdpPeer;
 
 	has port => (
@@ -62,5 +62,5 @@ use lib qw(../lib);
 my $port = 12345;
 my $peer = Reflex::Udp::Echo->new( port => $port );
 print "UDP echo service is listening on port $port.\n";
-Reflex::Object->run_all();
+Reflex->run_all();
 exit;
