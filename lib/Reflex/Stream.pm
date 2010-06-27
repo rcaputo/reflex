@@ -1,139 +1,21 @@
 package Reflex::Stream;
 
 use Moose;
-extends 'Reflex::Handle';
+extends 'Reflex::Object';
 
-# TODO - I've seen output buffers done two ways.  First as a string
-# that's appended to on push and lopped on srite.  Second as an array
-# of chunks.  The theory behind using arrays is that shift is faster
-# than substr($string, 0, 1024) = "".  Or even 4-arg substr().  We
-# should comparatively benchmark them.  Meanwhile, I'm going to use
-# the big string buffer for simplicity.
-#
-# Stored as a string reference so we can modify it without calling
-# accessors for silly things.
-
-# TODO - Buffer put() if not connected.  Flush them after connect.
-
-has out_buffer => (
-	is      => 'rw',
-	isa     => 'ScalarRef',
-	default => sub { my $x = ""; \$x },
+has handle => (
+	is => 'rw',
+	isa => 'FileHandle',
+	required => 1
 );
 
-sub put {
-	my ($self, @chunks) = @_;
-
-	# TODO - Benchmark string vs. array.
-	
-	my $out_buffer = $self->out_buffer();
-	if (length $$out_buffer) {
-		$$out_buffer .= $_ foreach @chunks;
-		return;
-	}
-
-	# Try to flush 'em all.
-	while (@chunks) {
-		my $next = shift @chunks;
-		my $octet_count = syswrite($self->handle(), $next);
-
-		# Hard error.
-		unless (defined $octet_count) {
-			$self->_emit_failure("syswrite");
-			return;
-		}
-
-		use bytes;
-
-		# Wrote it all!  Whooooo!
-		next if $octet_count == length $next;
-
-		# Wrote less than all.  Save the rest, and turn on write
-		# multiplexing.
-
-		$$out_buffer = substr($next, $octet_count);
-		$$out_buffer .= $_ foreach @chunks;
-		$self->wr(1);
-		return;
-	}
-
-	# Flushed it all.  Yay!
-	return;
-}
-
-sub on_handle_readable {
-	my ($self, $args) = @_;
-
-	my $in_buffer   = "";
-	my $octet_count = sysread($args->{handle}, $in_buffer, 65536);
-
-	# Hard error.
-	unless (defined $octet_count) {
-		$self->_emit_failure("sysread");
-		$self->rd(0);
-		return;
-	}
-
-	# Closure.
-	unless ($octet_count) {
-		# TODO - It's getting a little tedious to specify empty args for
-		# events that don't include data.
-		$self->emit(event => "closed", args => {} );
-		$self->rd(0);
-		return;
-	}
-
-	$self->emit(
-		event => "data",
-		args  => {
-			data => $in_buffer
-		},
-	);
-
-	return;
-}
-
-sub on_handle_writable {
-	my ($self, $args) = @_;
-
-	my $out_buffer   = $self->out_buffer();
-	my $octet_count = syswrite($args->{handle}, $$out_buffer);
-
-	unless (defined $octet_count) {
-		$self->_emit_failure("syswrite");
-		$self->wr(0);
-		return;
-	}
-
-	sue bytes;
-
-	# Wrote it all!  Whooooo!
-	if ($octet_count == length $$out_buffer) {
-		$$out_buffer = "";
-		$self->wr(0);
-		return;
-	}
-
-	# Only wrote some.  Remove that.
-	substr($$out_buffer, 0, $octet_count) = "";
-	return;
-}
-
-sub _emit_failure {
-	my ($self, $errfun) = @_;
-
-	$self->emit(
-		event => "failure",
-		args  => {
-			data    => undef,     # TODO - Indicates fail another way.
-			errnum  => ($!+0),
-			errstr  => "$!",
-			errfun  => $errfun,
-		},
-	);
-
-	return;
-}
+with 'Reflex::Role::Streaming' => {
+	handle      => 'handle',
+	method_put  => 'put',
+	cb_error    => 'on_stream_error',
+	cb_data     => 'on_stream_data',
+	cb_closed   => 'on_stream_closed',
+};
 
 1;
 
@@ -153,18 +35,18 @@ Reflex::Collection.
 	use Moose;
 	extends 'Reflex::Stream';
 
-	sub on_stream_data {
+	sub on_handle_data {
 		my ($self, $args) = @_;
 		$self->put($args->{data});
 	}
 
-	sub on_stream_failure {
+	sub on_handle_error {
 		my ($self, $args) = @_;
 		warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
 		$self->emit( event => "stopped", args => {} );
 	}
 
-	sub on_stream_closed {
+	sub on_handle_closed {
 		my ($self, $args) = @_;
 		$self->emit( event => "stopped", args => {} );
 	}
@@ -196,32 +78,67 @@ promise.  This incomplte example comes from eg/eg-38-promise-client.pl:
 =head1 DESCRIPTION
 
 Reflex::Stream reads from and writes to a file handle, most often a
-socket.  It uses Reflex::Handle to read data from the handle when it
-arrives, and to write data to the handle as space becomes available.
-Data that cannot be written right away will be buffered until
-Reflex::Handle says the handle can accept more.
+socket.  It is almost entirely implemented in Reflex::Role::Streaming.
+That role's documentation contains important details that won't be
+covered here.
 
 =head2 Public Attributes
 
-Reflex::Stream inherits attributes from Reflex::Handle.  Please see
-the other module for the latest documentation.
+=head3 handle
 
-One Reflex::Handle attribute to be wary of is rd().  It defaults to
-false, so Reflex::Stream objects don't start off ready to read data.
-This is subject to change.
-
-No other public attributes are defined.
+Reflex::Stream implements a single attribute, handle, that must be set
+to the stream's file handle (which can be a socket or something).
 
 =head2 Public Methods
 
-Reflex::Stream adds its own public methods to those that may be
-inherited by Refex::Handle.
+Reflex::Role::Streaming provides all of Reflex::Stream's methods.
+Reflex::Stream however renames them to make more sense in a class.
 
 =head3 put
 
 The put() method writes one or more chunks of raw octets to the
 stream's handle.  Any data that cannot be written immediately will be
-buffered until Reflex::Handle says it's safe to write again.
+buffered until Reflex::Role::Streaming can write it later.
+
+Please see L<Reflex::Role::Streaming/method_put> for details.
+
+=head2 Callbacks
+
+=head3 on_stream_closed
+
+Subclasses may define on_stream_closed() to be notified when the
+remote end of the stream has closed for output.  No further data will
+be received after receipt of this callback.
+
+on_stream_closed() receives no parameters of note.
+
+The default on_stream_closed() callback will emit a "closed" event.
+
+=head3 on_stream_data
+
+on_stream_data() will be called whenever Reflex::Stream receives data.
+It will include one named parameter in $_[1], "data", containing raw
+octets received from the stream.
+
+	sub on_stream_data {
+		my ($self, $param) = @_;
+		print "Got data: $param->{data}\n";
+	}
+
+The default on_stream_data() callback will emit a "data" event.
+
+=head3 on_stream_error
+
+on_stream_error() will be called if an error occurs reading from or
+writing to the stream's handle.  Its parameters are the usual for
+Reflex:
+
+	sub on_stream_error {
+		my ($self, $param) = @_;
+		print "$param->{errfun} error $param->{errnum}: $param->{errstr}\n";
+	}
+
+The default on_stream_error() callback will emit a "error" event.
 
 =head2 Public Events
 
@@ -232,35 +149,28 @@ Reflex::Stream emits stream-related events, naturally.
 The "closed" event indicates that the stream is closed.  This is most
 often caused by the remote end of a socket closing their connection.
 
+See L</on_stream_closed> for more details.
+
 =head3 data
 
 The "data" event is emitted when a stream produces data to work with.
 It includes a single parameter, also "data", containing the raw octets
 read from the handle.
 
-=head3 failure
+See L</on_stream_data> for more details.
 
-Reflex::Stream emits "failure" when any of a number of calls fails.
-This event's parameters include:
+=head3 error
 
-=over 2
+Reflex::Stream emits "error" when any of a number of calls fails.
 
-=item * data - Undefined, since no data could be read.
-
-=item * errnum - The numeric value of $! at the time of error.
-
-=item * errstr - The string value of $! at the time of error.
-
-=item * errfun - A brief description of the function call that failed.
-
-=back
+See L</on_stream_error> for more details.
 
 =head1 EXAMPLES
 
 eg/EchoStream.pm in the distribution is the same EchoStream that
 appears in the SYNOPSIS.
 
-eg/eg-38-promise-client.pl shows a lengthy condvar-esque usage of
+eg/eg-38-promise-client.pl shows a lengthy inline usage of
 Reflex::Stream and a few other classes.
 
 =head1 SEE ALSO

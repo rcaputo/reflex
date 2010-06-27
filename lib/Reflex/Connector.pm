@@ -39,7 +39,7 @@ sub BUILD {
 
 	my $packed_address;
 	if ($handle->isa("IO::Socket::INET")) {
-		# TODO - Non-bollocking resolver.
+		# TODO - Need a non-bollocking resolver.
 		my $inet_address = inet_aton($self->remote_addr());
 		$packed_address = pack_sockaddr_in($self->remote_port(), $inet_address);
 	}

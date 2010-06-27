@@ -4,7 +4,7 @@ extends 'Reflex::POE::Wheel';
 use POE::Wheel::Run;
 
 # These are class methods, returning static class data.
-# TODO - How does Moose do this?
+# TODO - What's the proper way to do this with Moose?
 
 sub event_to_index {
 	return(

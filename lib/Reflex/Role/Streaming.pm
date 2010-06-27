@@ -27,6 +27,15 @@ parameter cb_error => (
 	lazy      => 1,
 );
 
+parameter cb_closed => (
+	isa       => 'Str',
+	default   => sub {
+		my $self = shift;
+		"on_" . $self->handle() . "_closed";
+	},
+	lazy      => 1,
+);
+
 parameter method_put => (
 	isa       => 'Str',
 	default   => sub {
@@ -42,6 +51,7 @@ role {
 	my $h         = $p->handle();
 	my $cb_data   = $p->cb_data();
 	my $cb_error  = $p->cb_error();
+	my $cb_closed = $p->cb_closed();
 
 	with 'Reflex::Role::Readable' => {
 		handle  => $h,
@@ -62,13 +72,20 @@ role {
 		my ($self, $arg) = @_;
 
 		my $octet_count = sysread($arg->{handle}, my $buffer = "", 65536);
+
+		# Got data.
 		if ($octet_count) {
 			$self->$cb_data({ data => $buffer });
 			return;
 		}
 
-		return if defined $octet_count;
+		# EOF
+		if (defined $octet_count) {
+			$self->$cb_closed({ });
+			return;
+		}
 
+		# Quelle erreur!
 		$self->cb_error(
 			{
 				errnum => ($! + 0),
@@ -78,10 +95,10 @@ role {
 		);
 	};
 
-	method $self->method_put() => sub {
+	method $p->method_put() => sub {
 		my ($self, @chunks) = @_;
 
-		# TODO - Benchmark string vs. array.
+		# TODO - Benchmark string vs. array buffering.
 
 		use bytes;
 
@@ -125,8 +142,9 @@ role {
 	};
 
 	# Default callbacks that re-emit their parameters.
-	method $cb_data   => emit_an_event("${h}_data");
-	method $cb_error  => emit_an_event("${h}_error");
+	method $cb_data   => emit_an_event("data");
+	method $cb_error  => emit_an_event("error");
+	method $cb_closed => emit_an_event("closed");
 };
 
 1;

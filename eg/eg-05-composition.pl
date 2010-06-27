@@ -9,7 +9,7 @@ use lib qw(../lib);
 # Reflex::UdpPeer object rather than inheriting from that class.
 
 {
-	package Reflex::UdpPeer::Echo;
+	package Reflex::Udp::Echo;
 	use Moose;
 	extends 'Reflex::Object';
 	use Reflex::UdpPeer;
@@ -20,12 +20,17 @@ use lib qw(../lib);
 	);
 
 	has peer => (
-		isa     => 'Reflex::UdpPeer|Undef',
+		isa     => 'Maybe[Reflex::UdpPeer]',
 		is      => 'rw',
 		traits  => ['Reflex::Trait::Observed'],
 		setup   => sub {
 			my $self = shift;
-			Reflex::UdpPeer->new(port => $self->port());
+			Reflex::UdpPeer->new(
+				socket => IO::Socket::INET->new(
+					LocalPort => $self->port(),
+					Proto     => 'udp',
+				)
+			)
 		},
 	);
 
@@ -46,6 +51,7 @@ use lib qw(../lib);
 
 	sub on_peer_error {
 		my ($self, $args) = @_;
+
 		warn "$args->{op} error $args->{errnum}: $args->{errstr}";
 		$self->peer(undef);
 	}
@@ -54,7 +60,7 @@ use lib qw(../lib);
 # Main.
 
 my $port = 12345;
-my $peer = Reflex::UdpPeer::Echo->new( port => $port );
+my $peer = Reflex::Udp::Echo->new( port => $port );
 print "UDP echo service is listening on port $port.\n";
 Reflex::Object->run_all();
 exit;

@@ -9,16 +9,16 @@ use lib qw(../lib);
 # the composition architectures in past examples.
 
 {
-	package Reflex::UdpPeer::Echo;
+	package Reflex::Udp::Echo;
 	use Moose;
 	extends 'Reflex::UdpPeer';
 
-	sub on_udppeer_datagram {
+	sub on_socket_datagram {
 		my ($self, $args) = @_;
 		my $data = $args->{datagram};
 
 		if ($data =~ /^\s*shutdown\s*$/) {
-			$self->destruct();
+			$self->stop_socket_readable();
 			return;
 		}
 
@@ -28,7 +28,7 @@ use lib qw(../lib);
 		);
 	}
 
-	sub on_udppeer_error {
+	sub on_socket_error {
 		my ($self, $args) = @_;
 		warn "$args->{op} error $args->{errnum}: $args->{errstr}";
 		$self->destruct();
@@ -38,7 +38,12 @@ use lib qw(../lib);
 # Main.
 
 my $port = 12345;
-my $peer = Reflex::UdpPeer::Echo->new( port => $port );
+my $peer = Reflex::Udp::Echo->new(
+	socket => IO::Socket::INET->new(
+		LocalPort => $port,
+		Proto     => 'udp',
+	)
+);
 print "UDP echo service is listening on port $port.\n";
 Reflex::Object->run_all();
 exit;

@@ -3,7 +3,8 @@ use MooseX::Role::Parameterized;
 use Reflex::Util::Methods qw(emit_an_event);
 
 # TODO - Reflex::Role::Readable and Writable are nearly identical.
-# Can they be abstracted further?
+# Can they be abstracted further?  Possibly composed as parameterized
+# instances of a common base role?
 
 use Scalar::Util qw(weaken);
 
@@ -44,6 +45,15 @@ parameter method_resume => (
 	lazy      => 1,
 );
 
+parameter method_stop => {
+	isa       => 'Str',
+	default   => sub {
+		my $self = shift;
+		"stop_" . $self->handle() . "_writable";
+	},
+	lazy      => 1,
+};
+
 role {
 	my $p = shift;
 
@@ -51,8 +61,6 @@ role {
 	my $active        = $p->active();
 
 	my $cb_name       = $p->cb_ready();
-	my $pause_name    = $p->method_pause();
-	my $resume_name   = $p->method_resume();
 	my $setup_name    = "_setup_${h}_writable";
 
 	method $setup_name => sub {
@@ -72,14 +80,19 @@ role {
 		$POE::Kernel::poe_kernel->select_pause_write($self->$h());
 	};
 
-	method $pause_name => sub {
+	method $p->method_pause() => sub {
 		my $self = shift;
 		$POE::Kernel::poe_kernel->select_pause_read($self->$h());
 	};
 
-	method $resume_name => sub {
+	method $p->method_resume() => sub {
 		my $self = shift;
 		$POE::Kernel::poe_kernel->select_resume_read($self->$h());
+	};
+
+	method $p->method_stop() => sub {
+		my $self = shift;
+		$POE::Kernel::poe_kernel->select_read($self->$h(), undef);
 	};
 
 	after BUILD => sub {
@@ -90,7 +103,7 @@ role {
 	# Turn off watcher during destruction.
 	after DEMOLISH => sub {
 		my $self = shift;
-		$POE::Kernel::poe_kernel->select_write($self->h(), undef);
+		$POE::Kernel::poe_kernel->select_write($self->$h(), undef);
 	};
 
 	# Part of the POE/Reflex contract.
@@ -100,7 +113,7 @@ role {
 	};
 
 	# Default callbacks that re-emit their parameters.
-	method $cb_name => emit_an_event("${h}_writable");
+	method $cb_name => emit_an_event("writable");
 };
 
 1;
@@ -151,6 +164,7 @@ named "XYZ" would generates these methods by default:
 	cb_ready      => "on_XYZ_writable",
 	method_pause  => "pause_XYZ_writable",
 	method_resume => "resume_XYZ_writable",
+	method_stop   => "stop_XYZ_writable",
 
 This naming convention allows the role to be used for more than one
 handle in the same class.  Each handle will have its own name, and the
@@ -195,6 +209,13 @@ the watcher.  It is "pause_${handle}_writable" by default.
 
 C<method_resume> may be used to resume paused writability watchers, or
 to activate them if they are started in an inactive state.
+
+=head3 method_stop
+
+C<method_stop> may be used to stop readability watchers.  These
+watchers may not be restarted once they've been stopped.  If you want
+to pause and resume watching, see C<method_pause> and
+C<method_resume>.
 
 =head1 EXAMPLES
 

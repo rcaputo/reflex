@@ -4,7 +4,7 @@ use Reflex::Util::Methods qw(emit_an_event);
 
 parameter handle => (
 	isa     => 'Str',
-	default => 'handle',
+	default => 'socket',
 );
 
 parameter cb_datagram => (
@@ -34,6 +34,15 @@ parameter method_send => (
 	lazy      => 1,
 );
 
+parameter method_stop => (
+	isa       => 'Str',
+	default   => sub {
+		my $self = shift;
+		"stop_" . $self->handle();
+	},
+	lazy      => 1,
+);
+
 parameter max_datagram_size => (
 	isa     => 'Int',
 	is      => 'rw',
@@ -50,6 +59,11 @@ role {
 
 	with 'Reflex::Role::Readable' => {
 		handle => $h,
+	};
+
+	method $p->method_stop() => sub {
+		my $self = shift;
+		$self->$h(undef);
 	};
 
 	method "on_${h}_readable" => sub {
@@ -108,8 +122,8 @@ role {
 	};
 
 	# Default callbacks that re-emit their parameters.
-	method $cb_datagram => emit_an_event("${h}_data");
-	method $cb_error    => emit_an_event("${h}_error");
+	method $cb_datagram => emit_an_event("datagram");
+	method $cb_error    => emit_an_event("error");
 };
 
 1;
@@ -117,10 +131,6 @@ role {
 __END__
 
 
-sub destruct {
-	my $self = shift;
-	$self->handle(undef);
-}
 
 1;
 
@@ -128,12 +138,14 @@ __END__
 
 =head1 NAME
 
-Reflex::Role::UdpPeer - Add non-blocking UDP networking to an object.
+Reflex::Role::Recving - Mix standard send/recv code into a class.
 
 =head1 SYNOPSIS
 
 This UDP echo service comes from a more complete program,
 eg/eg-06-moose-roles.pl in Reflex's tarball.
+
+TODO - New!
 
 	package Reflex::UdpPeer::Echo;
 	use Moose;

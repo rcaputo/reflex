@@ -4,42 +4,51 @@ use warnings;
 use strict;
 use lib qw(../lib);
 
-# An object's emitted events can also trigger methods in the subclass.
 # This example creates a UDP echo server using a role rather than
 # inheritance.
 
 {
-	package Reflex::UdpPeer::Echo;
+	package Reflex::Udp::Echo;
 	use Moose;
 	extends 'Reflex::Object';
-	with 'Reflex::Role::UdpPeer';
+	use IO::Socket::INET;
 
-	sub on_udppeer_datagram {
-		my ($self, $args) = @_;
-		my $data = $args->{datagram};
+	has socket => (
+		is        => 'ro',
+		isa       => 'FileHandle',
+		required  => 1,
+	);
 
-		if ($data =~ /^\s*shutdown\s*$/) {
-			$self->destruct();
+	with 'Reflex::Role::Recving' => {
+		handle => 'socket',
+
+		# Expose send_socket() as send().
+		-alias    => { send_socket => 'send' },
+		-excludes => 'send_socket'
+		
+	};
+
+	sub on_socket_datagram {
+		my ($self, $arg) = @_;
+
+		if ($arg->{datagram} =~ /^\s*shutdown\s*$/) {
+			$self->stop_socket_readable();
 			return;
 		}
 
-		$self->send(
-			datagram    => $data,
-			remote_addr => $args->{remote_addr},
-		);
-	}
-
-	sub on_udppeer_error {
-		my ($self, $args) = @_;
-		warn "$args->{op} error $args->{errnum}: $args->{errstr}";
-		$self->destruct();
+		$self->send(%$arg);
 	}
 }
 
 # Main.
 
 my $port = 12345;
-my $peer = Reflex::UdpPeer::Echo->new( port => $port );
+my $peer = Reflex::Udp::Echo->new(
+	socket => IO::Socket::INET->new(
+		LocalPort => $port,
+		Proto     => 'udp',
+	)
+);
 print "UDP echo service is listening on port $port.\n";
 Reflex::Object->run_all();
 exit;

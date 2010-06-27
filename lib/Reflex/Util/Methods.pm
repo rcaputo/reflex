@@ -10,12 +10,10 @@ our @EXPORT_OK = qw(emit_an_event);
 
 sub emit_an_event {
 	my ($event_name) = @_;
-	return(
-		$cb_name => sub {
-			my ($self, $args) = @_;
-			$self->emit(event => $event_name, args => $args);
-		}
-	);
+	return sub {
+		my ($self, $args) = @_;
+		$self->emit(event => $event_name, args => $args);
+	};
 }
 
 1;
@@ -50,8 +48,8 @@ Reflex::Util::Methods - helper functions to generate methods
 		# (Lots of stuff omitted here.)
 
 		# Default callbacks that re-emit their parameters.
-		method $cb_datagram => emit_an_event("${h}_data");
-		method $cb_error    => emit_an_event("${h}_error");
+		method $cb_datagram => emit_an_event("data");
+		method $cb_error    => emit_an_event("error");
 	};
 
 =head1 DESCRIPTION

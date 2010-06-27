@@ -13,12 +13,15 @@ END {
 our @CARP_NOT = (__PACKAGE__);
 
 # Singleton POE::Session.
-# TODO - Extract the POE bits into another role.
+# TODO - Extract the POE bits into another role if we want to support
+# other event loops at the top level rather than beneath POE.
 
-# TODO - How to prevent this from being redefined?
+# TODO - How to prevent these from being redefined?
+# TODO - Such as if POE is loaded elsewhere first?
+#
 #sub POE::Kernel::ASSERT_DEFAULT () { 1 }
+#sub POE::Kernel::CATCH_EXCEPTIONS () { 0 }
 
-sub POE::Kernel::CATCH_EXCEPTIONS () { 0 }
 use POE;
 use Reflex::POE::Session;
 
@@ -92,7 +95,7 @@ my $singleton_session_id = POE::Session->create(
 			return if Reflex::POE::Session->deliver($_[SENDER]->ID, $event, $args);
 
 			# Unhandled event.
-			# TODO - Anything special?
+			# TODO - Should anything special be done in this case?
 		},
 
 		### Support POE::Wheel classes.
@@ -243,8 +246,8 @@ sub BUILD {
 		}
 
 		# TODO - Who is the watcher?
-		# TODO - watch() takes multiple event/callback pairs.  We can
-		# combine them into a hash and call watch() once.
+		# TODO - Optimization!  watch() takes multiple event/callback
+		# pairs.  We can combine them into a hash and call watch() once.
 		$self->watch($self, $1 => $value);
 		next CALLBACK;
 	}
@@ -332,8 +335,9 @@ sub _is_watched {
 sub emit {
 	my ($self, @args) = @_;
 
-	# TODO - Checking arguments is tedious, but check_args() method
-	# calls add up.
+	# TODO - Is there a better way to check parameters?  Checking them
+	# in custom code is tedious.  Calling check_args() is relatively
+	# slow.  Can we have our peanut butter and our chocolate together?
 
 	my $args = $self->check_args(
 		\@args,

@@ -1,7 +1,9 @@
 use Moose;
 use Socket qw(AF_UNIX SOCK_STREAM PF_UNSPEC);
 use Proxy;
-use Stream;
+use Reflex::Stream;
+1;
+
 
 # Socket pair 1.  Writes to either end are readable at the other.
 my ($socket_1a, $socket_1b);
@@ -17,8 +19,8 @@ my $p = Proxy->new(
 	handle_b => $socket_2b,
 );
 
-my $s1 = Stream->new( handle => $socket_1a );
-my $s2 = Stream->new( handle => $socket_2a );
+my $s1 = Reflex::Stream->new( handle => $socket_1a );
+my $s2 = Reflex::Stream->new( handle => $socket_2a );
 
 # Write data to Socket 1a.
 # It will appear on Socket 1b, via the socketpair.

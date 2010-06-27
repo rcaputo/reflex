@@ -20,8 +20,10 @@ sub next {
 
 	my $queue = $self->queue();
 
-	# TODO - Probably should bail out if the event loop ends.
-	$POE::Kernel::poe_kernel->run_one_timeslice() while @$queue < 1;
+	# Run while the queue is empty and POE has things to do.
+	1 while (
+		@$queue < 1 and $POE::Kernel::poe_kernel->run_one_timeslice()
+	);
 
 	return shift @$queue;
 }
