@@ -12,9 +12,9 @@ has handle => (
 with 'Reflex::Role::Streaming' => {
 	handle      => 'handle',
 	method_put  => 'put',
-	cb_error    => 'on_stream_error',
-	cb_data     => 'on_stream_data',
-	cb_closed   => 'on_stream_closed',
+	cb_error    => 'on_error',
+	cb_data     => 'on_data',
+	cb_closed   => 'on_closed',
 };
 
 1;
@@ -35,18 +35,18 @@ Reflex::Collection.
 	use Moose;
 	extends 'Reflex::Stream';
 
-	sub on_handle_data {
+	sub on_data {
 		my ($self, $args) = @_;
 		$self->put($args->{data});
 	}
 
-	sub on_handle_error {
+	sub on_error {
 		my ($self, $args) = @_;
 		warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
 		$self->emit( event => "stopped", args => {} );
 	}
 
-	sub on_handle_closed {
+	sub on_closed {
 		my ($self, $args) = @_;
 		$self->emit( event => "stopped", args => {} );
 	}
@@ -104,41 +104,40 @@ Please see L<Reflex::Role::Streaming/method_put> for details.
 
 =head2 Callbacks
 
-=head3 on_stream_closed
+=head3 on_closed
 
-Subclasses may define on_stream_closed() to be notified when the
-remote end of the stream has closed for output.  No further data will
-be received after receipt of this callback.
+Subclasses may define on_closed() to be notified when the remote end
+of the stream has closed for output.  No further data will be received
+after receipt of this callback.
 
-on_stream_closed() receives no parameters of note.
+on_closed() receives no parameters of note.
 
-The default on_stream_closed() callback will emit a "closed" event.
+The default on_closed() callback will emit a "closed" event.
 
-=head3 on_stream_data
+=head3 on_data
 
-on_stream_data() will be called whenever Reflex::Stream receives data.
-It will include one named parameter in $_[1], "data", containing raw
+on_data() will be called whenever Reflex::Stream receives data.  It
+will include one named parameter in $_[1], "data", containing raw
 octets received from the stream.
 
-	sub on_stream_data {
+	sub on_data {
 		my ($self, $param) = @_;
 		print "Got data: $param->{data}\n";
 	}
 
-The default on_stream_data() callback will emit a "data" event.
+The default on_data() callback will emit a "data" event.
 
-=head3 on_stream_error
+=head3 on_error
 
-on_stream_error() will be called if an error occurs reading from or
-writing to the stream's handle.  Its parameters are the usual for
-Reflex:
+on_error() will be called if an error occurs reading from or writing
+to the stream's handle.  Its parameters are the usual for Reflex:
 
-	sub on_stream_error {
+	sub on_error {
 		my ($self, $param) = @_;
 		print "$param->{errfun} error $param->{errnum}: $param->{errstr}\n";
 	}
 
-The default on_stream_error() callback will emit a "error" event.
+The default on_error() callback will emit a "error" event.
 
 =head2 Public Events
 
@@ -149,7 +148,7 @@ Reflex::Stream emits stream-related events, naturally.
 The "closed" event indicates that the stream is closed.  This is most
 often caused by the remote end of a socket closing their connection.
 
-See L</on_stream_closed> for more details.
+See L</on_closed> for more details.
 
 =head3 data
 
@@ -157,13 +156,13 @@ The "data" event is emitted when a stream produces data to work with.
 It includes a single parameter, also "data", containing the raw octets
 read from the handle.
 
-See L</on_stream_data> for more details.
+See L</on_data> for more details.
 
 =head3 error
 
 Reflex::Stream emits "error" when any of a number of calls fails.
 
-See L</on_stream_error> for more details.
+See L</on_error> for more details.
 
 =head1 EXAMPLES
 

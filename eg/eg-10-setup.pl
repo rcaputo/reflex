@@ -27,7 +27,7 @@ use lib qw(../lib);
 		isa       => 'Reflex::Timer',
 		is        => 'rw',
 		setup     => sub {
-			Reflex::Timer->new( interval => 1, auto_repeat => 1 )
+			Reflex::Timer->new( interval => 0.1, auto_repeat => 1 )
 		},
 	);
 

@@ -1,9 +1,9 @@
+use lib qw(../lib);
+
 use Moose;
 use Socket qw(AF_UNIX SOCK_STREAM PF_UNSPEC);
 use Proxy;
 use Reflex::Stream;
-1;
-
 
 # Socket pair 1.  Writes to either end are readable at the other.
 my ($socket_1a, $socket_1b);

@@ -32,7 +32,7 @@ use lib qw(../lib);
 
 		$self->ticker(
 			Reflex::Timer->new(
-				interval    => 1,
+				interval    => 0.1,
 				auto_repeat => 1,
 			)
 		);
