@@ -120,9 +120,9 @@ my $oh = ObjectHandler->new();
 
 my $rh = RoleHandler->new();
 
-### Poll for events with a condvar-like promise construct.  Goes last
-### because the while() loop will "block".  Meanwhile, next() is also
-### allowing the other timers to run.
+### Poll for events with promises.  Goes last because the while() loop
+### will "block".  Meanwhile, next() is also allowing the other timers
+### to run.
 
 my $pt = Reflex::Timer->new(
 	interval    => 1 + rand(),

@@ -34,7 +34,7 @@ __END__
 
 =head1 NAME
 
-Reflex::Callback::Promise - Condvar-like non-callback adapter
+Reflex::Callback::Promise - Non-callback, inline Promise adapter
 
 =head1 SYNOPSIS
 
@@ -64,10 +64,31 @@ Low-level usage:
 
 =head1 DESCRIPTION
 
-Reflex::Callback::Promise maps the generic Reflex::Callback interface
-to non-callback promises, which are kind of like condvars.  In most
-cases, Reflex::Callbacks' cb_promise() or other syntactic sweeteners
-will be used instead of raw Reflex::Callback::Promise objects.
+"In computer science, future, promise, and delay refer to constructs
+used for synchronization in some concurrent programming languages.
+They describe an object that acts as a proxy for a result that is
+initially not known, usually because the computation of its value has
+not yet completed." --
+http://en.wikipedia.org/wiki/Promise_%28programming%29
+
+Reflex::Callback::Promise enables Reflex objects to be used as inline
+event streams.  Reflex::Callback::Promise and Reflex::Role::Reactive
+transparently handle the conversion.  Reflex objects do not need
+special code to be used this way.
+
+In most cases, Reflex::Callbacks::cb_promise() or other syntactic
+sweeteners will be used instead of raw Reflex::Callback::Promise
+objects.  For example, promises are implicitly enabled if no callbacks
+are defined:
+
+	my $t = Reflex::Timer->new(
+		interval    => 1,
+		auto_repeat => 1,
+	);
+
+	while (my $event = $t->next()) {
+		print "next() returned an event\n";
+	}
 
 =head2 new
 

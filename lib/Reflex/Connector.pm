@@ -126,8 +126,8 @@ source for a more complete example.
 		$self->stop();
 	}
 
-Reflex objects may also be used in condvar-like ways.  This excerpts
-from eg/eg-38-promise-client.pl in the distribution.
+Reflex objects may also be used as promises.  This excerpts from
+eg/eg-38-promise-client.pl in the distribution.
 
 	my $connector = Reflex::Connector->new(remote_port => 12345);
 	my $event = $connector->next();
@@ -209,8 +209,8 @@ It will return a "socket", the value of which is the connected socket.
 L<Reflex::Client> extends Reflex::Connector to include a
 Reflex::Stream when the socket is connected.
 
-eg/eg-38-promise-client.pl shows how to use Reflex::Connector in a
-condvar-like fashion.
+eg/eg-38-promise-client.pl shows how to use Reflex::Connector may be
+used as a promise.
 
 =head1 SEE ALSO
 

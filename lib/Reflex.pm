@@ -45,7 +45,7 @@ Reflex - Class library for flexible, reactive programs.
 =head1 SYNOPSIS
 
 	# See eg-18-synopsis-no-moose.pl if you don't like Moose.
-	# See eg-32-promise-tiny.pl if you prefer condvars.
+	# See eg-32-promise-tiny.pl if you prefer promises (condvar-like).
 	# See eg-36-coderefs-tiny.pl if you prefer coderefs and/or closures.
 
 	{
@@ -164,11 +164,11 @@ decided upon.
 A complete, runnable version of the above example is available as
 eg/eg-36-tiny-coderefs.pl in the distribution.
 
-=head2 Condvars Instead of Callbacks
+=head2 Promises Instead of Callbacks
 
 Callback haters are not left out.  Reflex objects may also be used as
-condvars.  The following example is identical in function to the
-previous coderef callback example, but it doesn't use callbacks at
+inline promises.  The following example is identical in function to
+the previous coderef callback example, but it doesn't use callbacks at
 all.
 
 It may not be obvious, but the same emit() method drives all of
@@ -224,7 +224,7 @@ Reflex bundles a number of helpful base classes to get things started.
   Reflex::Callback - base class for Reflex callbacks
   | Reflex::Callback::CodeRef - simple coderef callback adapter
   | Reflex::Callback::Method - adapts callbacks to methods
-  | Reflex::Callback::Promise - adapts callbacks to condvars
+  | Reflex::Callback::Promise - adapts callbacks to promises (condvar-like)
   Reflex::POE::Event - represents POE events in Reflex
   Reflex::POE::Postback - represents POE postbacks in Reflex
   Reflex::Trait::EmitsOnChange - emit events when a member's value changes

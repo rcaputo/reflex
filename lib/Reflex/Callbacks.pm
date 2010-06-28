@@ -343,11 +343,11 @@ cb_promise() takes a scalar reference.  This reference will be
 populated with a Reflex::Callback::Promise object.
 
 cb_promise() returns two values that are suitable to insert onto a
-Reflex::Base's constructor.  The first value is a special event
-name, "on_promise", that tells Reflex::Base objects they may be used
-as promises or in a condvar-like context.  The second return value is
-the same Reflex::Callback::Promise object that was inserted into
-cb_promise()'s parameter.
+Reflex::Base's constructor.  The first value is a special event name,
+"on_promise", that tells Reflex::Base objects they may be used inline
+as promises.  The second return value is the same
+Reflex::Callback::Promise object that was inserted into cb_promise()'s
+parameter.
 
 	use Reflex::Callbacks qw(cb_promise);
 	my $promise;
