@@ -1,6 +1,6 @@
 package Reflex::Role::Readable;
 use MooseX::Role::Parameterized;
-use Reflex::Util::Methods qw(emit_an_event);
+use Reflex::Util::Methods qw(emit_an_event method_name);
 
 # TODO - Reflex::Role::Readable and Writable are nearly identical.
 # Can they be abstracted further?  Possibly composed as parameterized
@@ -18,41 +18,10 @@ parameter active => (
 	default => 1,
 );
 
-parameter cb_ready => (
-	isa       => 'Str',
-	default   => sub {
-		my $self = shift;
-		"on_" . $self->handle() . "_readable";
-	},
-	lazy      => 1,
-);
-
-parameter method_pause => (
-	isa       => 'Str',
-	default   => sub {
-		my $self = shift;
-		"pause_" . $self->handle() . "_readable";
-	},
-	lazy      => 1,
-);
-
-parameter method_resume => (
-	isa       => 'Str',
-	default   => sub {
-		my $self = shift;
-		"resume_" . $self->handle() . "_readable";
-	},
-	lazy      => 1,
-);
-
-parameter method_stop => {
-	isa       => 'Str',
-	default   => sub {
-		my $self = shift;
-		"stop_" . $self->handle() . "_readable";
-	},
-	lazy      => 1,
-};
+parameter cb_ready      => method_name("on", "handle", "readable");
+parameter method_pause  => method_name("pause", "handle", "readable");
+parameter method_resume => method_name("resume", "handle", "readable");
+parameter method_stop   => method_name("stop", "handle", "readable");
 
 role {
 	my $p = shift;

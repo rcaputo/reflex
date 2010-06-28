@@ -1,6 +1,6 @@
 package Reflex::Role::Streaming;
 use MooseX::Role::Parameterized;
-use Reflex::Util::Methods qw(emit_an_event);
+use Reflex::Util::Methods qw(emit_an_event method_name);
 
 use Scalar::Util qw(weaken);
 
@@ -9,41 +9,10 @@ parameter handle => (
 	default => 'handle',
 );
 
-parameter cb_data => (
-	isa       => 'Str',
-	default   => sub {
-		my $self = shift;
-		"on_" . $self->handle() . "_data";
-	},
-	lazy      => 1,
-);
-
-parameter cb_error => (
-	isa       => 'Str',
-	default   => sub {
-		my $self = shift;
-		"on_" . $self->handle() . "_error";
-	},
-	lazy      => 1,
-);
-
-parameter cb_closed => (
-	isa       => 'Str',
-	default   => sub {
-		my $self = shift;
-		"on_" . $self->handle() . "_closed";
-	},
-	lazy      => 1,
-);
-
-parameter method_put => (
-	isa       => 'Str',
-	default   => sub {
-		my $self = shift;
-		"put_" . $self->handle();
-	},
-	lazy      => 1,
-);
+parameter cb_data     => method_name("on", "handle", "data");
+parameter cb_error    => method_name("on", "handle", "error");
+parameter cb_closed   => method_name("on", "handle", "closed");
+parameter method_put  => method_name("put", "handle", undef);
 
 role {
 	my $p = shift;

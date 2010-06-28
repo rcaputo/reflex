@@ -1,47 +1,16 @@
 package Reflex::Role::Recving;
 use MooseX::Role::Parameterized;
-use Reflex::Util::Methods qw(emit_an_event);
+use Reflex::Util::Methods qw(emit_an_event method_name);
 
 parameter handle => (
 	isa     => 'Str',
 	default => 'socket',
 );
 
-parameter cb_datagram => (
-	isa       => 'Str',
-	default   => sub {
-		my $self = shift;
-		"on_" . $self->handle() . "_datagram";
-	},
-	lazy      => 1,
-);
-
-parameter cb_error => (
-	isa       => 'Str',
-	default   => sub {
-		my $self = shift;
-		"on_" . $self->handle() . "_error";
-	},
-	lazy      => 1,
-);
-
-parameter method_send => (
-	isa       => 'Str',
-	default   => sub {
-		my $self = shift;
-		"send_" . $self->handle();
-	},
-	lazy      => 1,
-);
-
-parameter method_stop => (
-	isa       => 'Str',
-	default   => sub {
-		my $self = shift;
-		"stop_" . $self->handle();
-	},
-	lazy      => 1,
-);
+parameter cb_datagram => method_name("on", "handle", "datagram");
+parameter cb_error    => method_name("on", "handle", "error");
+parameter method_send => method_name("send", "handle", undef);
+parameter method_stop => method_name("stop", "handle", undef);
 
 parameter max_datagram_size => (
 	isa     => 'Int',

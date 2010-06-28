@@ -6,7 +6,7 @@ use strict;
 use Exporter;
 use base 'Exporter';
 
-our @EXPORT_OK = qw(emit_an_event);
+our @EXPORT_OK = qw(emit_an_event method_name);
 
 sub emit_an_event {
 	my ($event_name) = @_;
@@ -14,6 +14,17 @@ sub emit_an_event {
 		my ($self, $args) = @_;
 		$self->emit(event => $event_name, args => $args);
 	};
+}
+
+sub method_name {
+	my ($prefix, $member, $suffix) = @_;
+	return(
+		isa     => 'Str',
+		lazy    => 1,
+		default => sub {
+			join("_", grep { defined() } $prefix, shift()->$member(), $suffix)
+		},
+	);
 }
 
 1;
@@ -30,12 +41,14 @@ Reflex::Util::Methods - helper functions to generate methods
 
 	package Reflex::Role::Recving;
 	use MooseX::Role::Parameterized;
-	use Reflex::Util::Methods qw(emit_an_event);
+	use Reflex::Util::Methods qw(emit_an_event method_name);
 
 	parameter handle => (
 		isa     => 'Str',
 		default => 'handle',
 	);
+
+	parameter cb_datagram => method_name("on", "handle", "writable");
 
 	# (cb_datagram and cb_error omitted, among other things.)
 
@@ -57,14 +70,33 @@ Reflex::Util::Methods - helper functions to generate methods
 Reflex::Util::Methods defines utility functions that generate methods
 so developers don't have to.
 
-=head2 emit_and_event
+=head2 emit_an_event
 
-emit_and_event() takes one parameter: the name of an event to emit.
-It returns an anonymous method that will emit that event, passing its
-parameters with the event.
+emit_an_event() generates a method body that will emit() a Reflex
+event.  It was created to define default methods for Reflex roles.
 
-emit_an_event() methods take two parameters: $self and an anonymous
-hashref of named parameters.
+emit_an_event() takes one parameter: the name of an event to emit.  It
+returns an anonymous method that will emit that event, passing its
+parameters with the event.  See the SYNOPSIS for an example.
+
+=head2 method_name
+
+method_name() generates a MooseX::Role::Parameterized declaration for
+method name parameters.  Many Reflex roles accept callback and method
+names for customization by their consumers.  method_name() eliminates
+some of the tedium of declaring these parameters.
+
+method_name() takes two or three parameters: a method prefix, a member
+name, and an optional method suffix.  The parameter's default value
+will be the prefix, the member's value, and suffix catenated with
+underscores.
+
+In the following example, if handle_name() is "XYZ", then cb_foo()
+will be "on_XYZ_foo" by default.  It can of course be overridden by
+the consumer.
+
+	parameter handle_name => ( ... );
+	cb_foo => method_name("on", "handle_name", "foo");
 
 =head1 EXAMPLES
 
