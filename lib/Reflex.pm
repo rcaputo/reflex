@@ -210,11 +210,11 @@ The basic modules upon which most everything else is built.
 
 =over 2
 
-=item Reflex − Class library for flexible, reactive programs.
+=item Reflex - Class library for flexible, reactive programs.
 
-=item Reflex::Base − Base class for reactive (aka, event driven) objects.
+=item Reflex::Base - Base class for reactive (aka, event driven) objects.
 
-=item Reflex::Role::Reactive − Make an object reactive (aka, event driven).
+=item Reflex::Role::Reactive - Make an object reactive (aka, event driven).
 
 =back
 
@@ -226,15 +226,15 @@ be used inline without callbacks at all.
 
 =over 2
 
-=item Reflex::Callback − Generic callback adapters to simplify calling back
+=item Reflex::Callback - Generic callback adapters to simplify calling back
 
-=item Reflex::Callback::CodeRef − Callback adapter for plain code references
+=item Reflex::Callback::CodeRef - Callback adapter for plain code references
 
-=item Reflex::Callback::Method − Callback adapter for class and object
+=item Reflex::Callback::Method - Callback adapter for class and object
 
-=item Reflex::Callback::Promise − Non−callback, inline Promise adapter
+=item Reflex::Callback::Promise - Non-callback, inline Promise adapter
 
-=item Reflex::Callbacks − Convenience functions for creating and using
+=item Reflex::Callbacks - Convenience functions for creating and using
 
 =back
 
@@ -245,15 +245,15 @@ work with them using these adapters.
 
 =over 2
 
-=item Reflex::POE::Event − Communicate with POE components expecting events.
+=item Reflex::POE::Event - Communicate with POE components expecting events.
 
-=item Reflex::POE::Postback − Communicate with POE components expecting
+=item Reflex::POE::Postback - Communicate with POE components expecting
 
-=item Reflex::POE::Session − Observe events from a POE::Session object.
+=item Reflex::POE::Session - Observe events from a POE::Session object.
 
-=item Reflex::POE::Wheel − Base class for POE::Wheel wrappers.
+=item Reflex::POE::Wheel - Base class for POE::Wheel wrappers.
 
-=item Reflex::POE::Wheel::Run − Represent POE::Wheel::Run as a Reflex class.
+=item Reflex::POE::Wheel::Run - Represent POE::Wheel::Run as a Reflex class.
 
 =back
 
@@ -264,9 +264,9 @@ connections or jobs.
 
 =over 2
 
-=item Reflex::Role::Collectible − add manageability by Reflex::Collection
+=item Reflex::Role::Collectible - add manageability by Reflex::Collection
 
-=item Reflex::Collection − Autmatically manage a collection of collectible
+=item Reflex::Collection - Autmatically manage a collection of collectible
 
 =back
 
@@ -277,25 +277,25 @@ modules provide reactive I/O support.
 
 =over 2
 
-=item Reflex::Client − A non−blocking socket client.
+=item Reflex::Client - A non-blocking socket client.
 
-=item Reflex::Connector − Connect to a server without blocking.
+=item Reflex::Connector - Connect to a server without blocking.
 
-=item Reflex::Handle − Watch a filehandle for read− and/or writability.
+=item Reflex::Handle - Watch a filehandle for read- and/or writability.
 
-=item Reflex::Listener − Generate connected client sockets from a listening
+=item Reflex::Listener - Generate connected client sockets from a listening
 
-=item Reflex::Role::Readable − add readable−watching behavior to a class
+=item Reflex::Role::Readable - add readable-watching behavior to a class
 
-=item Reflex::Role::Recving − Mix standard send/recv code into a class.
+=item Reflex::Role::Recving - Mix standard send/recv code into a class.
 
-=item Reflex::Role::Streaming − add streaming I/O behavior to a class
+=item Reflex::Role::Streaming - add streaming I/O behavior to a class
 
-=item Reflex::Role::Writable − add writable−watching behavior to a class
+=item Reflex::Role::Writable - add writable-watching behavior to a class
 
-=item Reflex::Stream − Buffered, translated I/O on non−blocking handles.
+=item Reflex::Stream - Buffered, translated I/O on non-blocking handles.
 
-=item Reflex::UdpPeer − Base class for non−blocking UDP networking peers.
+=item Reflex::UdpPeer - Base class for non-blocking UDP networking peers.
 
 =back
 
@@ -306,9 +306,9 @@ process management.
 
 =over 2
 
-=item Reflex::PID − Observe the exit of a subprocess by its SIGCHLD signal.
+=item Reflex::PID - Observe the exit of a subprocess by its SIGCHLD signal.
 
-=item Reflex::Signal − Generic signal watcher and base class for specific
+=item Reflex::Signal - Generic signal watcher and base class for specific
 
 =back
 
@@ -319,7 +319,7 @@ it eventually, and you're welcome to help.
 
 =over 2
 
-=item Reflex::Timer − An object that watches the passage of time.
+=item Reflex::Timer - An object that watches the passage of time.
 
 =back
 
@@ -331,9 +331,9 @@ observable object attributes.
 
 =over 2
 
-=item Reflex::Trait::EmitsOnChange − Emit an event when an attribute’s value
+=item Reflex::Trait::EmitsOnChange - Emit an event when an attribute’s value
 
-=item Reflex::Trait::Observed − Automatically watch Reflex objects.
+=item Reflex::Trait::Observed - Automatically watch Reflex objects.
 
 =back
 
@@ -343,7 +343,7 @@ Miscellaneous helper functions.
 
 =over 2
 
-=item Reflex::Util::Methods − helper functions to generate methods
+=item Reflex::Util::Methods - helper functions to generate methods
 
 =back
 
