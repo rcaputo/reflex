@@ -142,6 +142,14 @@ eg/eg-38-promise-client.pl in the distribution.
 
 =head1 DESCRIPTION
 
+Reflex::Connector is scheduled for substantial changes.  Its base
+class, Reflex::Handle, will be deprecated in favor of
+Reflex::Role::Readable and Reflex::Role::Writable.  Hopefully
+Reflex::Connector's interfaces won't change much as a result, but
+there are no guarantees.
+Your ideas and feedback for Reflex::Connector's future implementation
+are welcome.
+
 Reflex::Connector performs a non-blocking connect() object on a plain
 socket.  It extends Reflex::Handle to wait for the connection without
 blocking the rest of a program.

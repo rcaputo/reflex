@@ -120,6 +120,14 @@ eg/eg-35-tcp-client.pl available at the time of this writing.
 
 =head1 DESCRIPTION
 
+Reflex::Client is scheduled for substantial changes.  One of its base
+classes, Reflex::Handle, will be deprecated in favor of
+Reflex::Role::Readable and Reflex::Role::Writable.  Hopefully
+Reflex::Client's interfaces won't change much as a result, but
+there are no guarantees.
+Your ideas and feedback for Reflex::Client's future implementation
+are welcome.
+
 Reflex::Client is a high-level base class for non-blocking socket
 clients.  As with other Reflex::Base classes, this one may be
 subclassed, composed with "has", or driven inline with promises.

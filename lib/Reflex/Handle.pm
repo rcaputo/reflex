@@ -180,6 +180,11 @@ Reflex::Handle - Watch a filehandle for read- and/or writability.
 
 =head1 DESCRIPTION
 
+Reflex::Handle is scheduled to be deprecated.
+Please see Reflex::Role::Readable and Reflex::Role::Writable, which
+allow the creation of read- and write-only classes.
+Your ideas and feedback for Reflex::Handle's replacement are welcome.
+
 Reflex::Handle watches a filehandle and emits events when it has data
 to be read, is ready to be written upon, or has some exceptional
 condition to be addressed.

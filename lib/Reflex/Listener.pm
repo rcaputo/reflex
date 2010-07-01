@@ -76,6 +76,14 @@ Reflex::Listener - Generate connected client sockets from a listening server soc
 
 =head1 DESCRIPTION
 
+Reflex::Listener is scheduled for substantial changes.  Its base
+class, Reflex::Handle, will be deprecated in favor of
+Reflex::Role::Readable and Reflex::Role::Writable.  Hopefully
+Reflex::Listener's interfaces won't change much as a result, but
+there are no guarantees.
+Your ideas and feedback for Reflex::Listener's future implementation
+are welcome.
+
 Reflex::Listener extends Reflex::Handle.  It watches listening server
 sockets for new client connections.  When they arrive, it accept()s
 them and emits them in "accepted" events.
