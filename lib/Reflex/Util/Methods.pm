@@ -6,13 +6,22 @@ use strict;
 use Exporter;
 use base 'Exporter';
 
-our @EXPORT_OK = qw(emit_an_event method_name);
+our @EXPORT_OK = qw(emit_an_event method_name emit_and_stopped);
 
 sub emit_an_event {
 	my ($event_name) = @_;
 	return sub {
 		my ($self, $args) = @_;
 		$self->emit(event => $event_name, args => $args);
+	};
+}
+
+sub emit_and_stopped {
+	my ($event_name) = @_;
+	return sub {
+		my ($self, $args) = @_;
+		$self->emit(event => $event_name, args => $args);
+		$self->stopped();
 	};
 }
 

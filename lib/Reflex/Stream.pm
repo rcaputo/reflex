@@ -43,12 +43,7 @@ Reflex::Collection.
 	sub on_error {
 		my ($self, $args) = @_;
 		warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
-		$self->emit( event => "stopped", args => {} );
-	}
-
-	sub on_closed {
-		my ($self, $args) = @_;
-		$self->emit( event => "stopped", args => {} );
+		$self->stopped();
 	}
 
 	sub DEMOLISH {
@@ -113,6 +108,12 @@ after receipt of this callback.
 on_closed() receives no parameters of note.
 
 The default on_closed() callback will emit a "closed" event.
+It will also call stopped().
+
+When overriding this callback, please be sure to call stopped(), which
+is provided by Reflex::Role::Collectible.  Calling stopped() is vital
+for collectible objects to be released from memory when managed by
+Reflex::Collection.
 
 =head3 on_data
 
@@ -138,6 +139,12 @@ to the stream's handle.  Its parameters are the usual for Reflex:
 	}
 
 The default on_error() callback will emit a "error" event.
+It will also call stopped().
+
+When overriding this callback, please be sure to call stopped(), which
+is provided by Reflex::Role::Collectible.  Calling stopped() is vital
+for collectible objects to be released from memory when managed by
+Reflex::Collection.
 
 =head2 Public Events
 

@@ -1,6 +1,6 @@
 package Reflex::Role::Streaming;
 use MooseX::Role::Parameterized;
-use Reflex::Util::Methods qw(emit_an_event method_name);
+use Reflex::Util::Methods qw(emit_an_event emit_and_stopped method_name);
 
 use Scalar::Util qw(weaken);
 
@@ -21,6 +21,8 @@ role {
 	my $cb_data   = $p->cb_data();
 	my $cb_error  = $p->cb_error();
 	my $cb_closed = $p->cb_closed();
+
+	with 'Reflex::Role::Collectible';
 
 	with 'Reflex::Role::Readable' => {
 		handle  => $h,
@@ -112,8 +114,8 @@ role {
 
 	# Default callbacks that re-emit their parameters.
 	method $cb_data   => emit_an_event("data");
-	method $cb_error  => emit_an_event("error");
-	method $cb_closed => emit_an_event("closed");
+	method $cb_error  => emit_and_stopped("error");
+	method $cb_closed => emit_and_stopped("closed");
 };
 
 1;
@@ -132,8 +134,9 @@ Reflex::Role::Streaming - add streaming I/O behavior to a class
 
 	with 'Reflex::Role::Streaming' => {
 		handle    => 'socket',
-		cb_data   => 'on_socket_data', # default
-		cb_error  => 'on_socket_error',  # default
+		cb_data   => 'on_socket_data',    # default
+		cb_error  => 'on_socket_error',   # default
+		cb_closed => 'on_socket_closed',  # default
 	};
 
 	sub on_socket_data {
@@ -144,7 +147,13 @@ Reflex::Role::Streaming - add streaming I/O behavior to a class
 	sub on_socket_error {
 		my ($self, $arg) = @_;
 		print "$arg->{errfun} error $arg->{errnum}: $arg->{errstr}\n";
-		$self->socket(undef);
+		$self->stopped();
+	}
+
+	sub on_socket_closed {
+		my $self = shift;
+		print "Connection closed.\n";
+		$self->stopped();
 	}
 
 =head1 DESCRIPTION
@@ -166,6 +175,7 @@ contains the handle to stream.  The name indirection allows the role
 to generate methods that are unique to the handle.  For example, a
 handle named "XYZ" would generates these methods by default:
 
+	cb_closed   => "on_XYZ_closed",
 	cb_data     => "on_XYZ_data",
 	cb_error    => "on_XYZ_error",
 	method_put  => "put_XYZ",
@@ -176,12 +186,34 @@ mixed in methods associated with them will also be unique.
 
 =head2 Optional Role Parameters
 
+=head3 cb_closed
+
+C<cb_closed> names the $self method that will be called whenever
+C<handle> has reached the end of readable data.  For sockets, this
+means the remote endpoint has closed or shutdown for writing.
+
+C<cb_closed> is by default the catenation of "on_", the C<handle>
+name, and "_closed".  A handle named "XYZ" will by default trigger
+on_XYZ_closed() callbacks.  The role defines a default callback that
+will emit a "closed" event and call stopped(), which is provided by
+Reflex::Role::Collectible.
+
+Currently the second parameter to the C<cb_closed> callback contains
+no parameters of note.
+
+When overriding this callback, please be sure to call stopped(), which
+is provided by Reflex::Role::Collectible.  Calling stopped() is vital
+for collectible objects to be released from memory when managed by
+Reflex::Collection.
+
 =head3 cb_data
 
 C<cb_data> names the $self method that will be called whenever the
 stream for C<handle> has provided new data.  By default, it's the
 catenation of "on_", the C<handle> name, and "_data".  A handle named
-"XYZ" will by default trigger on_XYZ_data() callbacks.
+"XYZ" will by default trigger on_XYZ_data() callbacks.  The role
+defines a default callback that will emit a "data" event with
+cb_data()'s parameters.
 
 All Reflex parameterized role calblacks are invoked with two
 parameters: $self and an anonymous hashref of named values specific to
@@ -193,7 +225,10 @@ C<data>, that contains the raw octets received from the filehandle.
 C<cb_error> names the $self method that will be called whenever the
 stream produces an error.  By default, this method will be the
 catenation of "on_", the C<handle> name, and "_error".  As in
-on_XYZ_error(), if the handle is named "XYZ".
+on_XYZ_error(), if the handle is named "XYZ".  The role defines a
+default callback that will emit an "error" event with cb_error()'s
+parameters, then will call stopped() so that streams managed by
+Reflex::Collection will be automatically cleaned up after stopping.
 
 C<cb_error> callbacks receive two parameters, $self and an anonymous
 hashref of named values specific to the callback.  Reflex error
@@ -204,6 +239,11 @@ holds the stringified version of C<$!>.
 
 Values of C<$!> are passed as parameters since the global variable may
 change before the callback can be invoked.
+
+When overriding this callback, please be sure to call stopped(), which
+is provided by Reflex::Role::Collectible.  Calling stopped() is vital
+for collectible objects to be released from memory when managed by
+Reflex::Collection.
 
 =head3 method_put
 
