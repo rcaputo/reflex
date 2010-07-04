@@ -1,9 +1,35 @@
-# A socket connector.
-# TODO - This is an intitial strawman implementation.
-
 package Reflex::Connector;
+
 use Moose;
-extends 'Reflex::Handle';
+extends 'Reflex::Base';
+
+has connector => (
+	is        => 'rw',
+	isa       => 'FileHandle',
+);
+
+has port => (
+	is => 'ro',
+	isa => 'Int',
+);
+
+has address => (
+	is      => 'ro',
+	isa     => 'Str',
+	default => '127.0.0.1',
+);
+
+with 'Reflex::Role::Connecting' => {
+	connector   => 'connector',   # Default!
+	address     => 'address',     # Default!
+	port        => 'port',        # Default!
+	cb_success  => 'on_success',
+	cb_error    => 'on_error',
+};
+
+1;
+
+__END__
 
 use Errno qw(EWOULDBLOCK EINPROGRESS);
 use Socket qw(SOL_SOCKET SO_ERROR inet_aton pack_sockaddr_in);

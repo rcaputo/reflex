@@ -22,6 +22,7 @@ parameter cb_ready      => method_name("on", "handle", "writable");
 parameter method_pause  => method_name("pause", "handle", "writable");
 parameter method_resume => method_name("resume", "handle", "writable");
 parameter method_stop   => method_name("stop", "handle", "writable");
+parameter method_start  => method_name("start", "handle", "writable");
 
 role {
 	my $p = shift;
@@ -30,49 +31,51 @@ role {
 	my $active        = $p->active();
 
 	my $cb_name       = $p->cb_ready();
-	my $setup_name    = "_setup_${h}_writable";
+	my $method_start  = $p->method_start();
+	my $method_stop   = $p->method_stop();
+	my $method_pause  = $p->method_pause();
+	my $method_resume = $p->method_resume();
 
-	method $setup_name => sub {
+	method $method_start => sub {
 		my ($self, $arg) = @_;
 
 		# Must be run in the right POE session.
-		return unless $self->call_gate($setup_name, $arg);
+		return unless $self->call_gate($method_start, $arg);
 
 		my $envelope = [ $self ];
 		weaken $envelope->[0];
 		$POE::Kernel::poe_kernel->select_write(
 			$self->$h(), 'select_ready', $envelope, $cb_name,
 		);
-
-		return if $active;
-
-		$POE::Kernel::poe_kernel->select_pause_write($self->$h());
 	};
 
-	method $p->method_pause() => sub {
-		my $self = shift;
+	method $method_pause => sub {
+		my ($self, $arg) = @_;
+		return unless $self->call_gate($method_pause, $arg);
 		$POE::Kernel::poe_kernel->select_pause_read($self->$h());
 	};
 
-	method $p->method_resume() => sub {
-		my $self = shift;
+	method $method_resume => sub {
+		my ($self, $arg) = @_;
+		return unless $self->call_gate($method_resume, $arg);
 		$POE::Kernel::poe_kernel->select_resume_read($self->$h());
 	};
 
-	method $p->method_stop() => sub {
-		my $self = shift;
+	method $method_stop => sub {
+		my ($self, $arg) = @_;
+		return unless $self->call_gate($method_stop, $arg);
 		$POE::Kernel::poe_kernel->select_read($self->$h(), undef);
 	};
 
 	after BUILD => sub {
 		my ($self, $arg) = @_;
-		$self->$setup_name($arg);
+		$self->$method_start() if $active;
 	};
 
 	# Turn off watcher during destruction.
 	after DEMOLISH => sub {
 		my $self = shift;
-		$POE::Kernel::poe_kernel->select_write($self->$h(), undef);
+		$self->method_stop();
 	};
 
 	# Part of the POE/Reflex contract.

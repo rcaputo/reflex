@@ -15,7 +15,7 @@ my $ticker = Reflex::Timer->new(
 );
 
 # Begin connecting to eg-34-tcp-server-echo.pl.
-my $connector = Reflex::Connector->new(remote_port => 12345);
+my $connector = Reflex::Connector->new(port => 12345);
 
 # Wait for the connection to finish.
 my $event = $connector->next();
