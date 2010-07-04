@@ -210,7 +210,7 @@ you just find Moose syntax difficult to handle.
 The C<handle> parameter must contain the name of the attribute that
 contains the handle to stream.  The name indirection allows the role
 to generate methods that are unique to the handle.  For example, a
-handle named "XYZ" would generates these methods by default:
+handle named "XYZ" would generate these methods by default:
 
 	cb_closed   => "on_XYZ_closed",
 	cb_data     => "on_XYZ_data",

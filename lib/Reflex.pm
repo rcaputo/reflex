@@ -277,13 +277,15 @@ modules provide reactive I/O support.
 
 =over 2
 
+=item Reflex::Acceptor - non-blocking client socket acceptor
+
 =item Reflex::Client - A non-blocking socket client.
 
-=item Reflex::Connector - Connect to a server without blocking.
+=item Reflex::Connector - non-blocking client socket connector
 
-=item Reflex::Handle - Watch a filehandle for read- and/or writability.
+=item Reflex::Role::Accepting - add connection accepting to a class
 
-=item Reflex::Listener - Generate connected client sockets from a listening
+=item Reflex::Role::Connecting - add non-blocking client connecting to a class
 
 =item Reflex::Role::Readable - add readable-watching behavior to a class
 
