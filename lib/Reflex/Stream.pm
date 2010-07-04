@@ -12,6 +12,7 @@ has handle => (
 with 'Reflex::Role::Streaming' => {
 	handle      => 'handle',
 	method_put  => 'put',
+	method_stop => 'stop',
 	cb_error    => 'on_error',
 	cb_data     => 'on_data',
 	cb_closed   => 'on_closed',

@@ -5,9 +5,9 @@ use Reflex::Util::Methods qw(emit_an_event emit_and_stopped method_name);
 use Errno qw(EWOULDBLOCK EINPROGRESS);
 use Socket qw(SOL_SOCKET SO_ERROR inet_aton pack_sockaddr_in);
 
-parameter connector => (
+parameter socket => (
 	isa     => 'Str',
-	default => 'connector',
+	default => 'socket',
 );
 
 parameter address => (
@@ -20,24 +20,24 @@ parameter port => (
 	default => 'port',
 );
 
-parameter cb_success  => method_name("on", "connector", "success");
-parameter cb_error    => method_name("on", "connector", "error");
+parameter cb_success  => method_name("on", "connect", "success");
+parameter cb_error    => method_name("on", "connect", "error");
 
 role {
 	my $p = shift;
 
-	my $connector   = $p->connector();
+	my $socket      = $p->socket();
 	my $address     = $p->address();
 	my $port        = $p->port();
 
 	my $cb_success  = $p->cb_success();
 	my $cb_error    = $p->cb_error();
 
-	my $internal_writable = "on_" . $connector . "_writable";
-	my $internal_stop     = "stop_" . $connector . "_writable";
+	my $internal_writable = "on_" . $socket . "_writable";
+	my $internal_stop     = "stop_" . $socket . "_writable";
 
 	with 'Reflex::Role::Writable' => {
-		handle  => $connector,
+		handle  => $socket,
 	};
 
 	after BUILD => sub {
@@ -50,11 +50,11 @@ role {
 		# make the socket non-blocking if we connect() first.
 
 		# Create a handle if we need to.
-		unless ($self->$connector()) {
-			$self->$connector(IO::Socket::INET->new(Proto => 'tcp'));
+		unless ($self->$socket()) {
+			$self->$socket(IO::Socket::INET->new(Proto => 'tcp'));
 		}
 
-		my $handle = $self->$connector();
+		my $handle = $self->$socket();
 
 		my $packed_address;
 		if ($handle->isa("IO::Socket::INET")) {
@@ -67,7 +67,7 @@ role {
 		}
 
 		# TODO - Make sure we're in the right session.
-		my $method_start = "start_${connector}_writable";
+		my $method_start = "start_${socket}_writable";
 		$self->$method_start();
 
 		# Begin connecting.
@@ -88,7 +88,7 @@ role {
 		}
 	};
 
-	method "on_${connector}_writable" => sub {
+	method $internal_writable => sub {
 		my ($self, $args) = @_;
 
 		# Not watching anymore.

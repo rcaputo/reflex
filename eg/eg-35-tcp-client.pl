@@ -13,7 +13,7 @@ use lib qw(../lib);
 		$self->connection()->put("Hello, world!\n");
 	};
 
-	sub on_client_data {
+	sub on_connection_data {
 		my ($self, $args) = @_;
 
 		# Not chomped.
@@ -24,7 +24,4 @@ use lib qw(../lib);
 	}
 }
 
-TcpEchoClient->new(
-	remote_addr => '127.0.0.1',
-	remote_port => 12345,
-)->run_all();
+TcpEchoClient->new(port => 12345)->run_all();

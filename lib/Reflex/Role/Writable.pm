@@ -52,19 +52,19 @@ role {
 	method $method_pause => sub {
 		my ($self, $arg) = @_;
 		return unless $self->call_gate($method_pause, $arg);
-		$POE::Kernel::poe_kernel->select_pause_read($self->$h());
+		$POE::Kernel::poe_kernel->select_pause_write($self->$h());
 	};
 
 	method $method_resume => sub {
 		my ($self, $arg) = @_;
 		return unless $self->call_gate($method_resume, $arg);
-		$POE::Kernel::poe_kernel->select_resume_read($self->$h());
+		$POE::Kernel::poe_kernel->select_resume_write($self->$h());
 	};
 
 	method $method_stop => sub {
 		my ($self, $arg) = @_;
 		return unless $self->call_gate($method_stop, $arg);
-		$POE::Kernel::poe_kernel->select_read($self->$h(), undef);
+		$POE::Kernel::poe_kernel->select_write($self->$h(), undef);
 	};
 
 	after BUILD => sub {
