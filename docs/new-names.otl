@@ -1,0 +1,227 @@
+[_] 86% Great Renaming	
+	[_] 75% Base Roles
+		[_] 75% MooseX::Role::Reactive - formerly Reflex::Role::Object
+			[_] 50% role interface
+				[_] 0% Move POE specific parts to a new role.
+					[_] 0% POE::Session singleton
+					[_] 0% has session_id
+					[_] 0% sub run_all
+					[_] 0% sub run_within_session
+					[_] 0% sub call_gate
+				[X] 100% Clean up internals naming a bit.
+					[X] 100% sub _deliver - rename to deliver
+					[X] 100% sub observe - rename to watch
+					[X] 100% sub wait - rename to next
+				[X] 100% Rename role to Reflex::Role::Reactive
+				[_] 0% Rename role to MooseX::Role::Reactive
+					[_] 0% Fork git project.
+					[_] 0% Remove all nonessentials.
+					[_] 0% Fix up dist.ini.
+					[_] 0% Rename things.
+			[X] 100% reified as Reflex::Base
+	[X] 100% Internal Classes
+		Reflex::Callback
+			has object
+	[X] 100% Public Helpers - Old and New
+		[X] 100% Reflex::Callback::CodeRef
+		[X] 100% Reflex::Callback::Method
+			has method_name
+			sub deliver
+		[X] 100% Reflex::Callback::Promise
+			[X] 100% has queue
+			[X] 100% sub deliver
+			[X] 100% sub next
+			[X] 100% Deprecate condvar language.
+		[X] 100% Reflex::Callbacks
+			has callback_map
+			sub cb_object
+			sub cb_method
+			sub cb_role
+			sub cb_promise
+			sub cb_coderef
+			sub gather_cb
+			[X] 100% sub send - rename deliver()
+		Reflex
+			sub import
+			sub run_all
+		[X] 100% Reflex::Collection
+			has objects
+			sub remember
+			sub forget
+			sub cb_forget
+			watches stopped
+		[X] 100% Reflex::Role::Collectible
+			sub stopped
+			emits stopped
+		[X] 100% Reflex::EmitHelper
+			[X] 100% default_emit() - rename to emit_by_default()
+		Reflex::POE::Event
+			has object
+			has method
+			has context
+			sub deliver
+		Reflex::POE::Postback
+			sub new
+			sub DESTROY
+		Reflex::POE::Session
+			has sid
+			sub BUILD
+			sub DEMOLISH
+			sub deliver
+			emits whatever the session posts
+		[X] 100% Reflex::POE::Wheel
+			has wheel
+			sub BUILD
+			sub create_wheel
+			sub wheel_id
+			sub put
+			sub DEMOLISH
+			sub demolish_wheel
+			[X] 100% sub _deliver - rename to deliver
+			emits whatever its subclasses emit
+		Reflex::POE::Wheel::Run
+			sub event_to_index
+			sub event_emit_names
+			sub event_param_names
+			sub wheel_class
+			sub valid_params
+			has sigchild_watcher
+			sub BUILD
+			sub on_sigchld_signal
+			sub kill
+			emits
+				signal
+				stdin
+				stdout
+				stderr
+				error
+				closed
+	[X] 100% Traits
+		[X] 100% Reflex::Trait::EmitsOnChange - formerly Reflex::Trait::Emitter
+			members
+				has setup
+				has trigger
+				has initializer
+				has event
+			emits
+				event() - defaults to member name
+		[X] 100% Reflex::Trait::Observed - formerly Reflex::Trait::Observer
+			has setup
+			has trigger
+			has initializer
+			has role
+			has setup
+	[_] 34% Atomic Roles
+		[X] 100% with Reflex::Role::Readable
+		[X] 100% with Reflex::Role::Writable
+			parameter handle
+			parameter active
+			parameter cb_ready
+			method _setup_${h}_writable
+			method pause_${h}_writable
+			method resume_${h}_writable
+			[X] 100% method _deliver - rename to deliver
+		[_] 0% with Reflex::Role::PidReaper
+			[_] 0% role interface
+			[_] 0% reified as Reflex::PidReaper
+		[_] 3% with Reflex::Role::SigCatcher - formerly Reflex::Signal
+			[_] 14% old object interface
+				[_] 0% has name
+				[_] 0% sub _register_signal_params
+				[_] 0% sub BUILD
+				[_] 0% sub start_watching
+				[_] 0% sub stop_watching
+				[X] 100% sub _deliver - rename to deliver
+				[_] 0% sub DEMOLISH
+			[_] 0% new role interface
+				[_] 0% parameter signal
+				[_] 0% parameter cb_signal
+				[_] 0% method stop
+			[_] 0% emits
+				[_] 0% signal
+			[_] 0% reified as Reflex::SigCatcher
+		[_] 0% with Reflex::Role::Alarm
+			[_] 0% role interface
+			[_] 0% reified as Reflex::Alarm
+		[_] 3% with Reflex::Role::Timer - formerly Reflex::Timer
+			[_] 12% old object interface
+				[_] 0% has interval
+				[_] 0% has alarm_id
+				[_] 0% has auto_repeat
+				[_] 0% sub BUILD
+				[_] 0% sub repeat
+				[X] 100% sub _deliver - rename to deliver
+				[_] 0% sub DEMOLISH
+				[_] 0% sub stop
+			[_] 0% emits
+				[_] 0% tick
+			[_] 0% role interface
+			[_] 0% reified as Reflex::Interval
+	[X] 100% use Reflex::Client
+	[X] 100% use Reflex::Connector
+	[X] 100% Deprecate Reflex::Handle
+		See Reflex::Role::Readable
+		See Reflex::Role::Writable
+	[X] 100% with Reflex::Role::Accepting
+	[X] 100% use Reflex::Acceptor
+	[_] 0% use Reflex::PID
+		[_] 0% extends Reflex::Signal
+		[_] 0% has +name
+		[_] 0% has pid
+		[_] 0% sub start_watching
+		[_] 0% sub stop_watching
+	[X] 100% with Reflex::Role::Connecting
+		[X] 100% role interface
+		[X] 100% reified as Reflex::Connector
+	[X] 100% with Reflex::Role::Streaming - formerly Reflex::Stream
+		[X] 100% emits
+			[X] 100% data
+			[X] 100% closed
+			[X] 100% error
+			[X] 100% stopped
+		[X] 100% role interface
+			[X] 100% parameter handle
+			[X] 100% parameter cb_data
+			[X] 100% parameter cb_error
+			[X] 100% parameter cb_closed
+			[X] 100% has out_buffer
+			[X] 100% method on_${h}_readable
+			[X] 100% method put_${h}
+			[X] 100% method default_emit(cb_data, data)
+			[X] 100% method default_emit(cb_error, error)
+		[X] 100% reified as Reflex::Stream
+			[X] 100% handle => handle
+			[X] 100% method_put => put
+			[X] 100% cb_error => on_error
+			[X] 100% cb_data => on_data
+			[X] 100% cb_closed => on_closed
+	[X] 100% with Reflex::Role::Recving - formerly Reflex::Role::UdpPeer
+		[X] 100% role interface
+			[X] 100% parameter handle
+			[X] 100% parameter max_datagram_size
+			[X] 100% parameter cb_datagram
+			[X] 100% parameter cb_error
+			[X] 100% parameter method_send
+			[X] 100% parameter method_stop
+			[X] 100% emits datagram
+			[X] 100% emits error
+			[X] 100% emits stopped
+		[X] 100% reified as Reflex::UdpPeer
+Stuff We Don't Have Yet
+	[_] 0% with Reflex::Role::Connector::Keepalive
+		[_] 0% role interface
+		[_] 0% reified as Reflex::Connector::Keepalive
+	[_] 0% with Reflex::Role::Resolver
+		[_] 0% role interface
+		[_] 0% reified as Reflex::Resolver
+	[_] 0% with Reflex::Role::TailWatcher
+		[_] 0% role interface
+		[_] 0% reified as Reflex::TailWatcher
+	[_] 0% with Reflex::Role::Client::HTTP
+		[_] 0% role interface
+		[_] 0% reified as Reflex::Client::HTTP
+	[_] 0% with Reflex::Role::Proxy
+		[_] 0% role interface
+			[_] 0% on_handle_a_data()
+			[_] 0% on_handle_b_data()
+		[_] 0% reified as Reflex::Conduit
