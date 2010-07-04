@@ -373,3 +373,8 @@
 			[_] 0% Explore IO::Lambda's cheat.
 		[_] 0% Consolidate POE-specific code out into a single role.
 			Allows other event loops to be supported directly rather than through POE.
+Philosophy
+	Boolean role parameters are opportunities for new roles or role subclasses.
+		Static behaviors should be determined at role consumption time.
+		Not continually evaluated at runtime.
+		Runtime behavior toggles are only appropriate when behavior should change at runtime.
