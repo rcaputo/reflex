@@ -56,8 +56,9 @@ my $singleton_session_id = POE::Session->create(
 		### I/O manipulators and callbacks.
 
 		select_ready => sub {
-			my ($handle, $envelope, $mode) = @_[ARG0, ARG2, ARG3];
-			$envelope->[0]->deliver($handle, $mode, @_[ARG4..$#_]);
+			my ($handle, $envelope, $mode) = @_[ARG0, ARG2];
+			my ($cb_object, $cb_method) = @$envelope;
+			$cb_object->$cb_method({ handle => $handle });
 		},
 
 		### Signals.

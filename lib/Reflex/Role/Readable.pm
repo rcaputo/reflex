@@ -38,10 +38,10 @@ role {
 		# Must be run in the right POE session.
 		return unless $self->call_gate($setup_name, $arg);
 
-		my $envelope = [ $self ];
+		my $envelope = [ $self, $cb_name ];
 		weaken $envelope->[0];
 		$POE::Kernel::poe_kernel->select_read(
-			$self->$h(), 'select_ready', $envelope, $cb_name,
+			$self->$h(), 'select_ready', $envelope,
 		);
 
 		return if $active;
@@ -73,12 +73,6 @@ role {
 	after DEMOLISH => sub {
 		my $self = shift;
 		$POE::Kernel::poe_kernel->select_read($self->$h(), undef);
-	};
-
-	# Part of the POE/Reflex contract.
-	method deliver => sub {
-		my ($self, $handle, $cb_member) = @_;
-		$self->$cb_member( { handle => $handle, } );
 	};
 
 	# Default callbacks that re-emit their parameters.
