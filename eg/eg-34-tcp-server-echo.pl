@@ -10,7 +10,7 @@ use lib qw(../lib);
 	package TcpEchoServer;
 
 	use Moose;
-	extends 'Reflex::Listener';
+	extends 'Reflex::Acceptor';
 	use Reflex::Collection;
 	use EchoStream;
 
@@ -21,7 +21,7 @@ use lib qw(../lib);
 		handles => { remember_client => "remember" },
 	);
 
-	sub on_listener_accepted {
+	sub on_accept {
 		my ($self, $args) = @_;
 		$self->remember_client(
 			EchoStream->new(
@@ -31,9 +31,10 @@ use lib qw(../lib);
 		);
 	}
 
-	sub on_listener_failure {
+	sub on_error {
 		my ($self, $args) = @_;
 		warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
+		$self->stop();
 	}
 }
 
@@ -42,7 +43,7 @@ use lib qw(../lib);
 my $port = 12345;
 print "Setting up TCP echo server on localhost:$port...\n";
 TcpEchoServer->new(
-	handle => IO::Socket::INET->new(
+	listener => IO::Socket::INET->new(
 		LocalAddr => '127.0.0.1',
 		LocalPort => $port,
 		Listen    => 5,
