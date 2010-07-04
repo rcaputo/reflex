@@ -4,9 +4,9 @@ use Moose;
 extends 'Reflex::Base';
 
 has handle => (
-	is => 'rw',
-	isa => 'FileHandle',
-	required => 1
+	is        => 'rw',
+	isa       => 'FileHandle',
+	required  => 1
 );
 
 with 'Reflex::Role::Streaming' => {

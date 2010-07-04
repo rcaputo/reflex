@@ -57,7 +57,7 @@ role {
 		}
 
 		# Quelle erreur!
-		$self->cb_error(
+		$self->$cb_error(
 			{
 				errnum => ($! + 0),
 				errstr => "$!",

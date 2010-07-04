@@ -9,14 +9,11 @@ has socket => (
 );
 
 with 'Reflex::Role::Recving' => {
-	handle => 'socket',
-
-	# Expose role methods with more sensible names for a class.
-	-alias    => {
-		send_socket => 'send',
-		stop_socket => 'stop',
-	},
-	-excludes => [ qw(send_socket stop_socket) ],
+	handle      => 'socket',
+	method_send => 'send',
+	method_stop => 'stop',
+	cb_datagram => 'on_datagram',
+	cb_error    => 'on_error',
 };
 
 1;
