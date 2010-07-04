@@ -379,9 +379,9 @@ lengthy and sometimes irrelevant design discussion for oh so long.
 
 L<Moose>, L<POE>, the Reflex namespace on CPAN.
 
-TODO - Set up ohlo.
+Ohlo - https://www.ohloh.net/p/reflex-perl
 
-TODO - Set up CIA.
+CIA - http://cia.vc/stats/project/reflex
 
 TODO - Set up home page.
 
