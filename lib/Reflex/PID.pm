@@ -1,10 +1,11 @@
 package Reflex::PID;
 
 use Moose;
-extends qw(Reflex::Signal);
+extends qw(Reflex::SigCatcher);
 
-has '+name' => (
-	default => 'CHLD',
+has '+signal' => (
+	required  => 0,
+	default   => 'CHLD',
 );
 
 has 'pid' => (
@@ -16,17 +17,16 @@ has 'pid' => (
 
 __PACKAGE__->_register_signal_params(qw(pid exit));
 
-sub start_watching {
+sub resume {
 	my $self = shift;
-	return unless $self->call_gate("start_watching");
+	return unless $self->call_gate("resume");
 	$POE::Kernel::poe_kernel->sig_child($self->pid(), "signal_happened");
 }
 
-sub stop_watching {
+sub pause {
 	my $self = shift;
-	return unless $self->call_gate("stop_watching");
+	return unless $self->call_gate("pause");
 	$POE::Kernel::poe_kernel->sig_child($self->pid(), undef);
-	$self->name(undef);
 }
 
 1;
