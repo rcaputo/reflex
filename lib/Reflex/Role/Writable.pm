@@ -117,7 +117,7 @@ Reflex::Role::Writable - add writable-watching behavior to a class
 =head1 DESCRIPTION
 
 Reflex::Role::Writable is a Moose parameterized role that adds
-writable-watching behavior for Reflex-based classes.  In the SYNOPSIS,
+writable-watching behavior to Reflex-based classes.  In the SYNOPSIS,
 a filehandle named "socket" is watched for writability.  The method
 on_socket_writable() is called when data becomes available.
 

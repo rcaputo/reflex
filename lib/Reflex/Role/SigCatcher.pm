@@ -78,12 +78,19 @@ role {
 	my $method_resume = $p->method_resume();
 
 	# Work around a Moose edge case.
-	sub BUILD {};
+	sub BUILD {}
 
 	after BUILD => sub {
 		return unless $active;
 		shift()->$method_start();
 		return;
+	};
+
+	# Work around a Moose edge case.
+	sub DEMOLISH {}
+
+	after DEMOLISH => sub {
+		shift()->$method_stop();
 	};
 
 	method $method_start => sub {
@@ -130,18 +137,17 @@ role {
 
 		my $sig_name = $self->$signal();
 
+		# Nothing to do?
+		return unless exists $callbacks{$sig_name}->{$self->session_id()};
+
 		# Unregister this object with that signal.
 		my $sw = $callbacks{$sig_name}->{$self->session_id()};
-		delete $sw->{$self};
+		return unless delete $sw->{$self};
 
 		# Deactivate the signal watcher if this was the last object.
 		unless (scalar keys %$sw) {
 			delete $callbacks{$sig_name}->{$self->session_id()};
-
-			delete $callbacks{$sig_name} unless (
-				scalar keys %{$callbacks{$sig_name}}
-			);
-
+			delete $callbacks{$sig_name} unless scalar keys %{$callbacks{$sig_name}};
 			$self->$method_pause();
 		}
 	};
@@ -151,91 +157,135 @@ role {
 
 __END__
 
-
-sub stop_watching {
-}
-
-
-sub DEMOLISH {
-	my $self = shift;
-
-	return unless defined $self->name();
-
-	my $sw = $session_watchers{$self->name()}->{$self->session_id()};
-	delete $sw->{$self};
-
-	unless (scalar keys %$sw) {
-		delete $session_watchers{$self->name()};
-
-		delete $session_watchers{$self->name()} unless (
-			scalar keys %{$session_watchers{$self->name()}}
-		);
-
-		$self->stop_watching();
-	}
-}
-
-1;
-
-__END__
-
 =head1 NAME
 
-Reflex::Signal - Generic signal watcher and base class for specific ones.
+Reflex::Role::SigCatcher - add signal catching behavior to a class
 
 =head1 SYNOPSIS
 
-As a callback:
+	package Reflex::SigCatcher;
 
-	use Reflex::Signal;
-	use Reflex::Callbacks qw(cb_coderef);
+	use Moose;
+	extends 'Reflex::Base';
 
-	my $usr1 = Reflex::Signal->new(
-		name      => "USR1",
-		on_signal => cb_coderef { print "Got SIGUSR1.\n" },
+	has signal => (
+		is        => 'ro',
+		isa       => 'Str',
+		required  => 1,
 	);
 
-As a promise:
+	has active => (
+		is      => 'ro',
+		isa     => 'Bool',
+		default => 1,
+	);
 
-	my $usr2 = Reflex::Signal->new( name => "USR2" );
-	while ($usr2->next()) {
-		print "Got SIGUSR2.\n";
-	}
+	with 'Reflex::Role::SigCatcher' => {
+		signal        => 'signal',
+		active        => 'active',
+		cb_signal     => 'on_signal',
+		method_start  => 'start',
+		method_stop   => 'stop',
+		method_pause  => 'pause',
+		method_resume => 'resume',
+	};
 
-May also be used with watchers, and Reflex::Trait::Observed, but
-those use cases aren't shown here.
+	1;
 
 =head1 DESCRIPTION
 
-Reflex::Signal is a general signal watcher.  It may be used to notify
-programs when they are sent a signal via kill.
+Reflex::Role::SigCatcher is a Moose parameterized role that adds
+signal-catching behavior to Reflex based classes.  The SYNOPSIS is the
+entire implementation of Reflex::SigCatcher, a simple class that
+allows Reflex::Role::SigCatcher to be used as an object.
 
-=head2 Public Attributes
+Reflex::Role::SigCatcher is not suitable for SIGCHLD use.  The
+specialized Reflex::Role::PidReaper class is used for that, and it
+will automatically wait() for processes and return their exit
+statuses.
 
-=head3 name
+=head2 Required Role Parameters
 
-"name" defines the name (or number) of an interesting signal.
-The Reflex::Signal object will emit events when it detects that the
-process has been given that signal.
+None.  All role parameters as of this writing have what we hope are
+sensible defaults.  Please let us know if they don't seem all that
+sensible.
 
-=head2 Public Methods
+=head2 Optional Role Parameters
 
-None at this time.  Destroy the object to stop it.
+=head3 signal
 
-=head2 Public Events
+C<signal> sets the name of an attribute that will contain the signal
+name to catch.  Signal names are as those found in %SIG.
 
-Reflex::Signal and its subclasses emit just one event: "signal".
-Generic signals have no additional information, but specific ones may.
-For example, Reflex::PID (SIGCHLD) includes a process ID and
-information about its exit.
+TODO - However, it may also be convenient to specify the signal name
+in the role's parameters.  General use cases don't usually require
+signals names to change.  The indirection through C<signal> is
+currently useful for Reflex::SigCatcher, however, so we probably need
+both modes.  It might be better to provide two roles, one for each
+behavior, rather than one role that does both.
+
+=head3 active
+
+C<active> specifies whether Reflex::Role::SigCatcher should be created
+in the active, signal-watching state.  All Reflex watchers are enabled
+by default.  Set it to a false value, preferably 0, to initialize the
+catcher in an inactive or paused mode.
+
+Signal watchers may be paused and resumed.  See C<method_pause> and
+C<method_resume> for ways to override the default method names.
+
+=head3 cb_signal
+
+C<cb_signal> names the $self method that will be called whenever the
+signal named in C<<$self->$signal()>> is caught.  It defaults to
+"on_%s_caught", where %s is the name of the signal.  So if the INT
+signal is being watched, C<cb_signal> will default to "on_INT_caught".
+
+=head3 method_start
+
+C<method_start> sets the name of the method that may be used to
+initially start catching signals.  It's "start_%s" by default, where
+%s is the signal name being caught.
+
+Reflex::Role::SigCatcher will automatically start watching for signals
+if the value of C<active>'s attribute is true.
+
+=head3 method_stop
+
+C<method_stop> may be used to permanently stop signal catchers.
+Stopped catchers cannot be restarted, so use C<method_pause> if you
+need to temporarily disable signal watchers.  C<method_resume> may be
+used to resume them again.
+
+Signal catchers will automatically stop watching for signals upon
+DEMOLISH.
+
+=head3 method_pause
+
+C<method_pause> sets the name of the method that may be used to pause
+signal catching.  It is "pause_%s" by default, where %s is the signal
+name being caught.
+
+=head3 method_resume
+
+C<method_resume> sets the name of the method that may be used to
+resume signal catching.  It is "resume_%s" by default, where %s is the
+signal name being caught.
+
+=head1 EXAMPLES
+
+eg/eg-39-signals.pl shows how Reflex::SigCatcher may be used with
+callbacks or promises.
+
+L<Reflex::SigCatcher> is a simple class that watches for signals with
+Reflex::Role::SigCatcher.
 
 =head1 SEE ALSO
 
-L<Moose::Manual::Concepts>
-
 L<Reflex>
-L<Reflex::PID>
-L<Reflex::POE::Wheel::Run>
+L<Reflex::SigCatcher>
+L<Reflex::Role::PidReaper>
+L<Reflex::PidReaper>
 
 L<Reflex/ACKNOWLEDGEMENTS>
 L<Reflex/ASSISTANCE>
