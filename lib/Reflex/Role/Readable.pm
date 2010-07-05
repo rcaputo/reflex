@@ -64,10 +64,16 @@ role {
 		$POE::Kernel::poe_kernel->select_read($self->$h(), undef);
 	};
 
+	# Work around a Moose edge case.
+	sub BUILD {}
+
 	after BUILD => sub {
 		my ($self, $arg) = @_;
 		$self->$setup_name($arg);
 	};
+
+	# Work around a Moose edge case.
+	sub DEMOLISH {}
 
 	# Turn off watcher during destruction.
 	after DEMOLISH => sub {

@@ -64,7 +64,7 @@ my $singleton_session_id = POE::Session->create(
 		### Signals.
 
 		signal_happened => sub {
-			Reflex::Signal->deliver(@_[ARG0..$#_]);
+			Reflex::Role::SigCatcher->deliver(@_[ARG0..$#_]);
 		},
 
 		### Cross-session emit() is converted into these events.

@@ -40,6 +40,9 @@ role {
 		handle  => $socket,
 	};
 
+	# Work around a Moose edge case.
+	sub BUILD {}
+
 	after BUILD => sub {
 		my ($self, $args) = @_;
 

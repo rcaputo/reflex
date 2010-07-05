@@ -67,10 +67,16 @@ role {
 		$POE::Kernel::poe_kernel->select_write($self->$h(), undef);
 	};
 
+	# Work around a Moose edge case.
+	sub BUILD {}
+
 	after BUILD => sub {
 		my ($self, $arg) = @_;
 		$self->$method_start() if $active;
 	};
+
+	# Work around a Moose edge case.
+	sub DEMOLISH {}
 
 	# Turn off watcher during destruction.
 	after DEMOLISH => sub {
