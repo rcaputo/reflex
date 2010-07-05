@@ -351,11 +351,16 @@ Miscellaneous helper functions.
 
 =head1 ASSISTANCE
 
+Thank you for volunteering to assist with this project.  You can find
+like-minded people in a few places, in descending order of preference.
+Or, oh, wait, maybe you wanted assistance using it?  We'll help you,
+too. :)
+
 See irc.perl.org #reflex for help with Reflex.
 
-See irc.perl.org #moose for help with Moose.
-
 See irc.perl.org #poe for help with POE and Reflex.
+
+See irc.perl.org #moose for help with Moose.
 
 Support is officially available from POE's mailing list as well.  Send
 a blank message to
