@@ -163,7 +163,7 @@ Reflex::Role::SigCatcher - add signal catching behavior to a class
 
 =head1 SYNOPSIS
 
-	package Reflex::SigCatcher;
+	package Reflex::Signal;
 
 	use Moose;
 	extends 'Reflex::Base';
@@ -220,7 +220,7 @@ name to catch.  Signal names are as those found in %SIG.
 TODO - However, it may also be convenient to specify the signal name
 in the role's parameters.  General use cases don't usually require
 signals names to change.  The indirection through C<signal> is
-currently useful for Reflex::SigCatcher, however, so we probably need
+currently useful for Reflex::Signal, however, so we probably need
 both modes.  It might be better to provide two roles, one for each
 behavior, rather than one role that does both.
 
@@ -274,16 +274,16 @@ signal name being caught.
 
 =head1 EXAMPLES
 
-eg/eg-39-signals.pl shows how Reflex::SigCatcher may be used with
+eg/eg-39-signals.pl shows how Reflex::Signal may be used with
 callbacks or promises.
 
-L<Reflex::SigCatcher> is a simple class that watches for signals with
+L<Reflex::Signal> is a simple class that watches for signals with
 Reflex::Role::SigCatcher.
 
 =head1 SEE ALSO
 
 L<Reflex>
-L<Reflex::SigCatcher>
+L<Reflex::Signal>
 L<Reflex::Role::PidReaper>
 L<Reflex::PidReaper>
 

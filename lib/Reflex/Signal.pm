@@ -1,4 +1,4 @@
-package Reflex::SigCatcher;
+package Reflex::Signal;
 
 use Moose;
 extends 'Reflex::Base';
@@ -31,7 +31,7 @@ __END__
 
 =head1 NAME
 
-Reflex::SigCatcher - receive callbacks when signals arrive
+Reflex::Signal - receive callbacks when signals arrive
 
 =head1 SYNOPSIS
 
@@ -40,34 +40,34 @@ eg/eg-39-signals.pl
 	use warnings;
 	use strict;
 
-	use Reflex::SigCatcher;
+	use Reflex::Signal;
 	use Reflex::Callbacks qw(cb_coderef);
 	use ExampleHelpers qw(eg_say);
 
 	eg_say("Process $$ is waiting for SIGUSR1 and SIGUSR2.");
 
-	my $usr1 = Reflex::SigCatcher->new(
+	my $usr1 = Reflex::Signal->new(
 		signal    => "USR1",
 		on_signal => cb_coderef { eg_say("Got SIGUSR1.") },
 	);
 
-	my $usr2 = Reflex::SigCatcher->new( signal => "USR2" );
+	my $usr2 = Reflex::Signal->new( signal => "USR2" );
 	while ($usr2->next()) {
 		eg_say("Got SIGUSR2.");
 	}
 
 =head1 DESCRIPTION
 
-Reflex::SigCatcher waits for signals from the operating system.  It
+Reflex::Signal waits for signals from the operating system.  It
 may invoke callback functions and/or be used as a promise of new
 signals depending on the application's needs.
 
-Reflex::SigCatcher is almost entirely implemented in
+Reflex::Signal is almost entirely implemented in
 Reflex::Role::SigCatcher.
 That role's documentation contains important details that won't be
 covered here.
 
-Reflex::SigCatcher is not suitable for SIGCHLD use.  The specialized
+Reflex::Signal is not suitable for SIGCHLD use.  The specialized
 Reflex::PidReaper class is used for that, and it will automatically
 wait() for processes and return their exit statuses.
 
@@ -75,7 +75,7 @@ wait() for processes and return their exit statuses.
 
 =head3 signal
 
-Reflex:SigCatcher's C<signal> attribute defines the name of the signal
+Reflex:Signal's C<signal> attribute defines the name of the signal
 to catch.  Names are as those in %SIG, namely with the leading "SIG"
 scraped off.
 
@@ -89,7 +89,7 @@ false if you'd like to activate the signal catcher later.
 
 =head3 start
 
-Reflex::SigCatcher's start() method may be used to initialize signal
+Reflex::Signal's start() method may be used to initialize signal
 catchers and start them watching for signals.  start() will be called
 automatically if the signal catcher is started in the active state,
 which it is by default.
@@ -188,7 +188,7 @@ Reflex::Stream and a few other classes.
 
 L<Reflex>
 L<Reflex::Role::SigCatcher>
-L<Reflex::Role::PidReaper>
+L<Reflex::Role::PID>
 L<Reflex::PidReaper>
 
 L<Reflex/ACKNOWLEDGEMENTS>

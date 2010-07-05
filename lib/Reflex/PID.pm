@@ -1,7 +1,7 @@
 package Reflex::PID;
 
 use Moose;
-extends qw(Reflex::SigCatcher);
+extends qw(Reflex::Signal);
 
 has '+signal' => (
 	required  => 0,
