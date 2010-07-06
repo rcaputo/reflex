@@ -20,12 +20,8 @@ use lib qw(../lib);
 	);
 
 	with 'Reflex::Role::Recving' => {
-		handle => 'socket',
-
-		# Expose send_socket() as send().
-		-alias    => { send_socket => 'send' },
-		-excludes => 'send_socket'
-		
+		handle      => 'socket',
+		method_send => 'send',
 	};
 
 	sub on_socket_datagram {
