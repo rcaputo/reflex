@@ -1,0 +1,287 @@
+=pod
+
+=head1 NAME
+
+Reflex::Doc - What is Reflex, and how do I use it?
+
+=head1 WHAT IS REFLEX?
+
+Reflex is a reactive programming library for Perl.  It uses Moose, a
+widely accepted standard for OO Perl, rather than concocting its own
+roles and classes.
+
+Reflex was designed to unify many forms of reactive programming.  It
+currently supports all of these, in the same program if necessary:
+
+=over 4
+
+=item plain old callbacks, using coderefs or methods
+
+=item promises, which work in an inline imperative fashion
+
+=item role-based composition of complex reactive classes
+
+=item class-based composition using inheritance.
+
+=back
+
+=head1 WHY IS REFLEX?
+
+In a nutshell, there is more than one reactive programming model, and
+the use of one often precludes the use of others.  This is sad because
+one model doesn't fit all use cases.  Each has its strengths and
+weaknesses, and it should be possible to use any or all of them as
+needed.
+
+=head1 WRITING REFLEX MODULES
+
+Reflex's multi-model magic arises from a particular design convention.
+Moose roles are the basic building block of Reflex program.  Classes
+(even the simple ones) are built from these roles.  Classes may then
+be combined by inheritance (is-a composition) or containment (has-a
+with callbacks).
+
+That's a mouthful, but the entire process is short and to the point.
+Most of the work is done in the roles, and the basic classes mainly
+wire roles together.
+
+=head2 Writing A Reactive Role
+
+We'll start with a simple role that provides a synchronous callback.
+This is a bit of a cheat.  Callbacks are usually asynchronous.  These
+synchronous ones let us cover callbacks first, by themselves.
+
+Most Reflex roles are parameterized, which allows a single class to
+consume more than one instance of a particular role.  One parameter
+acts as a primary key, or name for the role.  Callbacks and methods
+are named after this key by default.
+
+That's a bit of work, but roles are generally the biggest Reflex
+modules.  The classes that use it are much smaller.
+
+	package AfterAwhileRole;
+	use MooseX::Role::Parameterized;
+	use Reflex::Util::Methods qw(method_name emit_an_event);
+
+	parameter name    => ( isa => 'Str', default => 'name' );
+	parameter awhile  => ( isa => 'Str', default => 'awhile' );
+	parameter cb      => method_name("on", "name", "done");
+
+	role {
+		my $role_param = shift;
+
+		my $role_name = $role_param->name();
+		my $cb_done   = $role_param->cb();
+		my $awhile    = $role_param->awhile();
+
+		sub BUILD {}
+
+		after BUILD => sub {
+			my $self = shift;
+			sleep($self->$awhile());
+			$self->$cb_done();
+		};
+
+		method $cb_done => emit_an_event("done");
+	};
+
+	1;
+
+=head2 Creating Classes with Reflex Roles
+
+Reflex roles aren't usable until they become part of a class.  The
+simplest classes perform exactly what their roles do, but in a usable
+way.  Here's AfterAwhileClass, which converts AfterAwileRole into a
+usable class.
+
+All Reflex classes should be based on Reflex::Base.  The class exposes
+"name" and "awhile" attributes so they may be set during object
+construction.
+
+	package AfterAwhileClass;
+	use Moose;
+	extends 'Reflex::Base';
+
+	has name    => ( is => 'ro', isa => 'Str', default => 'awhile' );
+	has awhile  => ( is => 'ro', isa => 'Int', default => 1 );
+
+	with 'AfterAwhileRole' => { cb => 'on_done' };
+
+	1;
+
+If it's practical, Reflex roles may provide default attributes later.
+
+=head2 Subclassing
+
+Reflex classes are plain Moose classes, which are generally plain Perl
+classes.  Here's a subclass of AfterAwhileClass that internally
+consumes its on_done() callback.  Even though Moose would makethis a
+bit shorter, we deliberately avoid it because we can.
+
+	package AfterAwhileSubclass;
+
+	use warnings;
+	use strict;
+	use base 'AfterAwhileClass';
+
+	sub on_done {
+		print "subclass overrode on_done\n";
+	}
+
+	1;
+
+=head1 USING REFLEX MODULES
+
+Each reactive use case will be illustrated here.
+
+=head2 Classes With Reactive Roles
+
+Covered in L</Creating Classes with Reflex Roles>.
+
+=head2 Subclassing Reactive Classes
+
+Covered in L</Subclassing>.
+
+=head2 Objects With Coderef Callbacks
+
+Reflex objects work like any other objects with callbacks.  Code can
+use Reflex objects to do asynchronous work.
+
+The variable $aa is scoped so that the AfterAwhileClass object will be
+destroyed at the end of the "on_done" callback.
+
+	#!/usr/bin/env perl
+
+	use warnings;
+	use strict;
+	use AfterAwhileClass;
+
+	my $aa;
+	$aa = AfterAwhileClass->new(
+		awhile  => 1,
+		on_done => sub {
+			print "AfterAwhileClass done!\n";
+			$aa = undef;
+		},
+	);
+
+	$aa->run_all();
+
+=head2 Objects With Method Callbacks
+
+Method callbacks are virtually identical to coderef callbacks.  The
+anonymous subroutine is replaced with a cb_method() call.  This
+example is substantially longer, however, because a dummy object needs
+to be created to handle the callback.
+
+	#!/usr/bin/env perl
+
+	use warnings;
+	use strict;
+
+	my $aa;
+
+	{
+		package Class;
+		use Moose;
+		extends 'Reflex::Base';
+		sub method {
+			print "AfterAwhileClass called a method!\n";
+			$aa = undef;
+		}
+	}
+
+	use AfterAwhileClass;
+	use Reflex::Callbacks qw(cb_method);
+
+	my $object = Class->new();
+
+	$aa = AfterAwhileClass->new(
+		awhile  => 1,
+		on_done => cb_method($object, "method"),
+	);
+
+	$aa->run_all();
+
+=head2 Promises
+
+The best has been saved for last.  All asynchronous Reflex classes may
+be used as promises.  Their objects have a standard next() method that
+returns the next asynchrnous event they emit.
+
+First, here's how it's done:
+
+	#!/usr/bin/env perl
+
+	use warnings;
+	use strict;
+
+	use AsyncAwhileClass;
+
+	my $aa = AsyncAwhileClass->new(awhile => 1);
+
+	my $response = $aa->next();
+	print "Response callback: $response->{name}\n";
+
+We need to define AsyncAwhileClass before that will run.  It's just a
+renamed AfterAwhileClass, with the new asynchronous role.
+
+	package AsyncAwhileClass;
+	use Moose;
+	extends 'Reflex::Base';
+
+	has name    => ( is => 'ro', isa => 'Str', default => 'awhile' );
+	has awhile  => ( is => 'ro', isa => 'Int', default => 1 );
+
+	with 'AsyncAwhileRole' => { cb => 'on_done' };
+
+	1;
+
+As mentioned earlier, most of the work is done in the role itself.
+This AsyncAwhileRole replaces the blocking sleep() with a non-blocking
+Reflex::Timer object.  Later we'll introduce magic to make it more
+concise.
+
+	package AsyncAwhileRole;
+	use MooseX::Role::Parameterized;
+	use Reflex::Util::Methods qw(method_name emit_an_event);
+	use Reflex::Timer;
+	use Reflex::Callbacks qw(cb_method);
+
+	parameter name    => ( isa => 'Str', default => 'name' );
+	parameter awhile  => ( isa => 'Str', default => 'awhile' );
+	parameter cb      => method_name("on", "name", "done");
+
+	role {
+		my $role_param = shift;
+
+		my $role_name = $role_param->name();
+		my $cb_done   = $role_param->cb();
+		my $awhile    = $role_param->awhile();
+
+		my $timer_member  = "_${role_name}_timer";
+		has $timer_member => ( is => 'rw', isa => 'Reflex::Timer' );
+
+		sub BUILD {}
+
+		after BUILD => sub {
+			my $self = shift;
+			$self->$timer_member(
+				Reflex::Timer->new(
+					auto_repeat => 0,
+					interval    => $self->$awhile(),
+					on_tick     => cb_method($self, $cb_done),
+				)
+			);
+		};
+
+		method $cb_done => emit_an_event("done");
+	};
+
+	1;
+
+=head1 TODO
+
+Lots.
+
+=cut
