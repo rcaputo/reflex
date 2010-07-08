@@ -3,8 +3,10 @@ package Reflex::Role::Reactive;
 use Moose::Role;
 
 use Scalar::Util qw(weaken blessed);
-use Carp qw(croak);
+use Carp qw(carp croak);
 use Reflex;
+use Reflex::Callback::Promise;
+use Reflex::Callback::CodeRef;
 
 END {
 	#warn join "; ", keys %watchers;
@@ -241,6 +243,10 @@ sub BUILD {
 
 	CALLBACK: while (my ($param, $value) = each %$args) {
 		next unless $param =~ /^on_(\S+)/;
+
+		if (ref($value) eq "CODE") {
+			$value = Reflex::Callback::CodeRef->new(code_ref => $value);
+		}
 
 		# There is an object, so we have a watcher.
 		if ($value->object()) {
