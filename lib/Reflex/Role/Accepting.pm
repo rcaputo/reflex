@@ -20,14 +20,6 @@ role {
 	my $cb_accept = $p->cb_accept();
 	my $cb_error  = $p->cb_error();
 
-	with 'Reflex::Role::Readable' => {
-		handle        => $listener,
-		active        => 1,
-		method_pause  => $p->method_pause(),
-		method_resume => $p->method_resume(),
-		method_stop   => $p->method_stop(),
-	};
-
 	method "on_${listener}_readable" => sub {
 		my ($self, $args) = @_;
 
@@ -58,6 +50,15 @@ role {
 
 	method $cb_accept => emit_an_event("accept");
 	method $cb_error  => emit_an_event("error");  # TODO - Retryable ones.
+
+	with 'Reflex::Role::Readable' => {
+		handle        => $listener,
+		active        => 1,
+		method_pause  => $p->method_pause(),
+		method_resume => $p->method_resume(),
+		method_stop   => $p->method_stop(),
+	};
+
 };
 
 1;

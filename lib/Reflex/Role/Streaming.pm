@@ -19,135 +19,35 @@ role {
 	my $p = shift;
 
 	my $h         = $p->handle();
-	my $cb_data   = $p->cb_data();
 	my $cb_error  = $p->cb_error();
-	my $cb_closed = $p->cb_closed();
 
 	with 'Reflex::Role::Collectible';
+
+	method $cb_error => emit_and_stopped("error");
+
+	with 'Reflex::Role::Reading' => {
+		handle    => $h,
+		cb_data   => $p->cb_data(),
+		cb_error  => $cb_error,
+		cb_closed => $p->cb_closed(),
+	};
 
 	with 'Reflex::Role::Readable' => {
 		handle  => $h,
 		active  => 1,
 	};
 
+	with 'Reflex::Role::Writing' => {
+		handle      => $h,
+		cb_error    => $cb_error,
+		method_put  => $p->method_put(),
+	};
+
 	with 'Reflex::Role::Writable' => {
 		handle  => $h,
 	};
 
-	has out_buffer => (
-		is      => 'rw',
-		isa     => 'ScalarRef',
-		default => sub { my $x = ""; \$x },
-	);
-
-	my $resume_writable = "resume_${h}_writable";
-	my $pause_writable  = "pause_${h}_writable";
-
-	method "on_${h}_readable" => sub {
-		my ($self, $arg) = @_;
-
-		my $octet_count = sysread($arg->{handle}, my $buffer = "", 65536);
-
-		# Got data.
-		if ($octet_count) {
-			$self->$cb_data({ data => $buffer });
-			return;
-		}
-
-		# EOF
-		if (defined $octet_count) {
-			$self->$cb_closed({ });
-			return;
-		}
-
-		# Quelle erreur!
-		$self->$cb_error(
-			{
-				errnum => ($! + 0),
-				errstr => "$!",
-				errfun => "sysread",
-			}
-		);
-	};
-
-	method "on_${h}_writable" => sub {
-		my ($self, $arg) = @_;
-
-		my $out_buffer = $self->out_buffer();
-		my $octet_count = syswrite($self->$h(), $$out_buffer);
-
-		# Hard error.
-		unless (defined $octet_count) {
-			$self->$cb_error(
-				{
-					errnum => ($! + 0),
-					errstr => "$!",
-					errfun => "syswrite",
-				}
-			);
-			return;
-		}
-
-		# Remove what we wrote.
-		substr($$out_buffer, 0, $octet_count, "");
-
-		# Pause writes if it all was flushed.
-		return if length $$out_buffer;
-		$self->$pause_writable();
-		return;
-	};
-
-	method $p->method_put() => sub {
-		my ($self, @chunks) = @_;
-
-		# TODO - Benchmark string vs. array buffering.
-
-		use bytes;
-
-		my $out_buffer = $self->out_buffer();
-		if (length $$out_buffer) {
-			$$out_buffer .= $_ foreach @chunks;
-			return length $$out_buffer;
-		}
-
-		# Try to flush 'em all.
-		while (@chunks) {
-			my $next = shift @chunks;
-			my $octet_count = syswrite($self->$h(), $next);
-
-			# Hard error.
-			unless (defined $octet_count) {
-				$self->$cb_error(
-					{
-						errnum => ($! + 0),
-						errstr => "$!",
-						errfun => "syswrite",
-					}
-				);
-				return;
-			}
-
-			# Wrote it all!  Whooooo!
-			next if $octet_count == length $next;
-
-			# Wrote less than all.  Save the rest, and turn on write
-			# multiplexing.
-			$$out_buffer = substr($next, $octet_count);
-			$$out_buffer .= $_ foreach @chunks;
-
-			$self->$resume_writable();
-			return length $$out_buffer;
-		}
-
-		# Flushed it all.  Yay!
-		return 0;
-	};
-
-	# Default callbacks that re-emit their parameters.
-	method $cb_data   => emit_an_event("data");
-	method $cb_error  => emit_and_stopped("error");
-	method $cb_closed => emit_and_stopped("closed");
-
+	# Multiplex a single stop() to the sub-roles.
 	method $p->method_stop() => sub {
 		my $self = shift;
 		$self->stop_handle_readable();

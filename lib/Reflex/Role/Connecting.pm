@@ -36,10 +36,6 @@ role {
 	my $internal_writable = "on_" . $socket . "_writable";
 	my $internal_stop     = "stop_" . $socket . "_writable";
 
-	with 'Reflex::Role::Writable' => {
-		handle  => $socket,
-	};
-
 	# Work around a Moose edge case.
 	sub BUILD {}
 
@@ -121,6 +117,10 @@ role {
 
 	method $cb_success  => emit_an_event("success");
 	method $cb_error    => emit_an_event("error");
+
+	with 'Reflex::Role::Writable' => {
+		handle  => $socket,
+	};
 };
 
 1;

@@ -36,6 +36,8 @@ role {
 	my $method_pause  = $p->method_pause();
 	my $method_resume = $p->method_resume();
 
+	requires $cb_name;
+
 	method $method_start => sub {
 		my ($self, $arg) = @_;
 
@@ -85,7 +87,7 @@ role {
 	};
 
 	# Default callbacks that re-emit their parameters.
-	method $cb_name => emit_an_event("writable");
+	#method $cb_name => emit_an_event("writable");
 };
 
 1;

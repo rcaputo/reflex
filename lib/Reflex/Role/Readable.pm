@@ -32,6 +32,8 @@ role {
 	my $cb_name       = $p->cb_ready();
 	my $setup_name    = "_setup_${h}_readable";
 
+	requires $cb_name;
+
 	method $setup_name => sub {
 		my ($self, $arg) = @_;
 
@@ -82,7 +84,7 @@ role {
 	};
 
 	# Default callbacks that re-emit their parameters.
-	method $cb_name => emit_an_event("readable");
+	#method $cb_name => emit_an_event("readable");
 };
 
 1;
