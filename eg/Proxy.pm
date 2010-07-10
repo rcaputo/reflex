@@ -8,6 +8,9 @@ has handle_b => ( is => 'rw', isa => 'FileHandle', required => 1 );
 with 'Reflex::Role::Streaming' => { handle => 'handle_a' };
 with 'Reflex::Role::Streaming' => { handle => 'handle_b' };
 
+sub on_handle_a_error { }
+sub on_handle_b_error { }
+
 sub on_handle_a_data {
 	my ($self, $arg) = @_;
 	$self->put_handle_b($arg->{data});

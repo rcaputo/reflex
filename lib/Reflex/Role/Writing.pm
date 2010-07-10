@@ -1,16 +1,11 @@
 package Reflex::Role::Writing;
-use MooseX::Role::Parameterized;
+use Reflex::Role;
 use Reflex::Util::Methods qw(emit_an_event emit_and_stopped method_name);
 
-parameter handle => (
-	isa     => 'Str',
-	default => 'handle',
-);
-
-# Matches Reflex::Role::Writable's default callback.
-parameter method_put    => method_name("put", "handle", undef);
-parameter method_flush  => method_name("on", "handle", "writable");
-parameter cb_error      => method_name("on", "handle", "error");
+attribute_parameter handle        => "handle";
+method_parameter    method_put    => qw( put handle _ );
+method_parameter    method_flush  => qw( on handle writable );
+callback_parameter  cb_error      => qw( on handle error );
 
 role {
 	my $p = shift;
@@ -102,8 +97,6 @@ role {
 		# Flushed it all.  Yay!
 		return 0;
 	};
-
-	#method $cb_error  => emit_and_stopped("error");
 };
 
 1;

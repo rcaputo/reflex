@@ -54,7 +54,6 @@ role {
 
 	# Default callbacks that re-emit their parameters.
 	method $cb_data   => emit_an_event("data");
-	#method $cb_error  => emit_and_stopped("error");
 	method $cb_closed => emit_and_stopped("closed");
 };
 

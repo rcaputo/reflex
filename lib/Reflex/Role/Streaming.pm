@@ -1,19 +1,14 @@
 package Reflex::Role::Streaming;
-use MooseX::Role::Parameterized;
-use Reflex::Util::Methods qw(emit_an_event emit_and_stopped method_name);
+use Reflex::Role;
 
 use Scalar::Util qw(weaken);
 
-parameter handle => (
-	isa     => 'Str',
-	default => 'handle',
-);
-
-parameter cb_data     => method_name("on", "handle", "data");
-parameter cb_error    => method_name("on", "handle", "error");
-parameter cb_closed   => method_name("on", "handle", "closed");
-parameter method_put  => method_name("put", "handle", undef);
-parameter method_stop => method_name("stop", "handle", undef);
+attribute_parameter handle      => "handle";
+callback_parameter  cb_data     => qw( on handle data );
+callback_parameter  cb_error    => qw( on handle error );
+callback_parameter  cb_closed   => qw( on handle closed );
+method_parameter    method_put  => qw( put handle _ );
+method_parameter    method_stop => qw( stop handle _ );
 
 role {
 	my $p = shift;
@@ -23,7 +18,7 @@ role {
 
 	with 'Reflex::Role::Collectible';
 
-	method $cb_error => emit_and_stopped("error");
+	method_emit_and_stop $cb_error => "error";
 
 	with 'Reflex::Role::Reading' => {
 		handle    => $h,
