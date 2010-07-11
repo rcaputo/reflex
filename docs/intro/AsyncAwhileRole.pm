@@ -1,12 +1,11 @@
 package AsyncAwhileRole;
-use MooseX::Role::Parameterized;
-use Reflex::Util::Methods qw(method_name emit_an_event);
+use Reflex::Role;
 use Reflex::Timer;
 use Reflex::Callbacks qw(cb_method);
 
-parameter name    => ( isa => 'Str', default => 'name' );
-parameter awhile  => ( isa => 'Str', default => 'awhile' );
-parameter cb      => method_name("on", "name", "done");
+attribute_parameter name    => "name";
+attribute_parameter awhile  => "awhile";
+callback_parameter  cb      => qw( on name done );
 
 role {
 	my $role_param = shift;
@@ -18,6 +17,8 @@ role {
 	my $timer_member = "_${role_name}_timer";
 
 	has $timer_member => ( is => 'rw', isa => 'Reflex::Timer' );
+
+	method_emit $cb_done => "done";
 
 	sub BUILD {}
 
@@ -31,8 +32,6 @@ role {
 			)
 		);
 	};
-
-	method $cb_done => emit_an_event("done");
 };
 
 1;

@@ -1,24 +1,20 @@
 package Reflex::Role::SigCatcher;
-use MooseX::Role::Parameterized;
-use Reflex::Util::Methods qw(method_name emit_an_event);
+use Reflex::Role;
 
 use Scalar::Util qw(weaken);
 
-parameter signal => (
-	isa       => 'Str',
-	default   => 'signal',
-);
+attribute_parameter signal => "signal";
 
 parameter active => (
 	isa       => 'Str',
 	default   => 'active',
 );
 
-parameter cb_signal     => method_name("on", "signal", "caught");
-parameter method_start  => method_name("start", "signal", undef);
-parameter method_stop   => method_name("stop", "signal", undef);
-parameter method_pause  => method_name("pause", "signal", undef);
-parameter method_resume => method_name("resume", "signal", undef);
+callback_parameter  cb_signal     => qw( on signal caught );
+method_parameter    method_start  => qw( start signal _ );
+method_parameter    method_stop   => qw( stop signal _ );
+method_parameter    method_pause  => qw( pause signal _ );
+method_parameter    method_resume => qw( resume signal _ );
 
 # A session may only watch a distinct signal once.
 # So we must map each distinct signal to all the interested objects.
@@ -152,7 +148,7 @@ role {
 		}
 	};
 
-	method $cb_signal => emit_an_event("signal");
+	method_emit $cb_signal => "signal";
 };
 
 __END__

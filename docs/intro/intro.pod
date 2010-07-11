@@ -6,22 +6,25 @@ Reflex::Doc - What is Reflex, and how do I use it?
 
 =head1 WHAT IS REFLEX?
 
-Reflex is a reactive programming library for Perl.  It uses Moose, a
-widely accepted standard for OO Perl, rather than concocting its own
-roles and classes.
+Reflex is a reactive programming library for Perl.  It provides the
+basic (and some advanced) building blocks for event driven modules and
+programs.
+
+Reflex uses Moose, a widely accepted standard for OO Perl, rather than
+concocting its own roles and classes.
 
 Reflex was designed to unify many forms of reactive programming.  It
 currently supports all of these, in the same program if necessary:
 
 =over 4
 
-=item plain old callbacks, using coderefs or methods
+=item * plain old callbacks, using coderefs or methods
 
-=item promises, which work in an inline imperative fashion
+=item * promises, which are used inline in an imperative fashion
 
-=item role-based composition of complex reactive classes
+=item * role-based composition of complex reactive classes
 
-=item class-based composition using inheritance.
+=item * class-based composition using inheritance.
 
 =back
 
@@ -60,19 +63,19 @@ That's a bit of work, but roles are generally the biggest Reflex
 modules.  The classes that use it are much smaller.
 
 	package AfterAwhileRole;
-	use MooseX::Role::Parameterized;
-	use Reflex::Util::Methods qw(method_name emit_an_event);
+	use Reflex::Role;
 
-	parameter name    => ( isa => 'Str', default => 'name' );
-	parameter awhile  => ( isa => 'Str', default => 'awhile' );
-	parameter cb      => method_name("on", "name", "done");
+	attribute_parameter name    => "name";
+	attribute_parameter awhile  => "awhile";
+	callback_parameter  cb      => qw( on name done );
 
 	role {
 		my $role_param = shift;
 
-		my $role_name = $role_param->name();
 		my $cb_done   = $role_param->cb();
 		my $awhile    = $role_param->awhile();
+
+		method_emit $cb_done => "done";
 
 		sub BUILD {}
 
@@ -81,8 +84,6 @@ modules.  The classes that use it are much smaller.
 			sleep($self->$awhile());
 			$self->$cb_done();
 		};
-
-		method $cb_done => emit_an_event("done");
 	};
 
 	1;
@@ -243,14 +244,13 @@ Reflex::Timer object.  Later we'll introduce magic to make it more
 concise.
 
 	package AsyncAwhileRole;
-	use MooseX::Role::Parameterized;
-	use Reflex::Util::Methods qw(method_name emit_an_event);
+	use Reflex::Role;
 	use Reflex::Timer;
 	use Reflex::Callbacks qw(cb_method);
 
-	parameter name    => ( isa => 'Str', default => 'name' );
-	parameter awhile  => ( isa => 'Str', default => 'awhile' );
-	parameter cb      => method_name("on", "name", "done");
+	attribute_parameter name    => "name";
+	attribute_parameter awhile  => "awhile";
+	callback_parameter  cb      => qw( on name done );
 
 	role {
 		my $role_param = shift;
@@ -259,8 +259,11 @@ concise.
 		my $cb_done   = $role_param->cb();
 		my $awhile    = $role_param->awhile();
 
-		my $timer_member  = "_${role_name}_timer";
+		my $timer_member = "_${role_name}_timer";
+
 		has $timer_member => ( is => 'rw', isa => 'Reflex::Timer' );
+
+		method_emit $cb_done => "done";
 
 		sub BUILD {}
 
@@ -274,8 +277,6 @@ concise.
 				)
 			);
 		};
-
-		method $cb_done => emit_an_event("done");
 	};
 
 	1;

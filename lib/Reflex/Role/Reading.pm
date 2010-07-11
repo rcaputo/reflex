@@ -1,18 +1,16 @@
 package Reflex::Role::Reading;
-use MooseX::Role::Parameterized;
-use Reflex::Util::Methods qw(emit_an_event emit_and_stopped method_name);
+use Reflex::Role;
 
-parameter handle => (
-	isa     => 'Str',
-	default => 'handle',
-);
+attribute_parameter handle    => "handle";
 
-parameter cb_data     => method_name("on", "handle", "data");
-parameter cb_error    => method_name("on", "handle", "error");
-parameter cb_closed   => method_name("on", "handle", "closed");
+callback_parameter cb_data    => qw( on handle data );
+callback_parameter cb_error   => qw( on handle error );
+callback_parameter cb_closed  => qw( on handle closed );
 
 # Matches Reflex::Role::Readable's default callback.
-parameter method_read => method_name("on", "handle", "readable");
+# TODO - Any way we can coordinate this so it's obvious in the code
+# but not too verbose?
+method_parameter  method_read => qw( on handle readable );
 
 role {
 	my $p = shift;
@@ -53,8 +51,8 @@ role {
 	};
 
 	# Default callbacks that re-emit their parameters.
-	method $cb_data   => emit_an_event("data");
-	method $cb_closed => emit_and_stopped("closed");
+	method_emit           $cb_data    => "data";
+	method_emit_and_stop  $cb_closed  => "closed";
 };
 
 1;

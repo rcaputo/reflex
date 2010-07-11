@@ -339,16 +339,6 @@ observable object attributes.
 
 =back
 
-=head2 Generic Utilities
-
-Miscellaneous helper functions.
-
-=over 2
-
-=item Reflex::Util::Methods - helper functions to generate methods
-
-=back
-
 =head1 ASSISTANCE
 
 Thank you for volunteering to assist with this project.  You can find

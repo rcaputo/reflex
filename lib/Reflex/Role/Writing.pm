@@ -1,6 +1,5 @@
 package Reflex::Role::Writing;
 use Reflex::Role;
-use Reflex::Util::Methods qw(emit_an_event emit_and_stopped method_name);
 
 attribute_parameter handle        => "handle";
 method_parameter    method_put    => qw( put handle _ );
