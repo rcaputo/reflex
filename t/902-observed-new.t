@@ -11,7 +11,7 @@ use warnings;
 use strict;
 use lib qw(t/lib);
 
-use Reflex::Timer;
+use Reflex::Interval;
 use Reflex::Callbacks qw(cb_coderef);
 
 use Test::More tests => 5;
@@ -23,7 +23,7 @@ use Test::More tests => 5;
 
 my $countdown = 3;
 my $timer;
-$timer = Reflex::Timer->new(
+$timer = Reflex::Interval->new(
 	interval    => 0.1,
 	auto_repeat => 1,
 	on_tick     => cb_coderef(

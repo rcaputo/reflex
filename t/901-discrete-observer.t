@@ -26,14 +26,14 @@ use strict;
 use lib qw(t/lib);
 
 use Reflex::Base;
-use Reflex::Timer;
+use Reflex::Interval;
 use Reflex::Callbacks qw(cb_coderef);
 
 use Test::More tests => 6;
 
 ### Create a timer.  This timer will be watched for events.
 
-my $timer = Reflex::Timer->new( interval => 0.1, auto_repeat => 1 );
+my $timer = Reflex::Interval->new( interval => 0.1, auto_repeat => 1 );
 ok( (defined $timer), "started timer object" );
 
 ### Create an object to watch the timer.

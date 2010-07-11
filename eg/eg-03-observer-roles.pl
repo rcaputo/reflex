@@ -6,12 +6,12 @@
 # beginning with "on_${role}" in the watcher object are used to handle
 # the emitter's events.
 #
-# In this test case, the Reflex::Timer object is assigned the role
+# In this test case, the Reflex::Interval object is assigned the role
 # "waitron".  It emits "tick" events that are handled by the watcher's
 # on_waitron_tick() method.
 #
 # An object may watch another in more than one role.  In this test
-# case, the Reflex::Timer is also watched in the "waitroff" role.
+# case, the Reflex::Interval is also watched in the "waitroff" role.
 # The on_waitroff_tick() method is also invoked.
 
 use warnings;
@@ -20,7 +20,7 @@ use lib qw(../lib);
 
 use Test::More tests => 10;
 
-### Define a class to watch events from a Reflex::Timer.
+### Define a class to watch events from a Reflex::Interval.
 
 {
 	package Watcher;
@@ -28,13 +28,13 @@ use Test::More tests => 10;
 	use Moose;
 	extends 'Reflex::Base';
 
-	use Reflex::Timer;
+	use Reflex::Interval;
 	use Reflex::Callbacks qw(cb_role);
 
 	use Test::More;
 
 	has timer => (
-		isa => 'Maybe[Reflex::Timer]',
+		isa => 'Maybe[Reflex::Interval]',
 		is  => 'rw',
 	);
 
@@ -42,7 +42,7 @@ use Test::More tests => 10;
 		my $self = $_[0];
 
 		$self->timer(
-			Reflex::Timer->new(
+			Reflex::Interval->new(
 				interval    => 0.1,
 				auto_repeat => 1,
 				cb_role($self, "waitron"),

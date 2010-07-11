@@ -34,14 +34,14 @@ Used within Reflex:
 	use ExampleHelpers qw(eg_say);
 
 	has ticker => (
-		isa     => 'Maybe[Reflex::Timer]',
+		isa     => 'Maybe[Reflex::Interval]',
 		is      => 'rw',
 	);
 
 	sub BUILD {
 		my $self = shift;
 		$self->ticker(
-			Reflex::Timer->new(
+			Reflex::Interval->new(
 				interval    => 1 + rand(),
 				auto_repeat => 1,
 				on_tick     => cb_method($self, "callback"),

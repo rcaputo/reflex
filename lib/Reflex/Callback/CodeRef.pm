@@ -28,7 +28,7 @@ Used within Reflex:
 
 	use Reflex::Callbacks qw(cb_coderef);
 
-	my $ct = Reflex::Timer->new(
+	my $ct = Reflex::Interval->new(
 		interval    => 1 + rand(),
 		auto_repeat => 1,
 		on_tick     => cb_coderef {

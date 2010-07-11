@@ -52,7 +52,8 @@ my $singleton_session_id = POE::Session->create(
 
 		timer_due => sub {
 			my $envelope = $_[ARG0];
-			$envelope->[0]->deliver();
+			my ($cb_object, $cb_method) = @$envelope;
+			$cb_object->$cb_method({});
 		},
 
 		### I/O manipulators and callbacks.
@@ -770,11 +771,11 @@ next() returns the next event emitted by an object.  Objects cease to
 run while your code processes the event, so be quick about it.
 
 Here's most of eg/eg-32-promise-tiny.pl, which shows how to next() on
-events from a Reflex::Timer.
+events from a Reflex::Interval.
 
-	use Reflex::Timer;
+	use Reflex::Interval;
 
-	my $t = Reflex::Timer->new(
+	my $t = Reflex::Interval->new(
 		interval    => 1,
 		auto_repeat => 1,
 	);

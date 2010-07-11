@@ -8,10 +8,10 @@ use lib qw(../lib);
 	package App;
 	use Moose;
 	extends 'Reflex::Base';
-	use Reflex::Timer;
+	use Reflex::Interval;
 
 	has ticker => (
-		isa     => 'Reflex::Timer',
+		isa     => 'Reflex::Interval',
 		is      => 'rw',
 		setup   => { interval => 1, auto_repeat => 1 },
 		traits  => [ 'Reflex::Trait::Observed' ],

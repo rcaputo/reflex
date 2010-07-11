@@ -23,19 +23,19 @@ $self->emit( event => \%args );
 
 =cut
 
-my $timer = Reflex::Timer->new(
+my $timer = Reflex::Interval->new(
 	interval => 5,
 	auto_repeat => 1,
 	on_tick => cb_coderef(\&subroutine),
 );
 
-my $timer = Reflex::Timer->new(
+my $timer = Reflex::Interval->new(
 	interval => 5,
 	auto_repeat => 1,
 	on_tick => cb_method($self, "method"),
 );
 
-my $timer = Reflex::Timer->new(
+my $timer = Reflex::Interval->new(
 	interval => 5,
 	auto_repeat => 1,
 	on_tick => cb_method("class", "method"),
@@ -45,7 +45,7 @@ my $timer = Reflex::Timer->new(
 
 =cut
 
-my $timer = Reflex::Timer->new(
+my $timer = Reflex::Interval->new(
 	interval => 5,
 	auto_repeat => 1,
 	cb_role($self, "rolename"),
@@ -55,7 +55,7 @@ my $timer = Reflex::Timer->new(
 
 =cut
 
-my $timer = Reflex::Timer->new(
+my $timer = Reflex::Interval->new(
 	interval => 5,
 	auto_repeat => 1,
 	# cb_promise
@@ -69,7 +69,7 @@ while (my $event = $timer->next()) {
 
 =cut
 
-my $timer = Reflex::Timer->new(
+my $timer = Reflex::Interval->new(
 	interval => 5,
 	auto_repeat => 1,
 	promise => 1,
@@ -100,14 +100,14 @@ use strict;
 
 use lib qw(../lib);
 
-use Reflex::Timer;
+use Reflex::Interval;
 use Reflex::Callbacks qw(cb_promise);
 use ExampleHelpers qw(eg_say);
 
 my $watcher = Reflex::Base->new();
 
 my $promise;
-my $timer = Reflex::Timer->new(
+my $timer = Reflex::Interval->new(
 	interval    => 1,
 	auto_repeat => 1,
 );

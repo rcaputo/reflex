@@ -368,7 +368,7 @@ deliver events to the callback.
 cb_coderef() neither takes nor returns an event name.  As such, the
 Reflex::Base parameter name must be supplied outside cb_coderef().
 
-	my $timer = Reflex::Timer->new(
+	my $timer = Reflex::Interval->new(
 		interval    => 1,
 		auto_repeat => 1,
 		on_tick     => cb_coderef { print "tick!\n" },

@@ -1,14 +1,14 @@
 # A TCP echo client that looks like it's blocking when it's not.
 
 use lib qw(../lib);
-use Reflex::Timer;
+use Reflex::Interval;
 use Reflex::Connector;
 use Reflex::Stream;
 use Reflex::Callbacks qw(cb_coderef);
 use ExampleHelpers qw(eg_say);
 
 # Run a timer so we can prove the client isn't blocking.
-my $ticker = Reflex::Timer->new(
+my $ticker = Reflex::Interval->new(
 	interval    => 0.001,
 	auto_repeat => 1,
 	on_tick     => cb_coderef { eg_say("tick...") },

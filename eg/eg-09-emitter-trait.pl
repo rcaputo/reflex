@@ -10,7 +10,7 @@ use lib qw(../lib);
 	package Counter;
 	use Moose;
 	extends 'Reflex::Base';
-	use Reflex::Timer;
+	use Reflex::Interval;
 	use Reflex::Trait::Observed;
 	use Reflex::Trait::EmitsOnChange;
 
@@ -23,7 +23,7 @@ use lib qw(../lib);
 
 	has ticker  => (
 		traits    => ['Reflex::Trait::Observed'],
-		isa       => 'Reflex::Timer|Undef',
+		isa       => 'Maybe[Reflex::Interval]',
 		is        => 'rw',
 	);
 
@@ -31,7 +31,7 @@ use lib qw(../lib);
 		my $self = shift;
 
 		$self->ticker(
-			Reflex::Timer->new(
+			Reflex::Interval->new(
 				interval    => 0.1,
 				auto_repeat => 1,
 			)

@@ -2,7 +2,7 @@ package ThingWithCallbacks;
 use Moose;
 
 # A demo class that delivers callbacks to its users.  I wanted to go even
-# more abstract than Reflex::Timer, partly to reduce confusion over
+# more abstract than Reflex::Interval, partly to reduce confusion over
 # the callbacks subproject's scope.  Not all callback types are
 # appropriate for timers, too.
 
@@ -10,7 +10,7 @@ use Reflex::Callbacks qw(gather_cb);
 
 has cb => ( is => 'rw', isa => 'Reflex::Callbacks' );
 
-# This is interesting code from Reflex::Timer.
+# This is interesting code from Reflex::Interval.
 #has on_tick => (
 #	isa     => 'Reflex::Callback',
 #	is      => 'ro',

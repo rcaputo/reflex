@@ -25,11 +25,11 @@ use Test::More tests => 3;
 	package PromiseThing;
 	use Moose;
 	extends 'Reflex::Base';
-	use Reflex::Timer;
+	use Reflex::Interval;
 	use Reflex::Callbacks qw(gather_cb);
 
 	has ticker => (
-		isa     => 'Reflex::Timer',
+		isa     => 'Reflex::Interval',
 		is      => 'rw',
 		setup   => { interval => 1, auto_repeat => 1 },
 		traits  => [ 'Reflex::Trait::Observed' ],

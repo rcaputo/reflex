@@ -52,10 +52,10 @@ Reflex - Class library for flexible, reactive programs.
 		package App;
 		use Moose;
 		extends 'Reflex::Base';
-		use Reflex::Timer;
+		use Reflex::Interval;
 
 		has ticker => (
-			isa     => 'Reflex::Timer',
+			isa     => 'Reflex::Interval',
 			is      => 'rw',
 			setup   => { interval => 1, auto_repeat => 1 },
 			traits  => [ 'Reflex::Trait::Observed' ],
@@ -144,13 +144,13 @@ to handle events.
 
 Here we'll start a periodic timer and handle its ticks with a simple
 callback.  The program is still reactive.  Every second it prints
-"timer ticked" in response Reflex::Timer's events.
+"timer ticked" in response Reflex::Interval's events.
 
-	use Reflex::Timer;
+	use Reflex::Interval;
 	use ExampleHelpers qw(eg_say);
 	use Reflex::Callbacks qw(cb_coderef);
 
-	my $t = Reflex::Timer->new(
+	my $t = Reflex::Interval->new(
 		interval    => 1,
 		auto_repeat => 1,
 		on_tick     => cb_coderef { eg_say("timer ticked") },
@@ -172,13 +172,13 @@ the previous coderef callback example, but it doesn't use callbacks at
 all.
 
 It may not be obvious, but the same emit() method drives all of
-Reflex's forms of callback.  Reflex::Timer below is identical to the
-Reflex::Timer used differently elsewhere.
+Reflex's forms of callback.  Reflex::Interval below is identical to
+the Reflex::Interval used differently elsewhere.
 
-	use Reflex::Timer;
+	use Reflex::Interval;
 	use ExampleHelpers qw(eg_say);
 
-	my $t = Reflex::Timer->new(
+	my $t = Reflex::Interval->new(
 		interval => 1,
 		auto_repeat => 1,
 	);
@@ -321,7 +321,7 @@ it eventually, and you're welcome to help.
 
 =over 2
 
-=item Reflex::Timer - An object that watches the passage of time.
+=item Reflex::Interval - An object that emits periodic events.
 
 =back
 

@@ -5,12 +5,12 @@ use strict;
 
 use lib qw(../lib);
 
-use Reflex::Timer;
+use Reflex::Interval;
 use ExampleHelpers qw(eg_say);
 use ReflexPromise;
 
 my $p = ReflexPromise->new(
-	object => Reflex::Timer->new(
+	object => Reflex::Interval->new(
 		interval    => 1,
 		auto_repeat => 1,
 	)

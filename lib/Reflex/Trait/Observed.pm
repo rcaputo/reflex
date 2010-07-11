@@ -115,7 +115,7 @@ Reflex::Trait::Observed - Automatically watch Reflex objects.
 # L<synopsis|Reflex/SYNOPSIS>.
 
 	has clock => (
-		isa     => 'Reflex::Timer',
+		isa     => 'Reflex::Interval',
 		is      => 'rw',
 		traits  => [ 'Reflex::Trait::Observed' ],
 		setup   => { interval => 1, auto_repeat => 1 },
@@ -125,7 +125,7 @@ Reflex::Trait::Observed - Automatically watch Reflex objects.
 
 Reflex::Trait::Observed modifies a member to automatically observe any
 Reflex::Base object stored within it.  In the SYNOPSIS, storing a
-Reflex::Timer in the clock() attribute allows the owner to watch the
+Reflex::Interval in the clock() attribute allows the owner to watch the
 timer's events.
 
 This trait is a bit of Moose-based syntactic sugar for Reflex::Base's
@@ -136,10 +136,10 @@ more explict watch() and watch_role() methods.
 The "setup" option provides default constructor parameters for the
 attribute.  In the above example, clock() will by default contain
 
-	Reflex::Timer->new(interval => 1, auto_repeat => 1);
+	Reflex::Interval->new(interval => 1, auto_repeat => 1);
 
-In other words, it will emit the Reflex::Timer event ("tick") once per
-second until destroyed.
+In other words, it will emit the Reflex::Interval event ("tick") once
+per second until destroyed.
 
 =head2 role
 

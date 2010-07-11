@@ -7,9 +7,9 @@ use lib qw(../lib);
 {
 	package App;
 	use Moose;
-	extends 'Reflex::Timer';
+	extends 'Reflex::Interval';
 
-	sub on_timer_tick {
+	before on_tick => sub {
 		print "tick at ", scalar(localtime), "...\n";
 	}
 }

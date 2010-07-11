@@ -9,14 +9,14 @@ use lib qw(../lib);
 {
 	package App;
 	use Reflex::Base;
-	use Reflex::Timer;
+	use Reflex::Interval;
 	use Reflex::Callbacks qw(cb_role);
 	use base qw(Reflex::Base);
 
 	sub BUILD {
 		my $self = shift;
 
-		$self->{ticker} = Reflex::Timer->new(
+		$self->{ticker} = Reflex::Interval->new(
 			interval    => 1,
 			auto_repeat => 1,
 		);

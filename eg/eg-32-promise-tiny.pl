@@ -9,10 +9,10 @@ use strict;
 
 use lib qw(../lib);
 
-use Reflex::Timer;
+use Reflex::Interval;
 use ExampleHelpers qw(eg_say);
 
-my $t = Reflex::Timer->new(
+my $t = Reflex::Interval->new(
 	interval => 1,
 	auto_repeat => 1,
 );

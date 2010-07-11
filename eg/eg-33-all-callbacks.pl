@@ -10,13 +10,13 @@ use strict;
 
 use lib qw(../lib);
 
-use Reflex::Timer;
+use Reflex::Interval;
 use ExampleHelpers qw(eg_say);
 
 ### Handle timer ticks with coderefs.
 
 use Reflex::Callbacks qw(cb_coderef);
-my $ct = Reflex::Timer->new(
+my $ct = Reflex::Interval->new(
 	interval    => 1 + rand(),
 	auto_repeat => 1,
 	on_tick     => cb_coderef( sub { eg_say("coderef callback triggered") } ),
@@ -32,14 +32,14 @@ my $ct = Reflex::Timer->new(
 	use ExampleHelpers qw(eg_say);
 
 	has ticker => (
-		isa     => 'Maybe[Reflex::Timer]',
+		isa     => 'Maybe[Reflex::Interval]',
 		is      => 'rw',
 	);
 
 	sub BUILD {
 		my $self = shift;
 		$self->ticker(
-			Reflex::Timer->new(
+			Reflex::Interval->new(
 				interval    => 1 + rand(),
 				auto_repeat => 1,
 				on_tick     => cb_method($self, "callback"),
@@ -66,14 +66,14 @@ my $mh = MethodHandler->new();
 	use ExampleHelpers qw(eg_say);
 
 	has ticker => (
-		isa     => 'Maybe[Reflex::Timer]',
+		isa     => 'Maybe[Reflex::Interval]',
 		is      => 'rw',
 	);
 
 	sub BUILD {
 		my $self = shift;
 		$self->ticker(
-			Reflex::Timer->new(
+			Reflex::Interval->new(
 				interval    => 1 + rand(),
 				auto_repeat => 1,
 				cb_object($self, { tick => "callback" }),
@@ -98,14 +98,14 @@ my $oh = ObjectHandler->new();
 	use ExampleHelpers qw(eg_say);
 
 	has ticker => (
-		isa     => 'Maybe[Reflex::Timer]',
+		isa     => 'Maybe[Reflex::Interval]',
 		is      => 'rw',
 	);
 
 	sub BUIILD {
 		my $self = shift;
 		$self->ticker(
-			Reflex::Timer->new(
+			Reflex::Interval->new(
 				interval    => 1 + rand(),
 				auto_repeat => 1,
 				cb_role($self, "timer"),
@@ -124,7 +124,7 @@ my $rh = RoleHandler->new();
 ### will "block".  Meanwhile, next() is also allowing the other timers
 ### to run.
 
-my $pt = Reflex::Timer->new(
+my $pt = Reflex::Interval->new(
 	interval    => 1 + rand(),
 	auto_repeat => 1,
 );

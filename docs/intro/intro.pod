@@ -240,12 +240,12 @@ renamed AfterAwhileClass, with the new asynchronous role.
 
 As mentioned earlier, most of the work is done in the role itself.
 This AsyncAwhileRole replaces the blocking sleep() with a non-blocking
-Reflex::Timer object.  Later we'll introduce magic to make it more
+Reflex::Interval object.  Later we'll introduce magic to make it more
 concise.
 
 	package AsyncAwhileRole;
 	use Reflex::Role;
-	use Reflex::Timer;
+	use Reflex::Interval;
 	use Reflex::Callbacks qw(cb_method);
 
 	attribute_parameter name    => "name";
@@ -261,7 +261,7 @@ concise.
 
 		my $timer_member = "_${role_name}_timer";
 
-		has $timer_member => ( is => 'rw', isa => 'Reflex::Timer' );
+		has $timer_member => ( is => 'rw', isa => 'Reflex::Interval' );
 
 		method_emit $cb_done => "done";
 
@@ -270,7 +270,7 @@ concise.
 		after BUILD => sub {
 			my $self = shift;
 			$self->$timer_member(
-				Reflex::Timer->new(
+				Reflex::Interval->new(
 					auto_repeat => 0,
 					interval    => $self->$awhile(),
 					on_tick     => cb_method($self, $cb_done),

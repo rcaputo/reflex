@@ -1,6 +1,6 @@
 package AsyncAwhileRole;
 use Reflex::Role;
-use Reflex::Timer;
+use Reflex::Interval;
 use Reflex::Callbacks qw(cb_method);
 
 attribute_parameter name    => "name";
@@ -16,7 +16,7 @@ role {
 
 	my $timer_member = "_${role_name}_timer";
 
-	has $timer_member => ( is => 'rw', isa => 'Reflex::Timer' );
+	has $timer_member => ( is => 'rw', isa => 'Reflex::Interval' );
 
 	method_emit $cb_done => "done";
 
@@ -25,7 +25,7 @@ role {
 	after BUILD => sub {
 		my $self = shift;
 		$self->$timer_member(
-			Reflex::Timer->new(
+			Reflex::Interval->new(
 				auto_repeat => 0,
 				interval    => $self->$awhile(),
 				on_tick     => cb_method($self, $cb_done),

@@ -105,7 +105,7 @@ use lib qw(lib);
 	package Driver;
 	use Moose;
 	extends 'Reflex::Base';
-	use Reflex::Timer;
+	use Reflex::Interval;
 
 	has counter => (
 		isa     => 'Counter',
@@ -114,7 +114,7 @@ use lib qw(lib);
 	);
 
 	has clock => (
-		isa     => 'Reflex::Timer',
+		isa     => 'Reflex::Interval',
 		is      => 'rw',
 		traits  => ['Reflex::Trait::Observed'],
 	);
@@ -122,7 +122,7 @@ use lib qw(lib);
 	sub BUILD {
 		my $self = shift;
 		$self->counter( Counter->new() );
-		$self->clock( Reflex::Timer->new( interval => 1, auto_repeat => 1 ) );
+		$self->clock( Reflex::Interval->new( interval => 1, auto_repeat => 1 ) );
 	}
 
 	sub on_clock_tick {
