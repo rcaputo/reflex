@@ -5,6 +5,7 @@ extends 'Reflex::Base';
 
 has name        => ( isa => 'Str', is => 'ro', default => 'timeout' );
 has delay       => ( isa => 'Num', is  => 'ro' );
+has auto_start  => ( isa => 'Bool', is => 'ro', default => 1 );
 
 # TODO - There is a flaw in the design.
 #
@@ -23,6 +24,7 @@ with 'Reflex::Role::Timeout' => {
 	name          => "name",
 	delay         => "delay",
 	cb_timeout    => "on_done",
+	auto_start    => "auto_start",
 	method_start  => "start",
 	method_stop   => "stop",
 	method_reset  => "reset",

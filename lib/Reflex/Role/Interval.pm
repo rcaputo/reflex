@@ -57,7 +57,7 @@ role {
 		$self->$timer_id_name(
 			$POE::Kernel::poe_kernel->delay_set(
 				'timer_due',
-				$self->interval(),
+				$self->$interval(),
 				$envelope,
 			)
 		);
