@@ -2,26 +2,23 @@ package Reflex::Role::Interval;
 use Reflex::Role;
 use Scalar::Util qw(weaken);
 
-attribute_parameter name        => "name";
 attribute_parameter interval    => "interval";
 attribute_parameter auto_repeat => "auto_repeat";
 attribute_parameter auto_start  => "auto_start";
 
-method_parameter    method_stop   => qw( stop name _ );
-method_parameter    method_repeat => qw( repeat name _ );
-callback_parameter  cb_tick       => qw( on name tick );
+method_parameter    method_stop   => qw( stop interval _ );
+method_parameter    method_repeat => qw( repeat interval _ );
+callback_parameter  cb_tick       => qw( on interval tick );
 
 role {
 	my $p = shift;
 
-	my $role_name = $p->name();
-
-	my $timer_id_name = "${role_name}_timer_id";
+	my $interval      = $p->interval();
+	my $timer_id_name = "${interval}_timer_id";
 	my $method_repeat = $p->method_repeat();
 	my $method_stop   = $p->method_stop();
 	my $auto_start    = $p->auto_start();
 	my $auto_repeat   = $p->auto_repeat();
-	my $interval      = $p->interval();
 	my $cb_tick       = $p->cb_tick();
 
 	has $timer_id_name => (

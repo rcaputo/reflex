@@ -3,7 +3,6 @@ package Reflex::Timeout;
 use Moose;
 extends 'Reflex::Base';
 
-has name        => ( isa => 'Str', is => 'ro', default => 'timeout' );
 has delay       => ( isa => 'Num', is  => 'ro' );
 has auto_start  => ( isa => 'Bool', is => 'ro', default => 1 );
 
@@ -21,7 +20,6 @@ has auto_start  => ( isa => 'Bool', is => 'ro', default => 1 );
 # cb_timeout is set to here.
 
 with 'Reflex::Role::Timeout' => {
-	name          => "name",
 	delay         => "delay",
 	cb_timeout    => "on_done",
 	auto_start    => "auto_start",

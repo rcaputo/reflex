@@ -1,4 +1,4 @@
-[_] 95% Great Renaming
+[_] 97% Great Renaming
 	[_] 75% Base Roles
 		[_] 75% MooseX::Role::Reactive - formerly Reflex::Role::Object
 			[_] 50% role interface
@@ -8,6 +8,7 @@
 					[_] 0% sub run_all
 					[_] 0% sub run_within_session
 					[_] 0% sub call_gate
+					[_] 0% Abstract event loop things.
 				[X] 100% Clean up internals naming a bit.
 					[X] 100% sub _deliver - rename to deliver
 					[X] 100% sub observe - rename to watch
@@ -111,7 +112,7 @@
 			has initializer
 			has role
 			has setup
-	[_] 62% Atomic Roles
+	[_] 92% Atomic Roles
 		[X] 100% with Reflex::Role::Readable
 		[X] 100% with Reflex::Role::Writable
 			parameter handle
@@ -136,15 +137,15 @@
 		[_] 50% with Reflex::Role::PidReaper
 			[_] 0% role interface
 			[X] 100% reified as Reflex::PID
-		[_] 0% with Reflex::Role::Alarm
-			[_] 0% role interface
-			[_] 0% reified as Reflex::Alarm
-		[_] 25% with Reflex::Role::Timeout - formerly Reflex::Timer
-			[X] 100% old object interface
-				[X] 100% sub _deliver - rename to deliver
-			[_] 0% emits timeout
-			[_] 0% role interface
-			[_] 0% reified as Reflex::Timeout
+		[X] 100% with Reflex::Role::Wakeup
+			[X] 100% role interface
+			[X] 100% reified as Reflex::Wakeup
+		[X] 100% with Reflex::Role::Timeout (resettable delay)
+			[X] 100% role interface
+			[X] 100% reified as Reflex::Timeout
+		[X] 100% with Reflex::Role::Interval (periodic timeout)
+			[X] 100% role interface
+			[X] 100% reified as Reflex::Interval
 	[X] 100% use Reflex::Client
 	[X] 100% use Reflex::Connector
 	[X] 100% Deprecate Reflex::Handle
