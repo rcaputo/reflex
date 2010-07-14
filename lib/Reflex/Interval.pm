@@ -14,6 +14,7 @@ with 'Reflex::Role::Interval' => {
 	cb_tick       => "on_tick",
 	method_start  => "start",
 	method_stop   => "stop",
+	method_repeat => "repeat",
 };
 
 1;
