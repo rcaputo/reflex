@@ -1,8 +1,6 @@
 package Reflex::Role::Streaming;
 use Reflex::Role;
 
-use Scalar::Util qw(weaken);
-
 attribute_parameter handle      => "handle";
 callback_parameter  cb_data     => qw( on handle data );
 callback_parameter  cb_error    => qw( on handle error );
@@ -13,8 +11,9 @@ method_parameter    method_stop => qw( stop handle _ );
 role {
 	my $p = shift;
 
-	my $h         = $p->handle();
-	my $cb_error  = $p->cb_error();
+	my $h           = $p->handle();
+	my $cb_error    = $p->cb_error();
+	my $method_read = "_on_${h}_readable";
 
 	with 'Reflex::Role::Collectible';
 
@@ -25,11 +24,13 @@ role {
 		cb_data   => $p->cb_data(),
 		cb_error  => $cb_error,
 		cb_closed => $p->cb_closed(),
+		method_read => $method_read,
 	};
 
 	with 'Reflex::Role::Readable' => {
-		handle  => $h,
-		active  => 1,
+		handle    => $h,
+		active    => 1,
+		cb_ready  => $method_read,
 	};
 
 	with 'Reflex::Role::Writing' => {
@@ -120,62 +121,18 @@ mixed in methods associated with them will also be unique.
 
 =head3 cb_closed
 
-C<cb_closed> names the $self method that will be called whenever
-C<handle> has reached the end of readable data.  For sockets, this
-means the remote endpoint has closed or shutdown for writing.
-
-C<cb_closed> is by default the catenation of "on_", the C<handle>
-name, and "_closed".  A handle named "XYZ" will by default trigger
-on_XYZ_closed() callbacks.  The role defines a default callback that
-will emit a "closed" event and call stopped(), which is provided by
-Reflex::Role::Collectible.
-
-Currently the second parameter to the C<cb_closed> callback contains
-no parameters of note.
-
-When overriding this callback, please be sure to call stopped(), which
-is provided by Reflex::Role::Collectible.  Calling stopped() is vital
-for collectible objects to be released from memory when managed by
-Reflex::Collection.
+Please see L<Reflex::Role::Reading/cb_closed>.
+Reflex::Role::Reading's "cb_closed" defines this callback.
 
 =head3 cb_data
 
-C<cb_data> names the $self method that will be called whenever the
-stream for C<handle> has provided new data.  By default, it's the
-catenation of "on_", the C<handle> name, and "_data".  A handle named
-"XYZ" will by default trigger on_XYZ_data() callbacks.  The role
-defines a default callback that will emit a "data" event with
-cb_data()'s parameters.
-
-All Reflex parameterized role calblacks are invoked with two
-parameters: $self and an anonymous hashref of named values specific to
-the callback.  C<cb_data> callbacks include a single named value,
-C<data>, that contains the raw octets received from the filehandle.
+Please see L<Reflex::Role::Reading/cb_data>.
+Reflex::Role::Reading's "cb_data" defines this callback.
 
 =head3 cb_error
 
-C<cb_error> names the $self method that will be called whenever the
-stream produces an error.  By default, this method will be the
-catenation of "on_", the C<handle> name, and "_error".  As in
-on_XYZ_error(), if the handle is named "XYZ".  The role defines a
-default callback that will emit an "error" event with cb_error()'s
-parameters, then will call stopped() so that streams managed by
-Reflex::Collection will be automatically cleaned up after stopping.
-
-C<cb_error> callbacks receive two parameters, $self and an anonymous
-hashref of named values specific to the callback.  Reflex error
-callbacks include three standard values.  C<errfun> contains a
-single word description of the function that failed.  C<errnum>
-contains the numeric value of C<$!> at the time of failure.  C<errstr>
-holds the stringified version of C<$!>.
-
-Values of C<$!> are passed as parameters since the global variable may
-change before the callback can be invoked.
-
-When overriding this callback, please be sure to call stopped(), which
-is provided by Reflex::Role::Collectible.  Calling stopped() is vital
-for collectible objects to be released from memory when managed by
-Reflex::Collection.
+Please see L<Reflex::Role::Reading/cb_error>.
+Reflex::Role::Reading's "cb_error" defines this callback.
 
 =head3 method_put
 
