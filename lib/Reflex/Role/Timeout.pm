@@ -152,8 +152,9 @@ to wait for input and a longer timeout to wait for authentication.
 
 =head3 auto_start
 
-Timeouts will automatically start unless the value of the attribute
-named in C<auto_start> is false.
+Timeouts will automatically start if the value of the attribute
+named in C<auto_start> is true.  Otherwise, the class consuming this
+role must call the role's start method, named in C<method_start>.
 
 =head3 method_stop
 
@@ -172,14 +173,15 @@ The stop method neither takes parameters nor returns anything.
 =head3 method_reset
 
 C<method_reset> allows the role's consumer to override the default
-reset method name.  The default is C<"stop_${delay_name}">, where
-$delay_name is the attribute name provided in the C<delay> parameter.
+reset method name.  The default is C<"reset_${timeout_name}">, where
+$timeout_name is the attribute name provided in the C<timeout>
+parameter.
 
 All Reflex methods accept a hashref of named parameters.  Currently
 the reset method accepts one named parameter, "delay".  The value of
-"delay" must be the new time to trigger a callback.  If "delay" isn't
-provided, the timeout callback will happen at the previous time set by
-this module.
+"delay" must be the new timeout to trigger a callback.  If "delay"
+isn't provided, the timeout callback will happen at the previous time
+set by this module.
 
 	$self->reset_name( { delay => 60 } );
 
