@@ -9,8 +9,7 @@
 
 # Reflex::Callbacks and the Reflex::Callback helper classes will
 # abstract callbacks to fulfill a number of goals.  The goals are
-# detailed in docs/requirements.otl and summarized in
-# eg/eg-20-rcb-callback.pl
+# detailed in docs/TODO.otl and summarized in eg/eg-20-rcb-callback.pl
 
 use warnings;
 use strict;
