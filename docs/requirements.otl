@@ -1,9 +1,17 @@
-[_] 49% Framework Requirements
+[_] 51% Framework Requirements
 	About
 		This document summarizes the best ideas from the patterns document.
-		The patterns document tries to enumerate all available options.
-		The requirements document chooses which ones to actually use.
+		It is also a master TODO list for Reflex.
+		It's in Vim Outliner Format.
+			Basically just an outline where tab indents denote levels.
+			The "[_] 0%" is ongoing progress, managed by Vim Outliner.
+		The docs/patterns.otl document tries to enumerate all available options.
+			Even ones that have been discarded.
+			Even ones we'd like to do but may never get around to.
+			Patterns contains some sexy, interesting, and hard projects.
+			Volunteers are welcome.
 		A later specification document will attempt to reconcile the requirements into a syntax and semantics.
+			This will probably become the documentation. :)
 	Desirable Qualities
 		Best practices should be encouraged.
 			Base classes should set precedents for best practices.
@@ -48,11 +56,11 @@
 					[_] 0% How to document these interactions?
 			[_] 0% Command naming conventions.
 				stop()
-		[_] % Normalize names in Reflex
-			[_] % Helpers
-			[_] % Internals
-			[_] % Traits
-			[_] % Parts and Reified Objects
+		[_] 0% Normalize names in Reflex
+			[_] 0% Helpers
+			[_] 0% Internals
+			[_] 0% Traits
+			[_] 0% Parts and Reified Objects
 		[_] 0% Reflex::Manual
 			[_] 0% Nomenclature
 				[_] 0% Reflexive namespace is a sandbox for new modules.
@@ -237,77 +245,70 @@
 			[_] 0% Receiver data is not visible to the sender.
 			[_] 0% Message-scoped resources should be stored in the message's continuation.
 				[_] 0% Message cancelation triggers associated resource cleanup.
-	[_] 50% Common primitive classes must be provided.
-		[_] 27% Low-level event watchers.
-			[_] 50% Reflex::Handle
-				[X] 100% Strawman implementation.
-				[_] 0% Determine API.
-			[_] 16% Reflex::Timer
-				[_] 50% Delay a number of seconds.
-					[X] 100% Repeat with drift.
-					[_] 0% Repeat without drift.
-				[_] 0% Wait for a specific time.
-					[_] 0% Repeat without drift.
-					[_] 0% Use DateTime for interval math.
-				[_] 0% Determine full API.
-			[_] 0% Reflex::Cron
-				[_] 0% Strawman implementation.
-				[_] 0% Determine API.
-					See POE::Component::Cron for clues.
-					Would Chris Fedde like to work on this?
-				[_] 0% Wait for repeating times.
-			[_] 50% Reflex::Signal
-				[X] 100% Strawman implementation.
-				[_] 0% Determine API.
-			[_] 50% Reflex::PID (SIGCHLD)
-				[X] 100% Strawman implementation.
-				[_] 0% Determine API.
-			[_] 0% What else?
-		[_] 25% Primitive program pieces.
-			[_] 0% Reflex::App
-				[_] 0% Strawman implementation.
-				[_] 0% Determine API.
-			[_] 20% Reflex::Client::HTTP
-				[_] 33% Reflex::Connector
-					[X] 100% Strawman implementation.
-					[_] 0% Determine API.
-					[_] 0% IPv6 support.
-				[_] 0% Reflex::Connector::Keepalive
-					[_] 0% Strawman implementation.
-					[_] 0% Determine API.
-				[_] 0% Reflex::Resolver
-					[_] 0% Determine API.
-					[_] 0% Determine how to make asynchronous.
-						Forked?
-						Coro?
-						Threads?
-					[_] 0% IPV4
-					[_] 0% IPv6
-				[_] 50% Reflex::Stream
-					[X] 100%Strawman implementation.
-					[_] 0% Determine API.
-					Use Data::Transform internally to parse & marshall data.
-			[_] 33% Reflex::Listener
-				[X] 100% Strawman implementation.
-				[_] 0% Determine API.
-					See POE::Wheel::ListenAccept for clues.
-				[_] 0% IPv6 support.
-			[_] 0% Reflex::Process
-				[_] 0% Strawman implementation.
-				[_] 0% Determine API.
-					See POE::Wheel::Run for clues.
-			[_] 50% Reflex::UdpPeer
-				[X] 100% Strawman implementation.
-				[_] 0% Determine API.
-			[_] 0% Reflex::Tail
-				[_] 0% Strawman implementation.
-				[_] 0% Determine API.
-					See POE::Wheel::FollowTail for clues.
-			[X] 100% Reflex::Collection
-				Manage a collection of Reflex objects.
-				Removes objects from itself when they shut down.
-				Reflex servers can use this to manage client objects.
-			[_] 0% What else?  Probably a lot!
+	[_] 63% Common primitive classes must be provided.
+		[_] 50% Callback Abstractions
+			[X] 100% Reflex::Callback
+				[X] 100% Reflex::Callback::CodeRef
+				[X] 100% Reflex::Callback::Method
+				[X] 100% Reflex::Callback::Promise
+			[_] 0% Reflex::Callbacks
+				Syntactic sugar for callback creation.
+				[_] 0% Need to make this a declarative thing.
+		[_] 89% Low-level event watchers.
+			[X] 100% I/O Watchers
+				[X] 100% Reflex::Role::Readable
+				[X] 100% Reflex::Role::Writable
+			[_] 75% I/O Performers
+				[X] 100% Roles
+					[X] 100% Reflex::Role::Reading
+					[X] 100% Reflex::Role::Writing
+					[X] 100% Reflex::Role::Streaming
+				[_] 50% Classes
+					[X] 100% Reflex::Stream
+					[_] 0% Integrate Data::Transform
+			[X] 100% Time Watchers
+				[X] 100% Roles
+					[X] 100% Reflex::Role::Timeout
+					[X] 100% Reflex::Role::Wakeup
+					[X] 100% Reflex::Role::Interval
+				[X] 100% Classes
+					[X] 100% Reflex::Timeout
+					[X] 100% Reflex::Wakeup
+					[X] 100% Reflex::Interval
+			[X] 100% Signals
+				[X] 100% Roles
+					[X] 100% Reflex::Role::SigCatcher
+				[X] 100% Classes
+					[X] 100% Reflex::Signal
+			[X] 100% Clients and Servers
+				[X] 100% Roles
+					[X] 100% Reflex::Role::Connecting
+					[X] 100% Reflex::Role::Accepting
+					[X] 100% Reflex::Role::Recving
+				[X] 100% Classes
+					[X] 100% Reflex::Acceptor
+					[X] 100% Reflex::Connector
+					[X] 100% Reflex::Client
+					[X] 100% Reflex::UdpPeer
+			[X] 100% Pool Management
+				[X] 100% Reflex::Role::Collectible
+				[X] 100% Reflex::Collection
+					Manage a collection of Reflex objects.
+					Removes objects from itself when they shut down.
+					Reflex servers can use this to manage client objects.
+			[_] 50% Process Watchers
+				[_] 0% Reflex::Role::ProcReaper?
+					I can't find a good reason to write this role.
+					This seems highly dynamic.
+					Contributions are welcome.
+				[X] 100% Reflex::PID
+		[_] 50% Containership Traits
+			[_] 50% Reflex::Trait::EmitsOnChange
+				[X] 100% Initial implementation, with explicit syntax.
+				[_] 0% Make declarative syntax so we can avoid the icky explicit use of traits.
+			[_] 50% Reflex::Trait::Observed
+				[X] 100% Initial implementation, with explicit syntax.
+				[_] 0% Make declarative syntax so we can avoid the icky explicit use of traits.
 		[X] 100% POE Interfaces
 			[X] 100% Wheel wrappers.
 				[X] 100% Reflex::POE::Wheel
@@ -367,12 +368,73 @@
 				[X] 100% Components that emit specific events require Wheel-like wrappers.
 					[X] 100% Is this worth supporting?
 						No.  The Session subscriber can detect any events emitted by the component.
+		[_] 80% Basic Modules	
+			[X] 100% Reflex::Base
+			[X] 100% Reflex::Role::Reactive
+			[_] 0% MooseX::Role::Reactive
+				[_] 0% Fork git project.
+				[_] 0% Remove all nonessentials.
+				[_] 0% Fix up dist.ini.
+				[_] 0% Rename things.
+			[X] 100% Reflex::Role
+			[X] 100% Reflex
+		[_] 13% Primitive program pieces.
+			[_] 0% Clean up this branch of the outline.
+			[_] 0% Reflex::App
+				[_] 0% Does it offer anything in particular?
+				[_] 0% Strawman implementation.
+				[_] 0% Determine API.
+			[_] 0% Reflex::Cron
+				[_] 0% Strawman implementation.
+				[_] 0% Determine API.
+					See POE::Component::Cron for clues.
+					Would Chris Fedde like to work on this?
+				[_] 0% Wait for repeating times.
+			[_] 25% Reflex::Client::HTTP
+				[X] 100% Reflex::Connector
+				[_] 0% Reflex::Connector::Keepalive
+					[_] 0% Strawman implementation.
+					[_] 0% Determine API.
+					[_] 0% Reified version of Reflex::Role::Connector::Keepalive?
+				[_] 0% Reflex::Resolver
+					[_] 0% Determine API.
+					[_] 0% Determine how to make asynchronous.
+						Forked?
+						Coro?
+						Threads?
+					[_] 0% IPV4
+					[_] 0% IPv6
+					[_] 0% Reified version of Reflex::Role::Resolver
+				[_] 0% Is this a reified version of Reflex::Role::Client::HTTP?
+					Do we really need to be that dogmatic about roles?
+					What would a role allow us to do?
+			[_] 0% Reflex::Conduit
+				[_] 0% Reified version of Reflex::Role::Proxy
+				[_] 0% Based on the example proxy.
+				[_] 0% Between-endpoint flow control?
+			[_] 0% Reflex::Process
+				[_] 0% Strawman implementation.
+				[_] 0% Determine API.
+					See POE::Wheel::Run for clues.
+			[_] 0% Reflex::Tail
+				[_] 0% Strawman implementation.
+				[_] 0% Determine API.
+					See POE::Wheel::FollowTail for clues.
+				[_] 0% Reified version of Reflex::Role::Tail
+			[X] 100% Reflex::Collection
+			[_] 0% What else?  Probably a lot!
 	[_] 33% Optimizations.
 		[X] 100% Only $kernel->call() when we need to switch sessions.
 		[_] 0% Do we need call() at all?
 			[_] 0% Explore IO::Lambda's cheat.
 		[_] 0% Consolidate POE-specific code out into a single role.
 			Allows other event loops to be supported directly rather than through POE.
+			[_] 0% POE::Session singleton
+			[_] 0% has session_id
+			[_] 0% sub run_all
+			[_] 0% sub run_within_session
+			[_] 0% sub call_gate
+			[_] 0% Abstract event loop things.
 Philosophy
 	Boolean role parameters are opportunities for new roles or role subclasses.
 		Static behaviors should be determined at role consumption time.

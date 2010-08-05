@@ -1,24 +1,16 @@
-[_] 97% Great Renaming
-	[_] 75% Base Roles
-		[_] 75% MooseX::Role::Reactive - formerly Reflex::Role::Object
-			[_] 50% role interface
-				[_] 0% Move POE specific parts to a new role.
-					[_] 0% POE::Session singleton
-					[_] 0% has session_id
-					[_] 0% sub run_all
-					[_] 0% sub run_within_session
-					[_] 0% sub call_gate
-					[_] 0% Abstract event loop things.
+[X] 100% Great Renaming
+	[X] 100% Base Roles
+		[X] 100% MooseX::Role::Reactive - formerly Reflex::Role::Object
+			[X] 100% role interface
+				[X] 100% Move POE specific parts to a new role.
+					These bullet points moved to docs/requirements.otl.
 				[X] 100% Clean up internals naming a bit.
 					[X] 100% sub _deliver - rename to deliver
 					[X] 100% sub observe - rename to watch
 					[X] 100% sub wait - rename to next
 				[X] 100% Rename role to Reflex::Role::Reactive
-				[_] 0% Rename role to MooseX::Role::Reactive
-					[_] 0% Fork git project.
-					[_] 0% Remove all nonessentials.
-					[_] 0% Fix up dist.ini.
-					[_] 0% Rename things.
+				[X] 100% Rename role to MooseX::Role::Reactive
+					These bullet points moved to docs/requirements.otl.
 			[X] 100% reified as Reflex::Base
 	[X] 100% Internal Classes
 		Reflex::Callback
@@ -112,7 +104,7 @@
 			has initializer
 			has role
 			has setup
-	[_] 92% Atomic Roles
+	[X] 100% Atomic Roles
 		[X] 100% with Reflex::Role::Readable
 		[X] 100% with Reflex::Role::Writable
 			parameter handle
@@ -134,8 +126,9 @@
 			[X] 100% new role interface
 			[X] 100% emits "signal"
 			[X] 100% reified as Reflex::Signal
-		[_] 50% with Reflex::Role::PidReaper
-			[_] 0% role interface
+		[X] 100% with Reflex::Role::PidReaper
+			I don't know the proper role interface at this time.
+			I'm going to go with Reflex::PID and hope someone can help make the role.
 			[X] 100% reified as Reflex::PID
 		[X] 100% with Reflex::Role::Wakeup
 			[X] 100% role interface
@@ -190,21 +183,3 @@
 			[X] 100% emits error
 			[X] 100% emits stopped
 		[X] 100% reified as Reflex::UdpPeer
-[_] 0% Stuff We Don't Have Yet
-	[_] 0% with Reflex::Role::Connector::Keepalive
-		[_] 0% role interface
-		[_] 0% reified as Reflex::Connector::Keepalive
-	[_] 0% with Reflex::Role::Resolver
-		[_] 0% role interface
-		[_] 0% reified as Reflex::Resolver
-	[_] 0% with Reflex::Role::TailWatcher
-		[_] 0% role interface
-		[_] 0% reified as Reflex::TailWatcher
-	[_] 0% with Reflex::Role::Client::HTTP
-		[_] 0% role interface
-		[_] 0% reified as Reflex::Client::HTTP
-	[_] 0% with Reflex::Role::Proxy
-		[_] 0% role interface
-			[_] 0% on_handle_a_data()
-			[_] 0% on_handle_b_data()
-		[_] 0% reified as Reflex::Conduit
