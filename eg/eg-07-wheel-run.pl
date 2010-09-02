@@ -64,6 +64,10 @@ use lib qw(../lib);
 
 # Main.
 
-my $runner = Runner->new();
+# TODO - SIGCHLD isn't delivered properly.
+
+my $runner_1 = Runner->new();
+my $runner_2 = Runner->new();
+
 Reflex->run_all();
 exit;
