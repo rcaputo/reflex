@@ -5,11 +5,11 @@ use Scalar::Util qw(weaken);
 attribute_parameter delay       => "delay";
 attribute_parameter auto_start  => "auto_start";
 
-method_parameter    method_stop   => qw( stop name _ );
-method_parameter    method_start  => qw( start name _ );
-method_parameter    method_reset  => qw( reset name _ );
+method_parameter    method_stop   => qw( stop delay _ );
+method_parameter    method_start  => qw( start delay _ );
+method_parameter    method_reset  => qw( reset delay _ );
 
-callback_parameter  cb_timeout    => qw( on name done );
+callback_parameter  cb_timeout    => qw( on delay done );
 
 role {
 	my $p = shift;
