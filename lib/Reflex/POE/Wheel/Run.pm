@@ -99,7 +99,7 @@ sub BUILD {
 }
 
 # Rethrow our signal event.
-sub on_sigchld_signal {
+sub on_sigchld_pid {
 	my ($self, $args) = @_;
 	$self->emit(
 		event => 'signal',

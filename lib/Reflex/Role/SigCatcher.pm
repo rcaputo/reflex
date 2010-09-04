@@ -28,7 +28,9 @@ my %signal_param_names;
 
 sub _register_signal_params {
 	my ($class, @names) = @_;
-	$signal_param_names{$class->meta->get_attribute("signal")->default()} = \@names;
+	$signal_param_names{$class->meta->get_attribute("signal")->default()} = (
+		\@names
+	);
 }
 
 sub deliver {
@@ -125,7 +127,9 @@ role {
 		# Be in the session associated with this object.
 		return unless $self->call_gate($method_resume);
 
-		$POE::Kernel::poe_kernel->sig($self->$signal(), "signal_happened");
+		$POE::Kernel::poe_kernel->sig(
+			$self->$signal(), "signal_happened", ref($self)
+		);
 	};
 
 	method $method_stop => sub {
@@ -196,7 +200,7 @@ entire implementation of Reflex::SigCatcher, a simple class that
 allows Reflex::Role::SigCatcher to be used as an object.
 
 Reflex::Role::SigCatcher is not suitable for SIGCHLD use.  The
-specialized Reflex::Role::PidReaper class is used for that, and it
+specialized Reflex::Role::PidCatcher class is used for that, and it
 will automatically wait() for processes and return their exit
 statuses.
 
@@ -280,8 +284,8 @@ Reflex::Role::SigCatcher.
 
 L<Reflex>
 L<Reflex::Signal>
-L<Reflex::Role::PidReaper>
-L<Reflex::PidReaper>
+L<Reflex::Role::PidCatcher>
+L<Reflex::PID>
 
 L<Reflex/ACKNOWLEDGEMENTS>
 L<Reflex/ASSISTANCE>

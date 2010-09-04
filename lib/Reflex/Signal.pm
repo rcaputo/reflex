@@ -68,8 +68,8 @@ That role's documentation contains important details that won't be
 covered here.
 
 Reflex::Signal is not suitable for SIGCHLD use.  The specialized
-Reflex::PidReaper class is used for that, and it will automatically
-wait() for processes and return their exit statuses.
+Reflex::PID class is used for that, and it will automatically wait()
+for processes and return their exit statuses.
 
 =head2 Public Attributes
 
@@ -188,8 +188,8 @@ Reflex::Stream and a few other classes.
 
 L<Reflex>
 L<Reflex::Role::SigCatcher>
-L<Reflex::Role::PID>
-L<Reflex::PidReaper>
+L<Reflex::Role::PidCatcher>
+L<Reflex::PID>
 
 L<Reflex/ACKNOWLEDGEMENTS>
 L<Reflex/ASSISTANCE>

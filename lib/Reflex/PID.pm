@@ -1,33 +1,29 @@
 package Reflex::PID;
 
 use Moose;
-extends qw(Reflex::Signal);
+extends 'Reflex::Base';
 
-has '+signal' => (
-	required  => 0,
-	default   => 'CHLD',
-);
-
-has 'pid' => (
-	isa       => 'Int',
+has pid => (
 	is        => 'ro',
+	isa       => 'Int',
 	required  => 1,
-	default   => sub { die "required" },
 );
 
-__PACKAGE__->_register_signal_params(qw(pid exit));
+has active => (
+	is      => 'ro',
+	isa     => 'Bool',
+	default => 1,
+);
 
-sub resume {
-	my $self = shift;
-	return unless $self->call_gate("resume");
-	$POE::Kernel::poe_kernel->sig_child($self->pid(), "signal_happened");
-}
-
-sub pause {
-	my $self = shift;
-	return unless $self->call_gate("pause");
-	$POE::Kernel::poe_kernel->sig_child($self->pid(), undef);
-}
+with 'Reflex::Role::PidCatcher' => {
+	pid           => 'pid',
+	active        => 'active',
+	cb_exit       => 'on_exit',
+	method_start  => 'start',
+	method_stop   => 'stop',
+	method_pause  => 'pause',
+	method_resume => 'resume',
+};
 
 1;
 
@@ -44,11 +40,11 @@ Reflex::PID - Observe the exit of a subprocess by its SIGCHLD signal.
 
 	use Reflex::PID;
 
-	has sigchild_watcher => (
+	has pid_watcher => (
 		isa    => 'Reflex::PID|Undef',
 		is     => 'rw',
 		traits => ['Reflex::Trait::Observed'],
-		role   => 'sigchld',
+		role   => 'process',
 	);
 
 	sub some_method {
@@ -64,7 +60,7 @@ Reflex::PID - Observe the exit of a subprocess by its SIGCHLD signal.
 		);
 	}
 
-	sub on_sigchld_signal {
+	sub on_process_exit {
 		# Handle the event.
 	}
 
@@ -87,9 +83,9 @@ Reflex::Collection won't know when to destroy them.
 
 =head2 Public Events
 
-=head3 signal
+=head3 exit
 
-Reflex::PID's "signal" event includes two named parameters.  "pid"
+Reflex::PID's "exit" event includes two named parameters.  "pid"
 contains the process ID that exited.  "exit" contains the process'
 exit value---a copy of C<$?> at the time the process exited.  Please
 see L<perlvar/"$?"> for more information about that special Perl
