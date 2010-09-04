@@ -193,7 +193,8 @@ has emits_seen => (
 
 # Base class.
 
-sub BUILD {
+sub BUILD {}
+after BUILD => sub {
 	my ($self, $args) = @_;
 
 	# Set up all emitters and watchers.
@@ -264,7 +265,7 @@ sub BUILD {
 
 	# The session has an object.
 	$session_object_count{$self->session_id()}++;
-}
+};
 
 # TODO - Does Moose have sugar for passing named parameters?
 
