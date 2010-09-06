@@ -18,12 +18,7 @@ my $rot13_server_port = 12345;
 	use Reflex::Collection;
 	use Reflex::Client;
 
-	has connections => (
-		is      => 'rw',
-		isa     => 'Reflex::Collection',
-		default => sub { Reflex::Collection->new() },
-		handles => { remember_client => "remember" },
-	);
+	has_many clients => ( handles => { remember_client => "remember" } );
 
 	sub said {
 		my ($mybot, $bot_event) = @_;
@@ -92,12 +87,7 @@ my $rot13_server_port = 12345;
 		extends 'Reflex::Acceptor';
 		use Reflex::Collection;
 
-		has clients => (
-			is      => 'rw',
-			isa     => 'Reflex::Collection',
-			default => sub { Reflex::Collection->new() },
-			handles => { remember_client => "remember" },
-		);
+		has_many clients => ( handles => { remember_client => "remember" } );
 
 		sub on_accept {
 			my ($self, $args) = @_;

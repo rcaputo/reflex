@@ -35,10 +35,8 @@ Reflex::Acceptor - non-blocking client socket acceptor
 	use Reflex::Collection;
 	use EchoStream;  # See eg directory.
 
-	has clients => (
-		is      => 'rw',
-		isa     => 'Reflex::Collection',
-		default => sub { Reflex::Collection->new() },
+	# From Reflex::Collection.
+	has_many clients => (
 		handles => { remember_client => "remember" },
 	);
 

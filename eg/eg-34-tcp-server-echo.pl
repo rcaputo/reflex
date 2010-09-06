@@ -14,12 +14,7 @@ use lib qw(../lib);
 	use Reflex::Collection;
 	use EchoStream;
 
-	has clients => (
-		is      => 'rw',
-		isa     => 'Reflex::Collection',
-		default => sub { Reflex::Collection->new() },
-		handles => { remember_client => "remember" },
-	);
+	has_many clients => ( handles => { remember_client => "remember" } );
 
 	sub on_accept {
 		my ($self, $args) = @_;

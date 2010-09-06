@@ -14,29 +14,4 @@ I've done a half-baked implementation, but it needs:
 
 ---
 
-Declarative syntactic sugar for collection attributes.
-Try to get it into the 0.080 release.
-
-They currently look like this:
-
-	has connections => (
-		is      => 'rw',
-		isa     => 'Reflex::Collection',
-		default => sub { Reflex::Collection->new() },
-		handles => { remember_client => "remember" },
-	);
-
-Perhaps they should look like this:
-
-	collection connections => (
-		handles => { remember_client => "remember" },
-	);
-
-That is, the "collection" sub build an attribute that is 'rw', isa
-'Reflex::Collection', and instantiates its default value.
-
-Can it instantiate itself lazily?
-
----
-
 For a larger, longer-term list of todos, please see docs/TODO.otl.
