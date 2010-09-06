@@ -1,5 +1,7 @@
 Current hot, outstanding TODOs:
 
+---
+
 Coderef callbacks require $self of the object calling them.
 Otherwise, how do they invoke methods on that object?
 I've done a half-baked implementation, but it needs:
@@ -7,6 +9,33 @@ I've done a half-baked implementation, but it needs:
 	Testing.
 	Examples and such modified.
 	Document modifications.
+	Release Reflex 0.080 since it's a big leap.
+	Alert people that the world has changed slightly.
+
+---
+
+Declarative syntactic sugar for collection attributes.
+Try to get it into the 0.080 release.
+
+They currently look like this:
+
+	has connections => (
+		is      => 'rw',
+		isa     => 'Reflex::Collection',
+		default => sub { Reflex::Collection->new() },
+		handles => { remember_client => "remember" },
+	);
+
+Perhaps they should look like this:
+
+	collection connections => (
+		handles => { remember_client => "remember" },
+	);
+
+That is, the "collection" sub build an attribute that is 'rw', isa
+'Reflex::Collection', and instantiates its default value.
+
+Can it instantiate itself lazily?
 
 ---
 
