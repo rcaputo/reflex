@@ -9,6 +9,7 @@ use Moose;
 use Reflex::Stream;
 
 extends 'Reflex::Connector';
+with 'Reflex::Role::Collectible';
 
 has protocol => (
 	is      => 'rw',
@@ -72,6 +73,7 @@ sub on_connection_data {
 sub stop {
 	my $self = shift;
 	$self->connection(undef);
+	$self->stopped();
 };
 
 1;

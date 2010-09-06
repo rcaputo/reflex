@@ -248,7 +248,10 @@ after BUILD => sub {
 		next unless $param =~ /^on_(\S+)/;
 
 		if (ref($value) eq "CODE") {
-			$value = Reflex::Callback::CodeRef->new(code_ref => $value);
+			$value = Reflex::Callback::CodeRef->new(
+				object    => $self,
+				code_ref  => $value
+			);
 		}
 
 		# There is an object, so we have a watcher.

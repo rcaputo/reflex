@@ -1,2 +1,13 @@
-Please see docs/TODO.otl for the TODO outline and current completion
-progress.
+Current hot, outstanding TODOs:
+
+Coderef callbacks require $self of the object calling them.
+Otherwise, how do they invoke methods on that object?
+I've done a half-baked implementation, but it needs:
+
+	Testing.
+	Examples and such modified.
+	Document modifications.
+
+---
+
+For a larger, longer-term list of todos, please see docs/TODO.otl.

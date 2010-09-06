@@ -3,29 +3,150 @@
 use warnings;
 use strict;
 
-die "This is a stub of an example.  See the source for notes to make it real.\n";
+my $rot13_server_port = 12345;
+
+### Bot::BasicBot bot.  Bot bot bot bot bot!
+#
+# Create a classing Bot::BasicBot, but use Reflex::Client within it to
+# talk to a server asynchronously.
+
+{
+	package MyBot;
+	use Moose;
+	use MooseX::NonMoose;
+	extends 'Bot::BasicBot', 'Reflex::Base';
+	use Reflex::Collection;
+	use Reflex::Client;
+
+	has connections => (
+		is      => 'rw',
+		isa     => 'Reflex::Collection',
+		default => sub { Reflex::Collection->new() },
+		handles => { remember_client => "remember" },
+	);
+
+	sub said {
+		my ($mybot, $bot_event) = @_;
+
+		my $said = $bot_event->{body};
+		return unless $said =~ /^\s*rot13\s*(\S.*?)\s*$/;
+		my $to_rot_13 = $1;
+
+		$mybot->remember_client(
+			Reflex::Client->new(
+				port => $rot13_server_port,
+				on_connected => sub {
+					my $client = shift;
+					$client->put($to_rot_13);
+				},
+				on_data => sub {
+					my ($client, $response) = @_;
+					$mybot->say(
+						channel => $bot_event->{channel},
+						body    => $response->{data},
+					);
+					$client->stop();
+				},
+			),
+		);
+
+		# Say nothing now.
+		return;
+	}
+}
+
+### Reflex rot13 server.
+#
+# We're embedding a small server within the bot for testing.
+# The idea of a rot13 server is pretty silly, but it serves (har) as a
+# good, small example.
+#
+# It also illustrates that isolated Reflexy things still work.
+
+{
+	# A stream that echoes back whatever it receives after rot13
+	# encrypting it.
+
+	{
+		package Rot13EchoStream;
+		use Moose;
+		extends 'Reflex::Stream';
+
+		sub on_data {
+			my ($self, $args) = @_;
+			my $text = $args->{data};
+			warn "Server has been asked to rot13('$text')...\n";
+			$text =~ tr[a-zA-Z][n-za-mN-ZA-M];
+			$self->put($text);
+		}
+	}
+
+	# The rot13 server itself.
+	# It's your basic Reflex server using Rot13EchoStream to handle
+	# client connections.
+
+	{
+		package Rot13Server;
+
+		use Moose;
+		extends 'Reflex::Acceptor';
+		use Reflex::Collection;
+
+		has clients => (
+			is      => 'rw',
+			isa     => 'Reflex::Collection',
+			default => sub { Reflex::Collection->new() },
+			handles => { remember_client => "remember" },
+		);
+
+		sub on_accept {
+			my ($self, $args) = @_;
+			$self->remember_client(
+				Rot13EchoStream->new( handle => $args->{socket} )
+			);
+		}
+
+		sub on_error {
+			my ($self, $args) = @_;
+			warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
+			$self->stop();
+		}
+	}
+}
+
+### Main program.
+#
+# Start the rot13 server so it's there for the bot.
+# Start the bot.
+# Run it all, forever, via the bot's main loop.
+
+my $server = Rot13Server->new(
+	listener => IO::Socket::INET->new(
+		LocalAddr => '127.0.0.1',
+		LocalPort => $rot13_server_port,
+		Listen    => 5,
+		Reuse     => 1,
+	),
+);
+
+my $bot = MyBot->new(
+	server    => "irc.perl.org",
+	channels  => ["#bots"],
+
+	nick      => "reflex-eg-42",
+	username  => "bot",
+	name      => "Reflex Example 42 Bot",
+
+	charset => "utf-8",
+)->run();
 
 __END__
-
-It should be possible to use Reflex within POE programs without ill effects.
-
-TODO:
-
-	Install Bot::BasicBot.
-	Create a Bot::BasicBot version of eg-13-irc-bot.pl
-	Embed a Reflex::Server within the bot.
-		The server should take significant time to respond.
-		This will allow requests to back up, testing re-entrancy.
-	Use Reflex::Client within the bot to talk to a server.
-	Test re-entrancy.
-		Two or more requests should back up in the server.
-		The bot, the server, and the client should all keep working.
 
 Inspiration:
 
 17:18      kthakore : awnstudio_: yeah me
 17:18      kthakore : dngor: right ..
-17:18      kthakore : but how do I plug it into Bot::BasicBot 
+17:18      kthakore : but how do I plug it into Bot::BasicBot
 17:19         dngor : When you get the trigger from Bot::BasicBot, open a
                       socket, send a request, and wait for a response.
 17:19         dngor : You could use IO::Socket::INET and

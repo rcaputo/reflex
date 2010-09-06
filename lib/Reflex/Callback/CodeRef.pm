@@ -11,7 +11,7 @@ has code_ref => (
 
 sub deliver {
 	my ($self, $event, $arg) = @_;
-	$self->code_ref()->($arg);
+	$self->code_ref()->($self->object(), $arg);
 }
 
 1;
