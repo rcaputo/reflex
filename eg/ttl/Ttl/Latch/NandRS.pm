@@ -1,7 +1,7 @@
 # $Id$
 
 # RS Nand latch.
-# 
+#
 # S ------a\
 #           (NAND1)-+--- Q
 #     +---b/        |
@@ -18,34 +18,14 @@ package Ttl::Latch::NandRS;
 use Moose;
 extends 'Reflex::Base';
 use Ttl::Nand;
+
 use Reflex::Trait::Observed;
 use Reflex::Trait::EmitsOnChange;
 
-has nand_r => (
-	isa     => 'Ttl::Nand',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::Observed'],
-	handles => { r => 'b' },
-);
-
-has nand_s => (
-	isa     => 'Ttl::Nand',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::Observed'],
-	handles => { s => 'a' },
-);
-
-has q => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
-
-has not_q => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
+observes nand_r => ( isa => 'Ttl::Nand', handles => { r => 'b' } );
+observes nand_s => ( isa => 'Ttl::Nand', handles => { s => 'a' } );
+emits    q      => ( isa => 'Bool'                               );
+emits    not_q  => ( isa => 'Bool'                               );
 
 sub on_nand_s_out {
 	my ($self, $args) = @_;

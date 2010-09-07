@@ -5,39 +5,13 @@ package Ttl::HexDecoder;
 use Moose;
 extends 'Reflex::Base';
 
-has ones => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-	event   => 'change',
-);
+use Reflex::Trait::EmitsOnChange;
 
-has twos => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-	event   => 'change',
-);
-
-has fours => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-	event   => 'change',
-);
-
-has eights => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-	event   => 'change',
-);
-
-has out => (
-	isa     => 'Str',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
+emits ones   => ( isa => 'Bool', event => 'change' );
+emits twos   => ( isa => 'Bool', event => 'change' );
+emits fours  => ( isa => 'Bool', event => 'change' );
+emits eights => ( isa => 'Bool', event => 'change' );
+emits out    => ( isa => 'Str'                     );
 
 sub on_my_change {
 	my $self = shift;

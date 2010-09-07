@@ -20,31 +20,16 @@ use Moose;
 extends 'Reflex::Base';
 use Ttl::TriAnd;
 use Ttl::Not;
-use Reflex::Trait::Observed;
+
 use Reflex::Trait::EmitsOnChange;
+use Reflex::Trait::Observed;
 
-has tri_and => (
-	isa     => 'Ttl::TriAnd',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::Observed'],
-	handles => [qw(a b c)],
-);
-
-has not => (
-  isa     => 'Ttl::Not',
-  is      => 'rw',
-  traits  => ['Reflex::Trait::Observed'],
-);
-
-has out => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
+observes tri_and => ( isa => 'Ttl::TriAnd', handles => [qw(a b c)] );
+observes not     => ( isa => 'Ttl::Not'                            );
+emits    out     => ( isa => 'Bool'                                );
 
 sub BUILD {
 	my $self = shift;
-
   $self->tri_and( Ttl::TriAnd->new() );
   $self->not( Ttl::Not->new() );
 }

@@ -8,15 +8,10 @@ use lib qw(lib);
 	package Breadboard;
 	use Moose;
 	extends 'Reflex::Base';
+	use Ttl::And;
 	use Reflex::Trait::Observed;
 
-	use Ttl::And;
-
-	has ander => (
-		isa => 'Ttl::And',
-		is  => 'rw',
-		traits => ['Reflex::Trait::Observed'],
-	);
+	observes ander => ( isa => 'Ttl::And' );
 
 	sub BUILD {
 		my $self = shift;
@@ -27,10 +22,10 @@ use lib qw(lib);
 
 	sub on_ander_out {
 		my ($self, $args) = @_;
+		warn 111;
 		warn "Ander out: $args->{value}\n";
 	}
 }
 
-my $b = Breadboard->new();
-Reflex->run_all();
+Breadboard->new()->run_all();
 exit;

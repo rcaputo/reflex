@@ -1,7 +1,7 @@
 # $Id$
 
 # RS Nor latch.
-# 
+#
 # R ------a\
 #           (NOR1)-+--- Q
 #     +---b/       |
@@ -18,34 +18,14 @@ package Ttl::Latch::NorRS;
 use Moose;
 extends 'Reflex::Base';
 use Ttl::Nor;
+
 use Reflex::Trait::Observed;
 use Reflex::Trait::EmitsOnChange;
 
-has nor_r => (
-	isa     => 'Ttl::Nor',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::Observed'],
-	handles => { r => 'a' },
-);
-
-has nor_s => (
-	isa     => 'Ttl::Nor',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::Observed'],
-	handles => { s => 'b' },
-);
-
-has q => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
-
-has not_q => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
+observes nor_r => ( isa => 'Ttl::Nor', handles => { r => 'a' } );
+observes nor_s => ( isa => 'Ttl::Nor', handles => { s => 'b' } );
+emits    q     => ( isa => 'Bool'                              );
+emits    not_q => ( isa => 'Bool'                              );
 
 sub on_nor_s_out {
 	my ($self, $args) = @_;

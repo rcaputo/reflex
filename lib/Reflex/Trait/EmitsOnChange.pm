@@ -36,7 +36,7 @@ has trigger => (
 			#
 			#$last_value = $value;
 			#weaken $last_value if defined($last_value) and ref($last_value);
-warn $self;
+
 			$self->emit(
 				args => {
 					value => $value,

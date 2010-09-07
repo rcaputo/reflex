@@ -6,27 +6,17 @@ package Ttl::FlipFlop::T;
 use Moose;
 extends 'Reflex::Base';
 use Ttl::FlipFlop::D;
+
 use Reflex::Trait::Observed;
 use Reflex::Trait::EmitsOnChange;
 
-has dff => (
-	isa     => 'Ttl::FlipFlop::D',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::Observed'],
+observes dff => (
+	isa => 'Ttl::FlipFlop::D',
 	handles => ['preset','clear','clock'],
 );
 
-has q => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
-
-has not_q => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
+emits q      => ( isa => 'Bool' );
+emits not_q  => ( isa => 'Bool' );
 
 sub on_dff_q {
 	my ($self, $args) = @_;

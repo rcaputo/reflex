@@ -1,7 +1,7 @@
 # $Id$
 
 # Clocked RS Nand latch.
-# 
+#
 # S ------a\
 #           (NAND1)-+
 #       +-b/        |
@@ -17,28 +17,13 @@ use Moose;
 extends 'Reflex::Base';
 use Ttl::Nand;
 use Ttl::Latch::NandRS;
-use Reflex::Trait::Observed;
+
 use Reflex::Trait::EmitsOnChange;
+use Reflex::Trait::Observed;
 
-has nand_not_r => (
-	isa     => 'Ttl::Nand',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::Observed'],
-	handles => { not_r => 'b' },
-);
-
-has nand_s => (
-	isa     => 'Ttl::Nand',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::Observed'],
-	handles => { s => 'a' },
-);
-
-has clk => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
+observes nand_not_r => ( isa => 'Ttl::Nand', handles => { not_r => 'b' } );
+observes nand_s     => ( isa => 'Ttl::Nand', handles => { s     => 'a' } );
+emits    clk        => ( isa => 'Bool' );
 
 sub on_my_clk {
 	my ($self, $args) = @_;
@@ -46,11 +31,7 @@ sub on_my_clk {
 	$self->nand_not_r()->a($args->{value});
 }
 
-has latch => (
-	isa     => 'Ttl::Latch::NandRS',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::Observed'],
-);
+observes latch => ( isa => 'Ttl::Latch::NandRS' );
 
 sub BUILD {
 	my $self = shift;
@@ -69,17 +50,8 @@ sub on_nand_not_r_out {
 	$self->latch()->r($args->{value});
 }
 
-has q => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
-
-has not_q => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
+emits q     => ( isa => 'Bool' );
+emits not_q => ( isa => 'Bool' );
 
 sub on_latch_q {
 	my ($self, $args) = @_;

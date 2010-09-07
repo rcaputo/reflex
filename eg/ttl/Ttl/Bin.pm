@@ -5,26 +5,11 @@
 package Ttl::Bin;
 use Moose;
 extends 'Reflex::Base';
+
 use Reflex::Trait::EmitsOnChange;
 
-has a => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-	event   => 'change',
-);
-
-has b => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-	event   => 'change',
-);
-
-has out => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
+emits a   => ( isa => 'Bool', event => 'change' );
+emits b   => ( isa => 'Bool', event => 'change' );
+emits out => ( isa => 'Bool' );
 
 1;

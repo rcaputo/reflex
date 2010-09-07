@@ -374,6 +374,9 @@ sub emit {
 	# Look for self-handling of the event.
 	# TODO - can() calls are also candidates for caching.
 	# (AKA: Cache as cache can()?)
+	#
+	# TODO - Using the class name here is weak.
+	# It would be sweetest if we could find a better role name.
 
 	my $caller_role = caller();
 	$caller_role =~ s/^Reflex::(?:Role::)?//;

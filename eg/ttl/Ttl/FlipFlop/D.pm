@@ -9,44 +9,16 @@ package Ttl::FlipFlop::D;
 use Moose;
 extends 'Reflex::Base';
 use Ttl::TriNand;
-use Reflex::Trait::Observed;
+
 use Reflex::Trait::EmitsOnChange;
+use Reflex::Trait::Observed;
 
-has clear => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
-
-has clock => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
-
-has d => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
-
-has preset => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
-
-has q => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
-
-has not_q => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
+emits clear  => ( isa => 'Bool' );
+emits clock  => ( isa => 'Bool' );
+emits d      => ( isa => 'Bool' );
+emits preset => ( isa => 'Bool' );
+emits q      => ( isa => 'Bool' );
+emits not_q  => ( isa => 'Bool' );
 
 sub BUILD {
 	my $self = shift;
@@ -128,41 +100,11 @@ sub on_tri6_out {
 	$self->tri5->c($args->{value});
 }
 
-
-has tri1 => (
-  isa     => 'Ttl::TriNand',
-  is      => 'rw',
-  traits  => ['Reflex::Trait::Observed'],
-);
-
-has tri2 => (
-  isa     => 'Ttl::TriNand',
-  is      => 'rw',
-  traits  => ['Reflex::Trait::Observed'],
-);
-
-has tri3 => (
-  isa     => 'Ttl::TriNand',
-  is      => 'rw',
-  traits  => ['Reflex::Trait::Observed'],
-);
-
-has tri4 => (
-  isa     => 'Ttl::TriNand',
-  is      => 'rw',
-  traits  => ['Reflex::Trait::Observed'],
-);
-
-has tri5 => (
-  isa     => 'Ttl::TriNand',
-  is      => 'rw',
-  traits  => ['Reflex::Trait::Observed'],
-);
-
-has tri6 => (
-  isa     => 'Ttl::TriNand',
-  is      => 'rw',
-  traits  => ['Reflex::Trait::Observed'],
-);
+observes tri1 => ( isa => 'Ttl::TriNand' );
+observes tri2 => ( isa => 'Ttl::TriNand' );
+observes tri3 => ( isa => 'Ttl::TriNand' );
+observes tri4 => ( isa => 'Ttl::TriNand' );
+observes tri5 => ( isa => 'Ttl::TriNand' );
+observes tri6 => ( isa => 'Ttl::TriNand' );
 
 1;

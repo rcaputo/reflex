@@ -12,20 +12,17 @@ use Moose;
 extends 'Ttl::Bin';
 use Ttl::Not;
 use Ttl::And;
+
 use Reflex::Trait::Observed;
 
-has and => (
+observes and => (
   isa     => 'Ttl::And',
-  is      => 'rw',
-  traits  => ['Reflex::Trait::Observed'],
   handles => [qw(a b)],
 	setup   => sub { Ttl::And->new() },
 );
 
-has not => (
+observes not => (
   isa     => 'Ttl::Not',
-  is      => 'rw',
-  traits  => ['Reflex::Trait::Observed'],
 	setup   => sub { Ttl::Not->new() },
 );
 

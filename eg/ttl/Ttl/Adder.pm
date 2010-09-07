@@ -1,7 +1,7 @@
 # $Id$
 
 # Full adder integrated circuit.  Not clocked.
-# 
+#
 #   A --------+---a\
 #             |     (XOR ab)--+-a\
 #   B -----+------b/          |   (XOR cin)----- Sum
@@ -27,69 +27,21 @@
 package Ttl::Adder;
 use Moose;
 extends 'Reflex::Base';
+
 use Ttl::Xor;
 use Ttl::And;
 use Ttl::Or;
 
-has a => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
-
-has b => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
-
-has cin => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
-
-has xor_ab => (
-  isa     => 'Ttl::Xor',
-  is      => 'rw',
-  traits  => ['Reflex::Trait::Observed'],
-);
-
-has xor_cin => (
-  isa     => 'Ttl::Xor',
-  is      => 'rw',
-  traits  => ['Reflex::Trait::Observed'],
-);
-
-has and_ab => (
-  isa     => 'Ttl::And',
-  is      => 'rw',
-  traits  => ['Reflex::Trait::Observed'],
-);
-
-has and_cin => (
-  isa     => 'Ttl::And',
-  is      => 'rw',
-  traits  => ['Reflex::Trait::Observed'],
-);
-
-has or_cout => (
-  isa     => 'Ttl::Or',
-  is      => 'rw',
-  traits  => ['Reflex::Trait::Observed'],
-);
-
-has sum => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
-
-has cout => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
+emits      a       => ( isa => 'Bool'     );
+emits      b       => ( isa => 'Bool'     );
+emits      cin     => ( isa => 'Bool'     );
+observes   xor_ab  => ( isa => 'Ttl::Xor' );
+observes   xor_cin => ( isa => 'Ttl::Xor' );
+observes   and_ab  => ( isa => 'Ttl::And' );
+observes   and_cin => ( isa => 'Ttl::And' );
+observes   or_cout => ( isa => 'Ttl::Or'  );
+emits      sum     => ( isa => 'Bool'     );
+emits      cout    => ( isa => 'Bool'     );
 
 sub on_my_a {
 	my ($self, $args) = @_;

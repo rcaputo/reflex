@@ -17,27 +17,17 @@ use Moose;
 extends 'Reflex::Base';
 use Ttl::Latch::ClockedNandRS;
 use Ttl::Not;
-use Reflex::Trait::Observed;
-use Reflex::Trait::EmitsOnChange;
 
-has cnrs1 => (
-	isa     => 'Ttl::Latch::ClockedNandRS',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::Observed'],
+use Reflex::Trait::EmitsOnChange;
+use Reflex::Trait::Observed;
+
+observes cnrs1 => (
+	isa => 'Ttl::Latch::ClockedNandRS',
 	handles => ['r', 's'],
 );
 
-has cnrs2 => (
-	isa     => 'Ttl::Latch::ClockedNandRS',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::Observed'],
-);
-
-has not => (
-	isa     => 'Ttl::Not',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::Observed'],
-);
+observes cnrs2 => ( isa => 'Ttl::Latch::ClockedNandRS' );
+observes not   => ( isa => 'Ttl::Not'                  );
 
 sub BUILD {
 	my $self = shift;
@@ -51,23 +41,9 @@ sub BUILD {
 	$self->clock(0);
 }
 
-has clock => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
-
-has q => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
-
-has not_q => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
+emits clock => ( isa => 'Bool' );
+emits q     => ( isa => 'Bool' );
+emits not_q => ( isa => 'Bool' );
 
 sub on_my_clock {
 	my ($self, $args) = @_;

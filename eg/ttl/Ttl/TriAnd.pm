@@ -20,32 +20,16 @@ package Ttl::TriAnd;
 use Moose;
 extends 'Reflex::Base';
 use Ttl::And;
+
 use Reflex::Trait::Observed;
 use Reflex::Trait::EmitsOnChange;
 
-has and_ab => (
-  isa     => 'Ttl::And',
-  is      => 'rw',
-  traits  => ['Reflex::Trait::Observed'],
-  handles => [qw(a b)],
-);
-
-has and_c => (
-  isa     => 'Ttl::And',
-  is      => 'rw',
-  traits  => ['Reflex::Trait::Observed'],
-  handles => { c => 'b' },
-);
-
-has out => (
-	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
-);
+observes and_ab => ( isa => 'Ttl::And', handles => [qw(a b)]    );
+observes and_c  => ( isa => 'Ttl::And', handles => { c => 'b' } );
+emits    out    => ( isa => 'Bool'                              );
 
 sub BUILD {
 	my $self = shift;
-
   $self->and_ab( Ttl::And->new() );
   $self->and_c( Ttl::And->new() );
 }

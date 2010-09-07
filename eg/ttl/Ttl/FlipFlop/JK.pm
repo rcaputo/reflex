@@ -22,53 +22,37 @@ package Ttl::FlipFlop::JK;
 use Moose;
 extends 'Reflex::Base';
 use Ttl::Latch::ClockedNandRS;
-use Reflex::Trait::Observed;
-use Reflex::Trait::EmitsOnChange;
 
-has nand_j => (
+observes nand_j => (
 	isa     => 'Ttl::Nand',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::Observed'],
 	handles => { j => 'a' },
 );
 
-has nand_k => (
+observes nand_k => (
 	isa     => 'Ttl::Nand',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::Observed'],
 	handles => { k => 'b' },
 );
 
-has trinand_preset => (
+observes trinand_preset => (
 	isa     => 'Ttl::TriNand',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::Observed'],
 	handles => { preset => 'a' },
 );
 
-has trinand_clear => (
+observes trinand_clear => (
 	isa     => 'Ttl::TriNand',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::Observed'],
 	handles => { clear => 'c' },
 );
 
-has q => (
+emits q => (
 	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
 );
 
-has not_q => (
+emits not_q => (
 	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
 );
 
-has clock => (
+emits clock => (
 	isa     => 'Bool',
-	is      => 'rw',
-	traits  => ['Reflex::Trait::EmitsOnChange'],
 );
 
 sub BUILD {

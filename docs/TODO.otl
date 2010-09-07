@@ -1,10 +1,11 @@
-[_] 51% Framework Requirements
+[_] 47% Framework Requirements
 	About
 		This document summarizes the best ideas from the patterns document.
 		It is also a master TODO list for Reflex.
 		It's in Vim Outliner Format.
 			Basically just an outline where tab indents denote levels.
 			The "[_] 0%" is ongoing progress, managed by Vim Outliner.
+			http://sites.google.com/site/vimoutlinerinfo/ ... version 0.3.4 or later required.
 		The docs/patterns.otl document tries to enumerate all available options.
 			Even ones that have been discarded.
 			Even ones we'd like to do but may never get around to.
@@ -151,7 +152,7 @@
 				[X] 100% Moose introspection allows objects to find their contents.
 	[X] 100% Class Inheritance Rules
 		[X] 100% Class inheritance rules are delegated to Moose.
-	[_] 24% Messaging Requirements
+	[_] 28% Messaging Requirements
 		[_] 0% Object command interfaces must be methods.
 			[_] 0% Methods on the objects themselves may pass messages into themselves.
 				Synchronous method calls are translated into asynchronous messages.
@@ -185,7 +186,7 @@
 			[_] 50% Emitted messages are next handled by explicit and role-based observers.
 				[_] 0% Explicit observers.
 				[X] 100% Role-based observers.
-		[_] 80% All forms of message handler (callback) must be supported.
+		[X] 100% All forms of message handler (callback) must be supported.
 			[X] 100% Anonymous Coderefs
 				Anonymous coderefs support closures.
 				Anonymous coderefs and closures may be used to implement faux continuation passing style.
@@ -195,9 +196,6 @@
 					$object->watch( watched => $object, event => "name", callback => \&coderef );
 				[X] Traits.
 					has member => ( traits => ['Reflex::Trait::Observed'] );
-			[_] 0% Named Subroutine References
-				Named message handlers are exportable as reusable interfaces.
-				[_] TODO - What is this?
 			[X] 100% Object Methods
 				Is this not obvious?
 				[X] Simple.
@@ -211,6 +209,9 @@
 				Classes may be used as singletons.
 				[X] 100% Do we want to support this?
 			[X] 100% Promises or condvars.
+			Named Subroutine References
+				Named message handlers are exportable as reusable interfaces.
+				Not needed.  Roles perform this task.
 		[_] 0% Messages must be associated with their triggers.
 			[_] 0% One message may trigger another, inner message.
 				[_] 0% The inner message must be associated with the outer message.
@@ -245,7 +246,7 @@
 			[_] 0% Receiver data is not visible to the sender.
 			[_] 0% Message-scoped resources should be stored in the message's continuation.
 				[_] 0% Message cancelation triggers associated resource cleanup.
-	[_] 63% Common primitive classes must be provided.
+	[_] 72% Common primitive classes must be provided.
 		[_] 50% Callback Abstractions
 			[X] 100% Reflex::Callback
 				[X] 100% Reflex::Callback::CodeRef
@@ -296,19 +297,20 @@
 					Manage a collection of Reflex objects.
 					Removes objects from itself when they shut down.
 					Reflex servers can use this to manage client objects.
+					[X] 100% has_many syntactic sugar for Reflex::Collection.
 			[_] 50% Process Watchers
 				[_] 0% Reflex::Role::ProcReaper?
 					I can't find a good reason to write this role.
 					This seems highly dynamic.
 					Contributions are welcome.
 				[X] 100% Reflex::PID
-		[_] 50% Containership Traits
-			[_] 50% Reflex::Trait::EmitsOnChange
+		[X] 100% Containership Traits
+			[X] 100% Reflex::Trait::EmitsOnChange
 				[X] 100% Initial implementation, with explicit syntax.
-				[_] 0% Make declarative syntax so we can avoid the icky explicit use of traits.
-			[_] 50% Reflex::Trait::Observed
+				[X] 100% Make declarative syntax so we can avoid the icky explicit use of traits.
+			[X] 100% Reflex::Trait::Observed
 				[X] 100% Initial implementation, with explicit syntax.
-				[_] 0% Make declarative syntax so we can avoid the icky explicit use of traits.
+				[X] 100% Make declarative syntax so we can avoid the icky explicit use of traits.
 		[X] 100% POE Interfaces
 			[X] 100% Wheel wrappers.
 				[X] 100% Reflex::POE::Wheel
@@ -412,6 +414,7 @@
 				[_] 0% Reified version of Reflex::Role::Proxy
 				[_] 0% Based on the example proxy.
 				[_] 0% Between-endpoint flow control?
+				[_] 0% Generic rate throttling?
 			[_] 0% Reflex::Process
 				[_] 0% Strawman implementation.
 				[_] 0% Determine API.

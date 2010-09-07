@@ -13,6 +13,7 @@ extends 'Ttl::Bin';
 
 sub on_my_change {
 	my $self = shift;
+	warn 999;
 	$self->out( ($self->a() && $self->b()) || 0 );
 }
 
