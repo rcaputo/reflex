@@ -12,8 +12,8 @@ use lib qw(../lib);
 	package Bot;
 	use Moose;
 	extends 'Reflex::Base';
-	use Reflex::Trait::Observed;
 	use Reflex::POE::Session;
+	use Reflex::Trait::Observed;
 
 	use POE qw(Component::IRC);
 
@@ -22,11 +22,9 @@ use lib qw(../lib);
 		is  => 'rw',
 	);
 
-	has poco_watcher => (
-		isa     => 'Reflex::POE::Session',
-		is      => 'rw',
-		traits  => ['Reflex::Trait::Observed'],
-		role    => 'poco',
+	observes poco_watcher => (
+		isa   => 'Reflex::POE::Session',
+		role  => 'poco',
 	);
 
 	sub BUILD {

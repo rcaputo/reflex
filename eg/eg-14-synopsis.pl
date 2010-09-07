@@ -9,12 +9,11 @@ use lib qw(../lib);
 	use Moose;
 	extends 'Reflex::Base';
 	use Reflex::Interval;
+	use Reflex::Trait::Observed;
 
-	has ticker => (
-		isa     => 'Reflex::Interval',
-		is      => 'rw',
-		setup   => { interval => 1, auto_repeat => 1 },
-		traits  => [ 'Reflex::Trait::Observed' ],
+	observes ticker => (
+		isa   => 'Reflex::Interval',
+		setup => { interval => 1, auto_repeat => 1 },
 	);
 
 	sub on_ticker_tick {

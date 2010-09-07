@@ -44,11 +44,12 @@ has callback_map => (
 
 coerce 'Reflex::Callback'
 	=> from 'CodeRef'
-		=> via { Reflex::Callback::CodeRef->new( code_ref => $_ ) };
+		=> via { die; Reflex::Callback::CodeRef->new( code_ref => $_ ) };
 
 coerce 'Reflex::Callback'
 	=> from 'Str'
 		=> via {
+			die;
 			Reflex::Callback::Method->new(
 				method_name => $_,
 			)
@@ -57,6 +58,7 @@ coerce 'Reflex::Callback'
 coerce 'Reflex::Callback'
 	=> from 'ArrayRef'
 		=> via {
+			die;
 			Reflex::Callback::Method->new(
 				object => $_->[0],
 				method_name => $_->[1],
@@ -133,7 +135,7 @@ sub cb_coderef (&) {
 }
 
 sub gather_cb {
-	my ($arg, $match) = @_;
+	my ($owner, $arg, $match) = @_;
 	$match = qr/^on_/ unless defined $match;
 
 	my %return;
@@ -149,6 +151,7 @@ sub gather_cb {
 			}
 
 			if ($callback->isa('Reflex::Callback')) {
+				$callback->object($owner) unless $callback->object();
 				$return{$_} = $callback;
 				next;
 			}
@@ -159,7 +162,10 @@ sub gather_cb {
 		# Unblessed callback types must be coerced.
 
 		if (ref($callback) eq "CODE") {
-			$return{$_} = Reflex::Callback::CodeRef->new(code_ref => $callback);
+			$return{$_} = Reflex::Callback::CodeRef->new(
+				object    => $owner,
+				code_ref  => $callback,
+			);
 			next;
 		}
 
@@ -392,9 +398,10 @@ The gather_cb() function extracts callbacks from an object's
 constructor parameters and encapsulates them in a Reflex::Callbacks
 object.
 
-gather_cb() takes two parameters: A hash reference containing a
-constructor's named parameters, and an optional regular expression to
-match callback parameter names.  By default, gather_cb() will collect
+gather_cb() takes three parameters: The object that will own the
+callbacks, a hash reference containing a constructor's named
+parameters, and an optional regular expression to match callback
+parameter names.  By default, gather_cb() will collect
 parameters matching C</^on_/>.
 
 	package ThingWithCallbacks;
@@ -406,7 +413,7 @@ parameters matching C</^on_/>.
 
 	sub BUILD {
 		my ($self, $arg) = @_;
-		$self->cb(gather_cb($arg));
+		$self->cb(gather_cb($self, $arg));
 	}
 
 	sub run {

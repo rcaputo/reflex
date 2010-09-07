@@ -53,12 +53,11 @@ Reflex - Class library for flexible, reactive programs.
 		use Moose;
 		extends 'Reflex::Base';
 		use Reflex::Interval;
+		use Reflex::Trait::Observed;
 
-		has ticker => (
+		observes ticker => (
 			isa     => 'Reflex::Interval',
-			is      => 'rw',
 			setup   => { interval => 1, auto_repeat => 1 },
-			traits  => [ 'Reflex::Trait::Observed' ],
 		);
 
 		sub on_ticker_tick {
@@ -103,19 +102,18 @@ warnings, strict, and base instead.  Reflex::Base provides emit().
 	}
 
 The next object uses Echoer.  It creates an Echoer and pings it to get
-started. It also reacts to "pong" events by pinging the Echoer again.
-Reflex::Trait::Observed implicitly watches the object in echoer(),
-mapping its "pong" event to the on_echoer_pong() method.
+started.  It also reacts to "pong" events by pinging the Echoer again.
+Reflex::Trait::Observed (via its exported observes() declarative
+syntax) implicitly watches the object in echoer(), mapping its "pong"
+event to the on_echoer_pong() method.
 
 	package Pinger;
 	use Moose;
 	extends 'Reflex::Base';
 
-	has echoer => (
-		is      => 'ro',
+	observes echoer => (
 		isa     => 'Echoer',
 		default => sub { Echoer->new() },
-		traits  => ['Reflex::Trait::Observed'],
 	);
 
 	sub BUILD {
@@ -338,6 +336,10 @@ observable object attributes.
 =item Reflex::Trait::Observed - Automatically watch Reflex objects.
 
 =back
+
+Reflex::Trait::EmitsOnchange exports a declarative emits() function
+that simplifies use of this trait.  Likewise, Reflex::Trait::Observed
+exports observes() to simplify its use.
 
 =head1 ASSISTANCE
 

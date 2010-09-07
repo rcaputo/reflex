@@ -31,33 +31,50 @@ use warnings;
 use strict;
 use lib qw(t/lib);
 
-use Test::More tests => 4;
+use Test::More tests => 7;
 
 use Reflex::Callbacks qw(cb_coderef);
 use ThingWithCallbacks;
 
-# Create a thing that will invoke callbacks.  This syntax uses
-# contextually specified coderef callbacks.
+# Create a thing that will invoke callbacks.
+# This syntax uses contextually specified coderef callbacks.
+# Circular reference on $thing_one leaks memory.
 
-my $thing_one = ThingWithCallbacks->new(
-	on_event => sub { pass("contextual callback invoked") },
+my $thing_one;
+$thing_one = ThingWithCallbacks->new(
+	on_event => sub {
+		pass("contextual callback invoked");
+		is($_[0], $thing_one, "contextual callback got self");
+	},
 );
 
 $thing_one->run();
 
 # cb_coderef() reduces context sensitivity at the expense of
 # verbosity.
+# Circular reference on $thing_two leaks memory.
 
-my $thing_two = ThingWithCallbacks->new(
-	on_event => cb_coderef(sub { pass("explicit callback invoked") }),
+my $thing_two;
+$thing_two = ThingWithCallbacks->new(
+	on_event => cb_coderef(
+		sub {
+			is($_[0], $thing_two, "explicit callback got self");
+			pass("explicit callback invoked");
+		}
+	),
 );
 
 $thing_two->run();
 
 # cb_coderef is prototyped so it can replace "sub".
+# Circular reference on $thing_three leaks memory.
 
-my $thing_three = ThingWithCallbacks->new(
-	on_event => cb_coderef { pass("explicit callback (no sub) invoked") },
+my $thing_three;
+$thing_three = ThingWithCallbacks->new(
+	on_event => cb_coderef {
+		is($_[0], $thing_three, "explicit callback (no sub) got self");
+		pass("explicit callback (no sub) invoked");
+	},
 );
 
 $thing_three->run();

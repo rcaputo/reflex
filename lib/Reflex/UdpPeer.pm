@@ -64,10 +64,8 @@ Use it as a helper.
 
 	has port => ( isa => 'Int', is => 'ro' );
 
-	has peer => (
+	observes peer => (
 		isa     => 'Maybe[Reflex::UdpPeer]',
-		is      => 'rw',
-		traits  => ['Reflex::Trait::Observed'],
 		setup   => sub {
 			my $self = shift;
 			Reflex::UdpPeer->new(

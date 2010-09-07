@@ -29,7 +29,7 @@ sub BUILD {
 	my ($self, $arg) = @_;
 
 	# Gather the callbacks from the constructor parameters.
-	$self->cb(gather_cb($arg));
+	$self->cb(gather_cb($self, $arg));
 }
 
 sub run {

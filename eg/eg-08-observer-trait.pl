@@ -14,10 +14,8 @@ use lib qw(../lib);
 	use Reflex::POE::Wheel::Run;
 	use Reflex::Trait::Observed;
 
-	has child => (
-		traits  => ['Reflex::Trait::Observed'],
+	observes child => (
 		isa     => 'Maybe[Reflex::POE::Wheel::Run]',
-		is      => 'rw',
 	);
 
 	sub BUILD {

@@ -11,21 +11,11 @@ use lib qw(../lib);
 	use Moose;
 	extends 'Reflex::Base';
 	use Reflex::Interval;
-	use Reflex::Trait::Observed;
 	use Reflex::Trait::EmitsOnChange;
+	use Reflex::Trait::Observed;
 
-	has count   => (
-		traits    => ['Reflex::Trait::EmitsOnChange'],
-		isa       => 'Int',
-		is        => 'rw',
-		default   => 0,
-	);
-
-	has ticker  => (
-		traits    => ['Reflex::Trait::Observed'],
-		isa       => 'Maybe[Reflex::Interval]',
-		is        => 'rw',
-	);
+	emits     count   => ( isa => 'Int', default => 0 );
+	observes  ticker  => ( isa => 'Maybe[Reflex::Interval]' );
 
 	sub BUILD {
 		my $self = shift;
@@ -48,12 +38,9 @@ use lib qw(../lib);
 	package Watcher;
 	use Moose;
 	extends 'Reflex::Base';
+	use Reflex::Trait::Observed;
 
-	has counter => (
-		traits  => ['Reflex::Trait::Observed'],
-		isa     => 'Counter',
-		is      => 'rw',
-	);
+	observes counter => ( isa => 'Counter' );
 
 	sub BUILD {
 		my $self = shift;

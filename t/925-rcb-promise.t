@@ -26,19 +26,18 @@ use Test::More tests => 3;
 	extends 'Reflex::Base';
 	use Reflex::Interval;
 	use Reflex::Callbacks qw(gather_cb);
+	use Reflex::Trait::Observed;
 
-	has ticker => (
+	observes ticker => (
 		isa     => 'Reflex::Interval',
-		is      => 'rw',
 		setup   => { interval => 1, auto_repeat => 1 },
-		traits  => [ 'Reflex::Trait::Observed' ],
 	);
 
 	has cb => ( is => 'rw', isa => 'Reflex::Callbacks' );
 
 	sub BUILD {
 		my ($self, $arg) = @_;
-		$self->cb(gather_cb($arg));
+		$self->cb(gather_cb($self, $arg));
 	}
 
 	sub on_ticker_tick {

@@ -250,7 +250,7 @@ after BUILD => sub {
 		if (ref($value) eq "CODE") {
 			$value = Reflex::Callback::CodeRef->new(
 				object    => $self,
-				code_ref  => $value
+				code_ref  => $value,
 			);
 		}
 
@@ -329,6 +329,7 @@ sub _stop_watchers {
 	}
 
 	delete $self->watchers()->{$watcher} unless (
+		exists $self->watchers()->{$watcher} and
 		@{$self->watchers()->{$watcher}}
 	);
 }

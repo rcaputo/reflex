@@ -2,6 +2,7 @@
 
 use warnings;
 use strict;
+use lib qw(../lib);
 
 my $rot13_server_port = 12345;
 

@@ -4,29 +4,24 @@ use warnings;
 use strict;
 use lib qw(../lib);
 
-# Exercise the new "setup" option for EmitsOnChange and Observed
-# traits.
+# Exercise the new "setup" option for emitters and observers.
 
 {
 	package Counter;
 	use Moose;
 	extends 'Reflex::Base';
 	use Reflex::Interval;
-	use Reflex::Trait::Observed;
 	use Reflex::Trait::EmitsOnChange;
+	use Reflex::Trait::Observed;
 
-	has count   => (
-		traits    => ['Reflex::Trait::EmitsOnChange'],
-		isa       => 'Int',
-		is        => 'rw',
-		default   => 0,
+	emits count => (
+		isa     => 'Int',
+		default => 0,
 	);
 
-	has ticker  => (
-		traits    => ['Reflex::Trait::Observed'],
-		isa       => 'Reflex::Interval',
-		is        => 'rw',
-		setup     => sub {
+	observes ticker => (
+		isa   => 'Reflex::Interval',
+		setup => sub {
 			Reflex::Interval->new( interval => 0.1, auto_repeat => 1 )
 		},
 	);
@@ -41,12 +36,11 @@ use lib qw(../lib);
 	package Watcher;
 	use Moose;
 	extends 'Reflex::Base';
+	use Reflex::Trait::Observed;
 
-	has counter => (
-		traits  => ['Reflex::Trait::Observed'],
-		isa     => 'Counter|Undef',
-		is      => 'rw',
-		setup   => sub { Counter->new() },
+	observes counter => (
+		isa   => 'Counter|Undef',
+		setup => sub { Counter->new() },
 	);
 
 	sub on_counter_count {

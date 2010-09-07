@@ -1,12 +1,11 @@
 package Reflex::Callback;
 
 use Moose;
-use Reflex::Base;
 
 # It's a class if it's a Str.
 has object => (
-	is        => 'ro',
-	isa       => 'Object|Str',  # TODO - Reflex::Base|Str
+	is        => 'rw',
+	isa       => 'Object|Str',
 	weak_ref  => 1,
 );
 

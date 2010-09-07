@@ -10,6 +10,7 @@ use Reflex::Stream;
 
 extends 'Reflex::Connector';
 with 'Reflex::Role::Collectible';
+use Reflex::Trait::Observed;
 
 has protocol => (
 	is      => 'rw',
@@ -17,10 +18,8 @@ has protocol => (
 	default => 'Reflex::Stream',
 );
 
-has connection => (
-	is      => 'rw',
+observes connection => (
 	isa     => 'Maybe[Reflex::Stream]',
-	traits  => ['Reflex::Trait::Observed'],
 	# Maps $self->put() to $self->connection()->put().
 	# TODO - Would be nice to have something like this for outbout
 	# events.  See on_connection_data() later in this module for more.

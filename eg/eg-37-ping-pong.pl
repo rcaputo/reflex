@@ -18,12 +18,11 @@ use lib qw(../lib);
 	package Pinger;
 	use Moose;
 	extends 'Reflex::Base';
+	use Reflex::Trait::Observed;
 
-	has echoer => (
-		is      => 'ro',
+	observes echoer => (
 		isa     => 'Echoer',
 		default => sub { Echoer->new() },
-		traits  => ['Reflex::Trait::Observed'],
 	);
 
 	sub BUILD {
