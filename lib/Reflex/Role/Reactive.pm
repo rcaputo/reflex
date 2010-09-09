@@ -34,108 +34,115 @@ POE::Kernel->run();
 
 my %session_object_count;
 
-my $singleton_session_id = POE::Session->create(
-	inline_states => {
-		# Make the session conveniently accessible.
-		# Although we're using the $singleton_session_id, so why bother?
+my $singleton_session_id;
 
-		_start => sub {
-			# No-op to satisfy assertions.
-			undef;
+sub _create_singleton_session {
+	$singleton_session_id = POE::Session->create(
+		inline_states => {
+			# Make the session conveniently accessible.
+			# Although we're using the $singleton_session_id, so why bother?
+
+			_start => sub {
+				# No-op to satisfy assertions.
+				undef;
+			},
+			_stop => sub {
+				# No-op to satisfy assertions.
+				undef;
+			},
+
+			### Timer manipulators and callbacks.
+
+			timer_due => sub {
+				my $envelope = $_[ARG0];
+				my ($cb_object, $cb_method) = @$envelope;
+				$cb_object->$cb_method({});
+			},
+
+			### I/O manipulators and callbacks.
+
+			select_ready => sub {
+				my ($handle, $envelope, $mode) = @_[ARG0, ARG2];
+				my ($cb_object, $cb_method) = @$envelope;
+				$cb_object->$cb_method({ handle => $handle });
+			},
+
+			### Signals.
+
+			signal_happened => sub {
+				my $signal_class = pop @_;
+				$signal_class->deliver(@_[ARG0..$#_]);
+			},
+
+			### Cross-session emit() is converted into these events.
+
+			deliver_callback => sub {
+				my ($callback, $args) = @_[ARG0, ARG1];
+				$callback->deliver($args);
+			},
+
+			# call_gate() uses this to call methods in the right session.
+
+			call_gate_method => sub {
+				my ($object, $method, @args) = @_[ARG0..$#_];
+				return $object->$method(@args);
+			},
+
+			call_gate_coderef => sub {
+				my ($coderef, @args) = @_[ARG0..$#_];
+				return $coderef->(@args);
+			},
+
+			# Catch dynamic events.
+
+			_default => sub {
+				my ($event, $args) = @_[ARG0, ARG1];
+
+				return $event->deliver($args) if (
+					"$event" =~ /^Reflex::POE::Event(?:::|=)/
+				);
+
+				return if Reflex::POE::Session->deliver($_[SENDER]->ID, $event, $args);
+
+				# Unhandled event.
+				# TODO - Should anything special be done in this case?
+			},
+
+			### Support POE::Wheel classes.
+
+			# Deliver to wheels based on the wheel ID.  Different wheels pass
+			# their IDs in different ARGn offsets, so we need a few of these.
+			wheel_event_0 => sub {
+				$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
+				"Reflex::POE::Wheel:\:$1"->deliver(0, @_[ARG0..$#_]);
+			},
+			wheel_event_1 => sub {
+				$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
+				"Reflex::POE::Wheel:\:$1"->deliver(1, @_[ARG0..$#_]);
+			},
+			wheel_event_2 => sub {
+				$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
+				"Reflex::POE::Wheel:\:$1"->deliver(2, @_[ARG0..$#_]);
+			},
+			wheel_event_3 => sub {
+				$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
+				"Reflex::POE::Wheel:\:$1"->deliver(3, @_[ARG0..$#_]);
+			},
+			wheel_event_4 => sub {
+				$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
+				"Reflex::POE::Wheel:\:$1"->deliver(4, @_[ARG0..$#_]);
+			},
 		},
-		_stop => sub {
-			# No-op to satisfy assertions.
-			undef;
-		},
-
-		### Timer manipulators and callbacks.
-
-		timer_due => sub {
-			my $envelope = $_[ARG0];
-			my ($cb_object, $cb_method) = @$envelope;
-			$cb_object->$cb_method({});
-		},
-
-		### I/O manipulators and callbacks.
-
-		select_ready => sub {
-			my ($handle, $envelope, $mode) = @_[ARG0, ARG2];
-			my ($cb_object, $cb_method) = @$envelope;
-			$cb_object->$cb_method({ handle => $handle });
-		},
-
-		### Signals.
-
-		signal_happened => sub {
-			my $signal_class = pop @_;
-			$signal_class->deliver(@_[ARG0..$#_]);
-		},
-
-		### Cross-session emit() is converted into these events.
-
-		deliver_callback => sub {
-			my ($callback, $args) = @_[ARG0, ARG1];
-			$callback->deliver($args);
-		},
-
-		# call_gate() uses this to call methods in the right session.
-
-		call_gate_method => sub {
-			my ($object, $method, @args) = @_[ARG0..$#_];
-			return $object->$method(@args);
-		},
-
-		call_gate_coderef => sub {
-			my ($coderef, @args) = @_[ARG0..$#_];
-			return $coderef->(@args);
-		},
-
-		# Catch dynamic events.
-
-		_default => sub {
-			my ($event, $args) = @_[ARG0, ARG1];
-
-			return $event->deliver($args) if (
-				"$event" =~ /^Reflex::POE::Event(?:::|=)/
-			);
-
-			return if Reflex::POE::Session->deliver($_[SENDER]->ID, $event, $args);
-
-			# Unhandled event.
-			# TODO - Should anything special be done in this case?
-		},
-
-		### Support POE::Wheel classes.
-
-		# Deliver to wheels based on the wheel ID.  Different wheels pass
-		# their IDs in different ARGn offsets, so we need a few of these.
-		wheel_event_0 => sub {
-			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
-			"Reflex::POE::Wheel:\:$1"->deliver(0, @_[ARG0..$#_]);
-		},
-		wheel_event_1 => sub {
-			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
-			"Reflex::POE::Wheel:\:$1"->deliver(1, @_[ARG0..$#_]);
-		},
-		wheel_event_2 => sub {
-			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
-			"Reflex::POE::Wheel:\:$1"->deliver(2, @_[ARG0..$#_]);
-		},
-		wheel_event_3 => sub {
-			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
-			"Reflex::POE::Wheel:\:$1"->deliver(3, @_[ARG0..$#_]);
-		},
-		wheel_event_4 => sub {
-			$_[CALLER_FILE] =~ m{/([^/.]+)\.pm};
-			"Reflex::POE::Wheel:\:$1"->deliver(4, @_[ARG0..$#_]);
-		},
-	},
-)->ID();
+	)->ID();
+}
 
 has session_id => (
 	isa     => 'Str',
 	is      => 'ro',
-	default => $singleton_session_id,
+	default => sub {
+		_create_singleton_session() unless defined $singleton_session_id;
+		$singleton_session_id;
+	},
 );
 
 # What's watching me.
@@ -547,6 +554,7 @@ sub call_gate {
 	$POE::Kernel::poe_kernel->call(
 		$self->session_id(), "call_gate_method", $self, $method, @_[2..$#_]
 	);
+
 	return 0;
 }
 
@@ -575,6 +583,7 @@ sub run_within_session {
 
 sub run_all {
 	POE::Kernel->run();
+	$singleton_session_id = undef;
 }
 
 sub next {

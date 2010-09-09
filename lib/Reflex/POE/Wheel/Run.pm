@@ -85,7 +85,7 @@ sub valid_params {
 # Also handle signals.
 
 observes sigchild_watcher => (
-	isa   => 'Reflex::PID|Undef',
+	isa   => 'Maybe[Reflex::PID]',
 	role  => 'sigchld',
 );
 
