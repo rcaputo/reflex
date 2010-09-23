@@ -47,7 +47,8 @@ sub _create_singleton_session {
 				undef;
 			},
 			_stop => sub {
-				# No-op to satisfy assertions.
+				# Session has become defunct.
+				$singleton_session_id = undef;
 				undef;
 			},
 
@@ -136,14 +137,10 @@ sub _create_singleton_session {
 	)->ID();
 }
 
-has session_id => (
-	isa     => 'Str',
-	is      => 'ro',
-	default => sub {
-		_create_singleton_session() unless defined $singleton_session_id;
-		$singleton_session_id;
-	},
-);
+sub session_id {
+	_create_singleton_session() unless defined $singleton_session_id;
+	$singleton_session_id;
+}
 
 # What's watching me.
 # watchers()->{$watcher} = \@callbacks
