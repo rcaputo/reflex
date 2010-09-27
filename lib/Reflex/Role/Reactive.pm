@@ -78,8 +78,8 @@ sub _create_singleton_session {
 			### Cross-session emit() is converted into these events.
 
 			deliver_callback => sub {
-				my ($callback, $args) = @_[ARG0, ARG1];
-				$callback->deliver($args);
+				my ($callback, $event, $args) = @_[ARG0, ARG1, ARG2];
+				$callback->deliver($event, $args);
 			},
 
 			# call_gate() uses this to call methods in the right session.
@@ -443,7 +443,7 @@ sub emit {
 			# Different session.  Post it through.
 			$poe_kernel->post(
 				$callback_rec->{watcher}->session_id(), 'deliver_callback',
-				$callback, $callback_args,
+				$callback, $event, $callback_args,
 				$callback_rec->{watcher}, $self, # keep objects alive a bit
 			);
 		}
