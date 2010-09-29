@@ -7,7 +7,6 @@ use Moose;
 use Moose::Exporter;
 use Reflex::Callbacks qw(cb_method);
 use Carp qw(cluck);
-
 extends 'Reflex::Base';
 
 Moose::Exporter->setup_import_methods( with_caller => [ qw( has_many ) ]);
@@ -18,9 +17,19 @@ has objects => (
 	default => sub { {} },
 );
 
+has _owner => (
+	is       => 'ro',
+	isa      => 'Object',
+	writer   => '_set_owner',
+	weak_ref => 1,
+);
+
 sub remember {
 	my ($self, $object) = @_;
+
 	$self->watch($object, stopped => cb_method($self, "cb_forget"));
+	$self->_owner->watch($object, result => cb_method($self->_owner, "on_result"));
+
 	$self->objects()->{$object} = $object;
 }
 
@@ -45,7 +54,12 @@ sub has_many {
 	$etc{is}      = 'ro';
 	$etc{isa}     = 'Reflex::Collection';
 	$etc{lazy}    = 1 unless exists $etc{lazy};
-	$etc{default} = sub { Reflex::Collection->new() };
+	$etc{default} = sub {
+		my $self = shift;
+		my $collection = Reflex::Collection->new();
+		$collection->_set_owner($self);
+		return $collection; 
+	};
 
 	$meta->add_attribute($name, %etc);
 }
