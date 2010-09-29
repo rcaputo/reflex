@@ -28,7 +28,10 @@ sub remember {
 	my ($self, $object) = @_;
 
 	$self->watch($object, stopped => cb_method($self, "cb_forget"));
-	$self->_owner->watch($object, result => cb_method($self->_owner, "on_result"));
+	$self->_owner->watch(
+		$object,
+		result => cb_method($self->_owner, "on_result")
+	);
 
 	$self->objects()->{$object} = $object;
 }
@@ -56,9 +59,7 @@ sub has_many {
 	$etc{lazy}    = 1 unless exists $etc{lazy};
 	$etc{default} = sub {
 		my $self = shift;
-		my $collection = Reflex::Collection->new();
-		$collection->_set_owner($self);
-		return $collection; 
+		return Reflex::Collection->new( _owner => $self );
 	};
 
 	$meta->add_attribute($name, %etc);
