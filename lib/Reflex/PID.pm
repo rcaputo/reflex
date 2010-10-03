@@ -19,6 +19,7 @@ with 'Reflex::Role::PidCatcher' => {
 	pid           => 'pid',
 	active        => 'active',
 	cb_exit       => 'on_exit',
+	ev_exit       => 'exit',
 	method_start  => 'start',
 	method_stop   => 'stop',
 	method_pause  => 'pause',

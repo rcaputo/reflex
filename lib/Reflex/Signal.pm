@@ -19,6 +19,7 @@ with 'Reflex::Role::SigCatcher' => {
 	signal        => 'signal',
 	active        => 'active',
 	cb_signal     => 'on_signal',
+	ev_signal     => 'signal',
 	method_start  => 'start',
 	method_stop   => 'stop',
 	method_pause  => 'pause',

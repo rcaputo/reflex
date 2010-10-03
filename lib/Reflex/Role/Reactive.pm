@@ -415,6 +415,7 @@ sub emit {
 		}
 
 		$deliver_event = "promise";
+		#warn $event unless exists $self->watchers_by_event()->{$deliver_event};
 		return unless exists $self->watchers_by_event()->{$deliver_event};
 		# Fall through.
 	}

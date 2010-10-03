@@ -11,6 +11,8 @@ parameter active => (
 );
 
 callback_parameter  cb_exit       => qw( on pid exit );
+event_parameter     ev_exit       => qw( _ pid exit );
+
 method_parameter    method_start  => qw( start pid _ );
 method_parameter    method_stop   => qw( stop pid _ );
 method_parameter    method_pause  => qw( pause pid _ );
@@ -143,7 +145,7 @@ role {
 		}
 	};
 
-	method_emit $cb_exit => "pid";
+	method_emit $cb_exit => $p->ev_exit();
 };
 
 __END__

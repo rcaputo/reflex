@@ -7,6 +7,9 @@ callback_parameter cb_data    => qw( on handle data );
 callback_parameter cb_error   => qw( on handle error );
 callback_parameter cb_closed  => qw( on handle closed );
 
+event_parameter ev_data   => qw( _ handle data );
+event_parameter ev_closed => qw( _ handle closed );
+
 # Matches Reflex::Role::Readable's default callback.
 # TODO - Any way we can coordinate this so it's obvious in the code
 # but not too verbose?
@@ -31,13 +34,13 @@ role {
 		# Got data.
 		if ($octet_count) {
 			$self->$cb_data({ data => $buffer });
-			return;
+			return $octet_count;
 		}
 
 		# EOF
 		if (defined $octet_count) {
 			$self->$cb_closed({ });
-			return;
+			return $octet_count;
 		}
 
 		# Quelle erreur!
@@ -48,11 +51,20 @@ role {
 				errfun => "sysread",
 			}
 		);
+		return; # Nothing.
 	};
 
 	# Default callbacks that re-emit their parameters.
-	method_emit           $cb_data    => "data";
-	method_emit_and_stop  $cb_closed  => "closed";
+
+	method_emit           $cb_data    => $p->ev_data();
+	method_emit_and_stop  $cb_closed  => $p->ev_closed();
+
+#	my $ev_closed = $p->ev_closed();
+#	method $cb_closed => sub {
+#		my ($self, $args) = @_;
+#		$self->emit(event => $ev_closed, args => $args);
+#		$self->stopped();
+#	};
 };
 
 1;
@@ -64,6 +76,8 @@ __END__
 Reflex::Role::Reading - add standard sysread() behavior to a class
 
 =head1 SYNOPSIS
+
+TODO - Changed again.
 
 	package InputStreaming;
 	use Reflex::Role;
@@ -81,7 +95,7 @@ Reflex::Role::Reading - add standard sysread() behavior to a class
 		my $cb_error    = $p->cb_error();
 		my $method_read = "on_${h}_readable";
 
-		method_emit_and_stop $cb_error => "error";
+		method_emit_and_stop $cb_error => $p->ev_error();
 
 		with 'Reflex::Role::Reading' => {
 			handle      => $h,

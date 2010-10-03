@@ -10,6 +10,7 @@ method_parameter    method_start  => qw( start delay _ );
 method_parameter    method_reset  => qw( reset delay _ );
 
 callback_parameter  cb_timeout    => qw( on delay done );
+event_parameter     ev_timeout    => qw( _ delay done );
 
 role {
 	my $p = shift;
@@ -82,7 +83,7 @@ role {
 		$self->$timer_id_name(undef);
 	};
 
-	method_emit $cb_timeout => "done";
+	method_emit $cb_timeout => $p->ev_timeout();
 };
 
 1;

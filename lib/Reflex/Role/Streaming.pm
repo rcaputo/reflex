@@ -8,11 +8,16 @@ callback_parameter  cb_closed   => qw( on handle closed );
 method_parameter    method_put  => qw( put handle _ );
 method_parameter    method_stop => qw( stop handle _ );
 
+event_parameter     ev_data     => qw( _ handle data );
+event_parameter     ev_error    => qw( _ handle error );
+event_parameter     ev_closed   => qw( _ handle closed );
+
 role {
 	my $p = shift;
 
 	my $h           = $p->handle();
 	my $cb_error    = $p->cb_error();
+	my $ev_error    = $p->ev_error();
 	my $method_read = "_on_${h}_readable";
 	my $method_put  = $p->method_put();
 
@@ -24,13 +29,16 @@ role {
 
 	with 'Reflex::Role::Collectible';
 
-	method_emit_and_stop $cb_error => "error";
+	method_emit_and_stop $cb_error => $ev_error;
 
 	with 'Reflex::Role::Reading' => {
 		handle      => $h,
 		cb_data     => $p->cb_data(),
+		ev_data     => $p->ev_data(),
 		cb_error    => $cb_error,
+		ev_error    => $ev_error,
 		cb_closed   => $p->cb_closed(),
+		ev_closed   => $p->ev_closed(),
 		method_read => $method_read,
 	};
 
@@ -43,6 +51,7 @@ role {
 	with 'Reflex::Role::Writing' => {
 		handle      => $h,
 		cb_error    => $cb_error,
+		ev_error    => $ev_error,
 		method_put  => $internal_put,
 	};
 

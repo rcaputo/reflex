@@ -79,7 +79,7 @@ role {
 	# Turn off watcher during destruction.
 	after DEMOLISH => sub {
 		my $self = shift;
-		$self->method_stop();
+		$self->$method_stop();
 	};
 };
 

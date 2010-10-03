@@ -14,6 +14,8 @@ with 'Reflex::Role::Recving' => {
 	method_stop => 'stop',
 	cb_datagram => 'on_datagram',
 	cb_error    => 'on_error',
+	ev_datagram => 'datagram',
+	ev_error    => 'error',
 };
 
 1;

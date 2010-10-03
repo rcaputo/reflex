@@ -10,7 +10,7 @@ use Moose::Exporter;
 
 Moose::Exporter->setup_import_methods(
 	with_caller => [ qw(
-		attribute_parameter method_parameter callback_parameter
+		attribute_parameter method_parameter callback_parameter event_parameter
 		method_emit_and_stop method_emit
 	) ],
 	also => 'MooseX::Role::Parameterized',
@@ -115,6 +115,8 @@ sub method_emit {
 # parameter flags to automatically generate those methods.
 BEGIN { *callback_parameter = *method_parameter; }
 
+BEGIN { *event_parameter = *method_parameter; }
+
 1;
 
 __END__
@@ -124,6 +126,8 @@ __END__
 Reflex::Role - define a Reflex paramaterized role
 
 =head1 SYNOPSIS
+
+TODO - Changed again;
 
 	package Reflex::Role::Streaming;
 	use Reflex::Role;
@@ -145,7 +149,7 @@ Reflex::Role - define a Reflex paramaterized role
 
 		with 'Reflex::Role::Collectible';
 
-		method_emit_and_stop $cb_error => "error";
+		method_emit_and_stop $cb_error => $p->ev_error();
 
 		with 'Reflex::Role::Reading' => {
 			handle      => $h,

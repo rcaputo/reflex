@@ -9,7 +9,7 @@ has auto_start  => ( isa => 'Bool', is => 'ro', default => 1 );
 # TODO - There is a flaw in the design.
 #
 # Reflex::Timeout = cb_timeout => "on_done"
-# Reflex::Role::Timeout = method_emit $cb_timeout => "done"
+# Reflex::Role::Timeout = method_emit $cb_timeout => $p->ev_done()
 #
 # However, the user's on_done => callback() only works because the
 # emitted event is "done".  And this "done" is a constant, which means
@@ -22,6 +22,7 @@ has auto_start  => ( isa => 'Bool', is => 'ro', default => 1 );
 with 'Reflex::Role::Timeout' => {
 	delay         => "delay",
 	cb_timeout    => "on_done",
+	ev_timeout    => "done",
 	auto_start    => "auto_start",
 	method_start  => "start",
 	method_stop   => "stop",

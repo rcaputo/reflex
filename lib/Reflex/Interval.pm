@@ -12,6 +12,7 @@ with 'Reflex::Role::Interval' => {
 	auto_start    => "auto_start",
 	auto_repeat   => "auto_repeat",
 	cb_tick       => "on_tick",
+	ev_tick       => "tick",
 	method_start  => "start",
 	method_stop   => "stop",
 	method_repeat => "repeat",

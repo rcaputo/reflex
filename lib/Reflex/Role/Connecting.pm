@@ -11,6 +11,9 @@ attribute_parameter port    => "port";
 callback_parameter  cb_success  => qw( on socket success );
 callback_parameter  cb_error    => qw( on socket error );
 
+event_parameter     ev_success  => qw( _ socket success );
+event_parameter     ev_error    => qw( _ socket error );
+
 role {
 	my $p = shift;
 
@@ -103,8 +106,8 @@ role {
 		return;
 	};
 
-	method_emit $cb_success => "success";
-	method_emit $cb_error   => "error";
+	method_emit $cb_success => $p->ev_success();
+	method_emit $cb_error   => $p->ev_error();
 
 	with 'Reflex::Role::Writable' => {
 		handle  => $socket,

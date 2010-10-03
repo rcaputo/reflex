@@ -4,7 +4,9 @@ use Reflex::Role;
 attribute_parameter listener => "listener";
 
 callback_parameter  cb_accept     => qw( on listener accept );
-callback_parameter  cb_error      => qw( on listener error );
+event_parameter     ev_accept     => qw( _  listener accept );
+callback_parameter  cb_error      => qw( on listener error  );
+event_parameter     ev_error      => qw( _  listener error  );
 method_parameter    method_pause  => qw( pause listener _ );
 method_parameter    method_resume => qw( resume listener _ );
 method_parameter    method_stop   => qw( stop listener _ );
@@ -44,8 +46,8 @@ role {
 		return;
 	};
 
-	method_emit $cb_accept  => "accept";
-	method_emit $cb_error   => "error";   # TODO - Retryable ones.
+	method_emit $cb_accept  => $p->ev_accept();
+	method_emit $cb_error   => $p->ev_error();   # TODO - Retryable ones.
 
 	with 'Reflex::Role::Readable' => {
 		handle        => $listener,

@@ -16,6 +16,9 @@ with 'Reflex::Role::Streaming' => {
 	cb_error    => 'on_error',
 	cb_data     => 'on_data',
 	cb_closed   => 'on_closed',
+	ev_error    => 'error',
+	ev_data     => 'data',
+	ev_closed   => 'closed',
 };
 
 1;
