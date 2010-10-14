@@ -6,8 +6,22 @@ package Reflex::Collection;
 use Moose;
 use Moose::Exporter;
 use Reflex::Callbacks qw(cb_method);
-use Reflex::Role::Collectible;
 use Carp qw(cluck);
+
+# Reflex::Role::Collectible isn't directly used in this module, but
+# the role needs to be loaded for the objects() type constraint to
+# work below.  Hans Dieter Pearcey recommends the canonical Moose
+# practice of declaring types in a separate header-like class:
+#
+#   package Reflex::Types;
+#   use Moose::Util::TypeConstraints;
+#   role_type('Reflex::Role::Collectible');
+#
+# Using Reflex::Types sets up role and type constraints once across
+# the entire program.  Problems can occur when the order modules are
+# loaded becomes significant.  A Reflex::Types module can avoid them.
+
+use Reflex::Role::Collectible;
 
 extends 'Reflex::Base';
 
