@@ -73,6 +73,7 @@ sub _create_singleton_session {
 			signal_happened => sub {
 				my $signal_class = pop @_;
 				$signal_class->deliver(@_[ARG0..$#_]);
+				$_[KERNEL]->sig_handled();
 			},
 
 			### Cross-session emit() is converted into these events.
