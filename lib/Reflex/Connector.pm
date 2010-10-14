@@ -25,6 +25,8 @@ with 'Reflex::Role::Connecting' => {
 	port          => 'port',        # Default!
 	cb_success    => 'on_connection',
 	cb_error      => 'on_error',
+	ev_success    => 'connection',
+	ev_error      => 'error',
 };
 
 1;

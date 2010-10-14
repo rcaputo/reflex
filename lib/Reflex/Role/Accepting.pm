@@ -5,8 +5,10 @@ attribute_parameter listener => "listener";
 
 callback_parameter  cb_accept     => qw( on listener accept );
 event_parameter     ev_accept     => qw( _  listener accept );
+
 callback_parameter  cb_error      => qw( on listener error  );
 event_parameter     ev_error      => qw( _  listener error  );
+
 method_parameter    method_pause  => qw( pause listener _ );
 method_parameter    method_resume => qw( resume listener _ );
 method_parameter    method_stop   => qw( stop listener _ );
@@ -84,6 +86,8 @@ Reflex::Role::Accepting - add connection accepting to a class
 		listener      => 'listener',
 		cb_accept     => 'on_accept',
 		cb_error      => 'on_error',
+		ev_accept     => 'accept',
+		ev_error      => 'error',
 		method_pause  => 'pause',
 		method_resume => 'resume',
 		method_stop   => 'stop',
@@ -93,7 +97,22 @@ Reflex::Role::Accepting - add connection accepting to a class
 
 =head1 DESCRIPTION
 
-Reflex::Role::Accepting is a Moose parameterized role that adds
+Reflex::Role::Accepting is a parameterized Moose role that accepts
+client connections from a listening socket.  The role's parameters
+allow the consumer to customize the role's behavior.
+
+	listener      key - name of attribute with the listening socket
+
+	cb_accept     method to call with accepted sockets (on_${listner}_accept)
+	ev_accept     event for default cb_accept to emit (${listener}_accept)
+
+	cb_error      method to call with errors (on_${listener}_error)
+	ev_error			event for default cb_error to emit (${listener}_error)
+
+	method_pause  method to pause accepting
+	method_resume method to resume accepting
+	method_stop   method to stop accepting and release resources
+
 accept() reactions to classes that contain listening sockets.  Because
 it's a role, the class composition happens before runtime, as opposed
 to runtime composition that occurs in other reactive libraries.
@@ -130,7 +149,8 @@ successfully accepted.
 
 The default method name is "on_${listener}_accept", where $listener is
 the name of the listening socket attribute.  This role defines a
-default callback that emits an "accept" event.
+default callback that emits an "accept" event, which may be overridden
+with the C<ev_accept> role parameter.
 
 All callback methods receive two parameters: $self and an anonymous
 hash containing information specific to the callback.  In
@@ -147,8 +167,9 @@ C<cb_error> names the $self method that will be called whenever
 accept() encounters an error.  By default, this method will be the
 catenation of "on_", the C<listener> name, and "_error".  As in
 on_XYZ_error(), if the listener is named "XYZ".  The role defines a
-default callback that will emit an "error" event with cb_error()'s
-parameters.
+default callback that will emit an "error" event by default, with
+cb_error()'s parameters.  The default "error" event may be overridden
+using the role's C<ev_error> parameter.
 
 C<cb_error> callbacks receive two parameters, $self and an anonymous
 hashref of named values specific to the callback.  Reflex error
@@ -164,6 +185,16 @@ When overriding this callback, please be sure to call stopped(), which
 is provided by Reflex::Role::Collectible.  Calling stopped() is vital
 for collectible objects to be released from memory when managed by
 Reflex::Collection.
+
+=head3 ev_accept
+
+The C<ev_accept> role parameter overrides the default event emitted by
+the C<cb_accept> callback.  It's moot if C<cb_accept> is overridden.
+
+=head3 ev_error
+
+The C<ev_error> role parameter overrides the default event emitted by
+the C<cb_error> callback.  It's moot if C<cb_error> is overridden.
 
 =head3 method_pause
 

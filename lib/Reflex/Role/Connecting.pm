@@ -205,8 +205,14 @@ connection handler method.  This handler will be called whenever a
 client connection is successfully connected.
 
 The default method name is "on_${socket}_success", where $socket is
-the name of the socket attribute.  This role defines a default
-callback that emits an "success" event.
+the name of the socket attribute.
+
+The role defines a default "on_${socket}_success" callback that emits
+an event with the callback's parameters.  The default event is the
+C<socket> name followed by "_success", as in "XYZ_success".
+
+The role's C<ev_success> parameter changes the name of the success
+event to be emitted.
 
 All callback methods receive two parameters: $self and an anonymous
 hash containing information specific to the callback.  In
@@ -218,9 +224,12 @@ socket that has just established a connection.
 C<cb_error> names the $self method that will be called whenever
 connect() encounters an error.  By default, this method will be the
 catenation of "on_", the C<socket> name, and "_error".  As in
-on_XYZ_error(), if the socket attribute is named "XYZ".  The role
-defines a default callback that will emit an "error" event with
-cb_error()'s parameters.
+on_XYZ_error(), if the socket attribute is named "XYZ".
+
+The role defines a default callback that will emit an event with
+cb_error()'s parameters.  The default event is the C<socket> name
+followed by "_error".  For example, "XYZ_error".  The role's
+C<ev_error> parameter changes the event to be emitted.
 
 C<cb_error> callbacks receive two parameters, $self and an anonymous
 hashref of named values specific to the callback.  Reflex error
