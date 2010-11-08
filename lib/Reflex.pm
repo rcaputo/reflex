@@ -110,6 +110,7 @@ event to the on_echoer_pong() method.
 	package Pinger;
 	use Moose;
 	extends 'Reflex::Base';
+	use Reflex::Trait::Observed;
 
 	observes echoer => (
 		isa     => 'Echoer',
