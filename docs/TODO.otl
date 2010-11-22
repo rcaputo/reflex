@@ -1,4 +1,4 @@
-[_] 47% Framework Requirements
+[_] 49% Framework Requirements
 	About
 		This document summarizes the best ideas from the patterns document.
 		It is also a master TODO list for Reflex.
@@ -42,7 +42,7 @@
 				System designs that fit within these frameworks are elegant.
 				Systems that wish to use other concepts are generally awkward.
 				Adapters can connect between metaphors, but they should not be needed.
-	[_] 0% Documentation Requirements
+	[_] 16% Documentation Requirements
 		Many "requirements" are really recommended conventions.
 		For example:
 			If we require return values to be typed, or ignored.
@@ -62,12 +62,25 @@
 			[_] 0% Internals
 			[_] 0% Traits
 			[_] 0% Parts and Reified Objects
-		[_] 0% Reflex::Manual
-			[_] 0% Nomenclature
-				[_] 0% Reflexive namespace is a sandbox for new modules.
-					Same purpose as the -X namespace convention.
-					A bit more whimsical.
-					Reads better.
+		[_] 50% Reflex::Manual
+			[_] 50% Nomenclature
+				[X] 100% Sandbox namespace name.
+					[X] 100% Reflexive - USING THIS ONE
+						Same purpose as the -X namespace convention.
+						Easiest to type... no modifier key (shift).
+						Reads better.
+						Sounds better when speaking.
+					[X] 100% ReflexX - NOT USING
+						Conventional.
+						Expected.
+						Difficult to say: Reflex-ex.
+						Or difficult to hear: Reflex
+						Pretty easy to type, though.
+					[X] 100% Reflex::Ex - NOT USING
+						It's taxonomically superior, being hierarchical and all.
+						Aesthetically unappealing, visually, physically and phonetically.
+						Sounds like you're stuttering.
+						More difficult to type.
 				[_] 0% Reflex is a curated namespace.
 					[_] 0% Define rules for inclusion.
 						Threshold for usage on CPAN?
