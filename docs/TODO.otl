@@ -1,4 +1,4 @@
-[_] 49% Framework Requirements
+[_] 48% Framework Requirements
 	About
 		This document summarizes the best ideas from the patterns document.
 		It is also a master TODO list for Reflex.
@@ -439,7 +439,7 @@
 				[_] 0% Reified version of Reflex::Role::Tail
 			[X] 100% Reflex::Collection
 			[_] 0% What else?  Probably a lot!
-	[_] 33% Optimizations.
+	[_] 25% Optimizations.
 		[X] 100% Only $kernel->call() when we need to switch sessions.
 		[_] 0% Do we need call() at all?
 			[_] 0% Explore IO::Lambda's cheat.
@@ -451,6 +451,16 @@
 			[_] 0% sub run_within_session
 			[_] 0% sub call_gate
 			[_] 0% Abstract event loop things.
+		[_] 0% Reflex roles must not emit() messages by default.
+			Stylistic difference.
+				Roles are statically composed.
+				emit() is dynamic composition.
+			Useless overhead.
+				Many emitted events will go unhandled.
+				Finding this out at runtime is slow.
+				Allow the programmer to choose this overhead, only when it's likely to be necessary.
+			[_] 0% Remove the default emit()s.
+			[_] 0% Provide a consumer syntax to concisely specify emit()s at "with" time.
 Philosophy
 	Boolean role parameters are opportunities for new roles or role subclasses.
 		Static behaviors should be determined at role consumption time.
