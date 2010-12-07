@@ -80,8 +80,9 @@ role {
 	method $method_put => sub {
 		my ($self, $arg) = @_;
 		my $flush_status = $self->$internal_put($arg);
-		return unless $flush_status;
-		$self->$resume_writable(), return if $flush_status == 1;
+		no warnings 'uninitialized';
+		$self->resume_writable() if $flush_status == 1;
+		return $flush_status;
 	};
 };
 
@@ -170,25 +171,28 @@ Reflex::Role::Reading's "cb_error" defines this callback.
 
 =head3 method_put
 
-C<method_put> defines the name of a method that will put data octets
-into the stream's output buffer.  The default name is "put_" followed
-by the streaming handle's name, such as put_XYZ().
+C<method_put> defines the name of a method that will write data octets
+to the role's handle, or buffer them if the handle can't accept them.
+It's implemented in terms of Reflex::Role::Writing, and it adds code
+to flush the buffer in the background using Reflex::Role::Writable.
+The method created by C<method_put> returns the same value as
+L<Reflex::Role::Writing/method_put> does: a status of the output
+buffer after flushing is attempted.
 
-The put method takes an array of strings of raw octets:
+The default name for C<method_put> is "put_" followed by the streaming
+handle's name, such as put_XYZ().
+
+The put method takes an list of strings of raw octets:
 
 	my $pending_count = $self->put_XYZ(
 		"raw octets here", " and some more"
 	);
 
-The put method will try to flush the stream's output buffer
-immediately.  Any data that cannot be flushed will remain in the
-buffer.  The streaming code will attempt to flush it later when the
-stream becomes writable again.
-
-The put method returns the number of buffered octets waiting to be
-flushed---zero if the buffer has been synchronously flushed.  If the
-synchronous syswrite() fails, it will invoke C<cb_error> and return
-undef.
+If C<method_put>'s method encounters an error, it invokes the
+C<cb_error> callback before returning undef.  The C<method_put> method
+returns 0 if all the data was successfully written, 1 if the buffer is
+beginning to hold data, or 2 if the buffer already had data and now
+has more.
 
 =head1 EXAMPLES
 

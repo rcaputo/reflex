@@ -49,7 +49,11 @@ role {
 	method $p->method_put() => sub {
 		my ($self, @chunks) = @_;
 
-		# TODO - Benchmark string vs. array buffering.
+		# TODO - Benchmark string vs. array buffering?
+		# Stack Overflow suggests that string buffering is more efficient,
+		# but it doesn't discuss the relative efficiencies of substr() vs.
+		# shift to remove the buffer's head.
+		# http://stackoverflow.com/questions/813752/how-can-i-pre-allocate-a-string-in-perl
 
 		use bytes;
 
