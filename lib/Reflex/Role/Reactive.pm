@@ -370,11 +370,12 @@ sub emit {
 	my $callback_args = $args->{args} || {};
 
 	# TODO - Needs consideration:
-	# TODO - Weaken?
 	# TODO - Underscores for Reflex parameters?
 	# TODO - Must be a hash reference.  Would be nice if non-hashref
 	# errors were pushed to the caller.
-	$callback_args->{_sender} = $self;
+
+	push(@{$callback_args->{_sender}}, $self);
+	weaken $callback_args->{_sender}[-1];
 
 	# Look for self-handling of the event.
 	# TODO - can() calls are also candidates for caching.
