@@ -4,6 +4,8 @@ use warnings;
 use strict;
 use lib qw(../lib);
 
+use Test::More tests => 5;
+
 # Exercise the new "setup" option for emitters and observers.
 
 {
@@ -38,6 +40,8 @@ use lib qw(../lib);
 	extends 'Reflex::Base';
 	use Reflex::Trait::Observed;
 
+	use Test::More;
+
 	observes counter => (
 		isa   => 'Counter|Undef',
 		setup => sub { Counter->new() },
@@ -45,7 +49,7 @@ use lib qw(../lib);
 
 	sub on_counter_count {
 		my ($self, $args) = @_;
-		warn "Watcher sees counter count: $args->{value}\n";
+		pass("Watcher sees counter count: $args->{value}/5");
 
 		$self->counter(undef) if $args->{value} >= 5;
 	}

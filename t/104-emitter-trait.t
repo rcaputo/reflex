@@ -4,6 +4,8 @@ use warnings;
 use strict;
 use lib qw(../lib);
 
+use Test::More tests => 4;
+
 # Objects may emit events when their members are changed.
 
 {
@@ -13,6 +15,8 @@ use lib qw(../lib);
 	use Reflex::Interval;
 	use Reflex::Trait::EmitsOnChange;
 	use Reflex::Trait::Observed;
+
+	use Test::More;
 
 	emits     count   => ( isa => 'Int', default => 0 );
 	observes  ticker  => ( isa => 'Maybe[Reflex::Interval]' );
@@ -26,6 +30,8 @@ use lib qw(../lib);
 				auto_repeat => 1,
 			)
 		);
+
+		ok( (defined $self->ticker()), "started ticker object in waitron role" );
 	}
 
 	sub on_ticker_tick {
@@ -40,7 +46,9 @@ use lib qw(../lib);
 	extends 'Reflex::Base';
 	use Reflex::Trait::Observed;
 
-	observes counter => ( isa => 'Counter' );
+	use Test::More;
+
+	observes counter => ( isa => 'Maybe[Counter]' );
 
 	sub BUILD {
 		my $self = shift;
@@ -49,7 +57,8 @@ use lib qw(../lib);
 
 	sub on_counter_count {
 		my ($self, $args) = @_;
-		warn "Watcher sees counter count: $args->{value}\n";
+		pass("watcher sees counter count $args->{value}/3");
+		$self->counter(undef) if $args->{value} > 2;
 	}
 }
 
