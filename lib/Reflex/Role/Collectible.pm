@@ -10,6 +10,11 @@ sub stopped {
 	$self->emit( event => "stopped", args => {} );
 }
 
+sub result {
+	my ($self, $args) = @_;
+	$self->emit( event => "result", args => $args );
+}
+
 1;
 
 __END__

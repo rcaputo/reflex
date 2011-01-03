@@ -38,10 +38,23 @@ has objects => (
 	},
 );
 
+has _owner => (
+	is       => 'ro',
+	isa      => 'Object',
+	writer   => '_set_owner',
+	weak_ref => 1,
+);
+
 sub remember {
 	my ($self, $object) = @_;
+
 	$self->watch($object, stopped => cb_method($self, "cb_forget"));
-	$self->_set_object($object, $object);
+	$self->_owner->watch(
+		$object,
+		result => cb_method($self->_owner, "on_result")
+	);
+
+	$self->objects()->{$object} = $object;
 }
 
 sub forget {
@@ -65,7 +78,10 @@ sub has_many {
 	$etc{is}      = 'ro';
 	$etc{isa}     = 'Reflex::Collection';
 	$etc{lazy}    = 1 unless exists $etc{lazy};
-	$etc{default} = sub { Reflex::Collection->new() };
+	$etc{default} = sub {
+		my $self = shift;
+		return Reflex::Collection->new( _owner => $self );
+	};
 
 	$meta->add_attribute($name, %etc);
 }
