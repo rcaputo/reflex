@@ -7,6 +7,7 @@ use Carp qw(carp croak);
 use Reflex;
 use Reflex::Callback::Promise;
 use Reflex::Callback::CodeRef;
+use Reflex::Sender;
 
 END {
 	#warn join "; ", keys %watchers;
@@ -374,8 +375,8 @@ sub emit {
 	# TODO - Must be a hash reference.  Would be nice if non-hashref
 	# errors were pushed to the caller.
 
-	push(@{$callback_args->{_sender}}, $self);
-	weaken $callback_args->{_sender}[-1];
+	$callback_args->{_sender} ||= Reflex::Sender->new();
+	$callback_args->{_sender}->push_emitter($self);
 
 	# Look for self-handling of the event.
 	# TODO - can() calls are also candidates for caching.
