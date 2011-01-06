@@ -20,7 +20,13 @@ has senders => (
 sub push_emitter {
 	my ($self, $item) = @_;
 	push(@{$self->senders}, $item);
-	weaken($self->senders->[-1]);
+
+	# TODO - If we weaken the senders, they can go undef if their
+	# objects are otherwise destroyed.  This is kind of upsetting to the
+	# message recipient, so I've strengthened them (temporarily?) to
+	# explore the semantics.  -- Rocco
+	#
+	#weaken($self->senders->[-1]);
 }
 
 no Moose;

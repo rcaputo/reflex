@@ -64,7 +64,7 @@ sub forget {
 
 sub cb_forget {
 	my ($self, $args) = @_;
-	$self->_delete_object($args->{_sender}->[0]);
+	$self->_delete_object($args->{_sender}->get_last_emitter());
 }
 
 sub has_many {

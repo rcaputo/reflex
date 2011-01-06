@@ -120,11 +120,11 @@ my $collectible_id = 1;
 	sub on_result {
 		my ($self, $args) = @_;
 
-		my $foo      = $args->{_sender};
+		my $foo      = $args->{_sender}->get_first_emitter();
 		my $value    = $args->{value};
 		my $foo_type = ref $foo;
 		printf(
-			"test collection got a result of %s! id => %s, value => %s\n",
+			"test collection got a result from %s! id => %s, value => %s\n",
 			$foo_type, $foo->id, $value
 		);
 	}
@@ -155,7 +155,6 @@ my $collectible_id = 1;
 
 	sub on_result {
 		my ($self, $args) = @_;
-		$args->{member} = $args->{_sender};
 		$self->emit( event => "result", args => $args );
 	}
 }
@@ -167,10 +166,10 @@ my $tc = TestCollection->new();
 my $tcp = PromiseCollection->new();
 
 while (my $e = $tcp->next) {
-	my $member = $e->{arg}{member};
+	my $sender = $e->{arg}{_sender}->get_first_emitter();
 	printf(
 		"promise collection got a result of %s! id => %s, value => %s\n",
-		ref($member), $member->id, $e->{arg}{value}
+		ref($sender), $sender->id, $e->{arg}{value}
 	);
 }
 
