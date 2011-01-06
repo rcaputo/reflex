@@ -3,9 +3,7 @@ use Reflex::Role;
 
 attribute_parameter handle      => "handle";
 
-callback_parameter  cb_data     => qw( on handle data );
 callback_parameter  cb_error    => qw( on handle error );
-callback_parameter  cb_closed   => qw( on handle closed );
 
 callback_parameter  ev_error    => qw( ev handle error );
 
@@ -59,3 +57,84 @@ role {
 };
 
 1;
+
+__END__
+
+=head1 NAME
+
+Reflex::Role::OutStreaming - add streaming input behavior to a class
+
+=head1 SYNOPSIS
+
+	use Moose;
+
+	has socket => ( is => 'rw', isa => 'FileHandle', required => 1 );
+
+	with 'Reflex::Role::OutStreaming' => {
+		handle     => 'socket',
+		method_put => 'put',
+	};
+
+=head1 DESCRIPTION
+
+Reflex::Role::OutStreaming is a Moose parameterized role that adds
+non-blocking output behavior to Reflex-based classes.  It comprises
+Reflex::Role::Collectible for dynamic composition,
+Reflex::Role::Writable for asynchronous output callbacks, and
+Reflex::Role::Writing to buffer and flush output when it can.
+
+See Reflex::Stream if you prefer runtime composition with objects, or
+you just find Moose syntax difficult to handle.
+
+=head2 Required Role Parameters
+
+=head3 handle
+
+The C<handle> parameter must contain the name of the attribute that
+holds a filehandle from which data will be read.  The name indirection
+allows the role to generate methods that are unique to the handle.
+For example, a handle named "XYZ" would generate these methods by
+default:
+
+	cb_closed   => "on_XYZ_closed",
+	cb_error    => "on_XYZ_error",
+	method_put  => "put_XYZ",
+
+This naming convention allows the role to be used for more than one
+handle in the same class.  Each handle will have its own name, and the
+mixed in methods associated with them will also be unique.
+
+=head2 Optional Role Parameters
+
+=head3 cb_error
+
+Please see L<Reflex::Role::Writing/cb_error>.
+Reflex::Role::Writing's "cb_error" defines this callback.
+
+=head3 method_put
+
+Please see L<Reflex::Role::Writing/method_put>.
+Reflex::Role::Writing's "method_put" defines this method.
+
+=head1 EXAMPLES
+
+See eg/RunnerRole.pm in the distribution.
+
+=head1 SEE ALSO
+
+L<Reflex>
+L<Reflex::Role::Writable>
+L<Reflex::Role::Writing>
+L<Reflex::Stream>
+
+L<Reflex/ACKNOWLEDGEMENTS>
+L<Reflex/ASSISTANCE>
+L<Reflex/AUTHORS>
+L<Reflex/BUGS>
+L<Reflex/BUGS>
+L<Reflex/CONTRIBUTORS>
+L<Reflex/COPYRIGHT>
+L<Reflex/LICENSE>
+L<Reflex/TODO>
+
+=cut
