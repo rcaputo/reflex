@@ -21,8 +21,12 @@ use lib qw(../lib);
 
 	sub BUILD {
 		my $self = shift;
+
+		# PoCoPostbck is used as an object.
 		$self->component( PoCoPostback->new() );
 
+		# Send the component a Reflex::POE::Postback, which looks and
+		# feels like a POE::Session postback but invokes Reflex callbacks.
 		$self->component->request(
 			Reflex::POE::Postback->new(
 				$self, "on_component_result", { cookie => 123 }
