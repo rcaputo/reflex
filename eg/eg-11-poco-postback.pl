@@ -27,6 +27,11 @@ use lib qw(../lib);
 
 		# Send the component a Reflex::POE::Postback, which looks and
 		# feels like a POE::Session postback but invokes Reflex callbacks.
+		#
+		# The request() call here could be replaced with
+		# $poe_kernel->post(...) assuming you import $poe_kernel and
+		# understand how to address the component.  PoCoPostback provides
+		# the request() method to gloss over these details.
 		$self->component->request(
 			Reflex::POE::Postback->new(
 				$self, "on_component_result", { cookie => 123 }
