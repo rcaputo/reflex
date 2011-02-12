@@ -27,14 +27,15 @@ extends 'Reflex::Base';
 
 Moose::Exporter->setup_import_methods( with_caller => [ qw( has_many ) ]);
 
-has objects => (
+has _objects => (
 	is      => 'rw',
 	isa     => 'HashRef[Reflex::Role::Collectible]',
 	traits  => ['Hash'],
 	default => sub { {} },
 	handles => {
-		_set_object => 'set',
+		_set_object    => 'set',
 		_delete_object => 'delete',
+		get_objects    => 'values',
 	},
 );
 
@@ -54,7 +55,8 @@ sub remember {
 		result => cb_method($self->_owner, "on_result")
 	);
 
-	$self->objects()->{$object} = $object;
+	# TODO - Not iThread safe to use $object as a key.
+	$self->_set_object($object, $object);
 }
 
 sub forget {
@@ -117,6 +119,14 @@ Reflex::Collection - Autmatically manage a collection of collectible objects
 			)
 		);
 	}
+
+    sub broadcast {
+        my ($self, $message) = @_;
+
+        foreach my $handle ($self->get_objects) {
+            $handle->put($message);
+        }
+    }
 
 	1;
 
@@ -185,6 +195,10 @@ remember() takes one parameter: the object to remember.
 Forget an object, returning its reference.  You've supplied the
 reference, so the returned one is usually redundant.  forget() takes
 one parameter: the object to forget.
+
+=head2 get_objects
+
+Get the collected objects in scope. Returns a list.
 
 =head1 SEE ALSO
 
