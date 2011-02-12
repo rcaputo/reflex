@@ -35,6 +35,7 @@ has objects => (
 	handles => {
 		_set_object => 'set',
 		_delete_object => 'delete',
+		get_objects => 'values',
 	},
 );
 
@@ -118,6 +119,14 @@ Reflex::Collection - Autmatically manage a collection of collectible objects
 		);
 	}
 
+    sub broadcast {
+        my ($self, $message) = @_;
+
+        foreach my $handle ($self->get_objects) {
+            $handle->put($message);
+        }
+    }
+
 	1;
 
 =head1 DESCRIPTION
@@ -185,6 +194,10 @@ remember() takes one parameter: the object to remember.
 Forget an object, returning its reference.  You've supplied the
 reference, so the returned one is usually redundant.  forget() takes
 one parameter: the object to forget.
+
+=head2 get_objects
+
+Get the collected objects in scope. Returns a list.
 
 =head1 SEE ALSO
 
