@@ -55,18 +55,17 @@ sub remember {
 		result => cb_method($self->_owner, "on_result")
 	);
 
-	# TODO - Not iThread safe to use $object as a key.
-	$self->_set_object($object, $object);
+	$self->_set_object($object->get_id(), $object);
 }
 
 sub forget {
 	my ($self, $object) = @_;
-	$self->_delete_object($object);
+	$self->_delete_object($object->get_id());
 }
 
 sub cb_forget {
 	my ($self, $args) = @_;
-	$self->_delete_object($args->{_sender}->get_last_emitter());
+	$self->forget($args->{_sender}->get_last_emitter());
 }
 
 sub has_many {

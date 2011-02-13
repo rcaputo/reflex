@@ -145,7 +145,7 @@ sub session_id {
 }
 
 # What's watching me.
-# watchers()->{$watcher} = \@callbacks
+# watchers()->{$watcher->get_id} = \@callbacks
 has watchers => (
 	isa     => 'HashRef',
 	is      => 'rw',
@@ -153,7 +153,7 @@ has watchers => (
 );
 
 # What's watching me.
-# watchers_by_event()->{$event}->{$watcher} = \@callbacks
+# watchers_by_event()->{$event}->{$watcher->get_id} = \@callbacks
 has watchers_by_event => (
 	isa     => 'HashRef',
 	is      => 'rw',
@@ -161,7 +161,7 @@ has watchers_by_event => (
 );
 
 # What I'm watching.
-# watched_objects()->{$watched}->{$event} = \@interests
+# watched_objects()->{$watched->get_id}->{$event} = \@interests
 has watched_object_events => (
 	isa     => 'HashRef',
 	is      => 'rw',
@@ -198,6 +198,16 @@ has emits_seen => (
 	isa     => 'HashRef[Str]',
 	default => sub { {} },
 );
+
+my $next_id = 1;
+
+has _id => (
+	isa     => 'Int',
+	is      => 'ro',
+	default => sub { $next_id++ },
+);
+
+sub get_id { return shift()->_id() }
 
 # Base class.
 
@@ -284,6 +294,8 @@ after BUILD => sub {
 sub watch {
 	my ($self, $watched, %callbacks) = @_;
 
+	my $watched_id = $watched->get_id();
+
 	while (my ($event, $callback) = each %callbacks) {
 		$event =~ s/^on_//;
 
@@ -294,15 +306,15 @@ sub watch {
 		};
 
 		weaken $interest->{watched};
-		unless (exists $self->watched_objects()->{$watched}) {
-			$self->watched_objects()->{$watched} = $watched;
-			weaken $self->watched_objects()->{$watched};
+		unless (exists $self->watched_objects()->{$watched_id}) {
+			$self->watched_objects()->{$watched_id} = $watched;
+			weaken $self->watched_objects()->{$watched_id};
 
 			# Keep this object's session alive.
 			$POE::Kernel::poe_kernel->refcount_increment($self->session_id, "in_use");
 		}
 
-		push @{$self->watched_object_events()->{$watched}->{$event}}, $interest;
+		push @{$self->watched_object_events()->{$watched_id}->{$event}}, $interest;
 
 		# Tell what I'm watching that it's being watched.
 
@@ -316,6 +328,7 @@ sub watch {
 sub _stop_watchers {
 	my ($self, $watcher, $events) = @_;
 
+	my $watcher_id = $watcher->get_id();
 	my @events = @{$events || []};
 
 	unless (@events) {
@@ -328,16 +341,16 @@ sub _stop_watchers {
 	}
 
 	foreach my $event (@events) {
-		delete $self->watchers_by_event()->{$event}->{$watcher};
+		delete $self->watchers_by_event()->{$event}->{$watcher_id};
 		delete $self->watchers_by_event()->{$event} unless (
 			scalar keys %{$self->watchers_by_event()->{$event}}
 		);
-		pop @{$self->watchers()->{$watcher}};
+		pop @{$self->watchers()->{$watcher_id}};
 	}
 
-	delete $self->watchers()->{$watcher} unless (
-		exists $self->watchers()->{$watcher} and
-		@{$self->watchers()->{$watcher}}
+	delete $self->watchers()->{$watcher_id} unless (
+		exists $self->watchers()->{$watcher_id} and
+		@{$self->watchers()->{$watcher_id}}
 	);
 }
 
@@ -351,8 +364,10 @@ sub _is_watched {
 	};
 	weaken $interest->{watcher};
 
-	push @{$self->watchers_by_event()->{$event}->{$watcher}}, $interest;
-	push @{$self->watchers()->{$watcher}}, $interest;
+	my $watcher_id = $watcher->get_id();
+
+	push @{$self->watchers_by_event()->{$event}->{$watcher_id}}, $interest;
+	push @{$self->watchers()->{$watcher_id}}, $interest;
 }
 
 sub emit {
@@ -526,11 +541,13 @@ sub ignore {
 
 	croak "ignore requires at least an object" unless defined $watched;
 
+	my $watched_id = $watched->get_id();
+
 	if (@events) {
-		delete @{$self->watched_object_events()->{$watched}}{@events};
-		unless (scalar keys %{$self->watched_object_events()->{$watched}}) {
-			delete $self->watched_object_events()->{$watched};
-			delete $self->watched_objects()->{$watched};
+		delete @{$self->watched_object_events()->{$watched_id}}{@events};
+		unless (scalar keys %{$self->watched_object_events()->{$watched_id}}) {
+			delete $self->watched_object_events()->{$watched_id};
+			delete $self->watched_objects()->{$watched_id};
 
 			# Decrement the session's use count.
 			$POE::Kernel::poe_kernel->refcount_decrement($self->session_id, "in_use");
@@ -539,8 +556,8 @@ sub ignore {
 	}
 	else {
 		use Carp qw(cluck); cluck "whaaaa" unless defined $watched;
-		delete $self->watched_object_events()->{$watched};
-		delete $self->watched_objects()->{$watched};
+		delete $self->watched_object_events()->{$watched_id};
+		delete $self->watched_objects()->{$watched_id};
 		$watched->_stop_watchers($self);
 
 		# Decrement the session's use count.
