@@ -2,6 +2,7 @@ package Reflex::Callback::Promise;
 
 use Moose;
 extends qw(Reflex::Callbacks Reflex::Callback);
+use Carp qw(confess);
 
 has queue => (
 	is      => 'rw',
@@ -9,10 +10,14 @@ has queue => (
 	default => sub { [] },
 );
 
+# TODO - 100 is hardcoded, but some people may want more or fewer.
+
 # Delivering to a promise enqueues the message.
 sub deliver {
 	my ($self, $event, $arg) = @_;
-	push @{$self->queue()}, { name => $event, arg => $arg };
+	confess "promise queue overflow in $self" if (
+		push(@{$self->queue()}, { name => $event, arg => $arg }) > 100
+	);
 }
 
 sub next {
