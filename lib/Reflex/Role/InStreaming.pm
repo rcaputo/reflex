@@ -79,8 +79,8 @@ Reflex::Role::InStreaming - add streaming input behavior to a class
 =head1 DESCRIPTION
 
 Reflex::Role::InStreaming is a Moose parameterized role that adds
-streaming input behavior to Reflex-based classes.  It comprises
-Reflex::Role::Collectible for dynamic composition,
+asynchronous streaming input behavior to Reflex-based classes.  It
+comprises Reflex::Role::Collectible for dynamic composition,
 Reflex::Role::Readable for asynchronous input watching, and
 Reflex::Role::Reading to perform input.
 
