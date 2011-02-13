@@ -190,6 +190,7 @@ has watched_objects => (
 has promise => (
 	is => 'rw',
 	isa => 'Reflex::Callback::Promise',
+	default => sub { Reflex::Callback::Promise->new() },
 );
 
 has emits_seen => (
