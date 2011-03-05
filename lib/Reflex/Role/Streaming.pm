@@ -21,11 +21,13 @@ role {
 	my $method_read = "_on_${h}_readable";
 	my $method_put  = $p->method_put();
 
-	my $method_writable = "_on_${h}_writable";
-	my $internal_flush  = "_do_${h}_flush";
-	my $internal_put    = "_do_${h}_put";
-	my $pause_writable  = "_pause_${h}_writable";
-	my $resume_writable = "_resume_${h}_writable";
+	my $method_writable      = "_on_${h}_writable";
+	my $internal_flush       = "_do_${h}_flush";
+	my $internal_put         = "_do_${h}_put";
+	my $pause_writable       = "_pause_${h}_writable";
+	my $resume_writable      = "_resume_${h}_writable";
+	my $stop_handle_readable = "stop_${h}_readable";
+	my $stop_handle_writable = "stop_${h}_writable";
 
 	with 'Reflex::Role::Collectible';
 
@@ -73,8 +75,8 @@ role {
 	# Multiplex a single stop() to the sub-roles.
 	method $p->method_stop() => sub {
 		my $self = shift;
-		$self->stop_handle_readable();
-		$self->stop_handle_writable();
+		$self->$stop_handle_readable();
+		$self->$stop_handle_writable();
 	};
 
 	method $method_put => sub {
