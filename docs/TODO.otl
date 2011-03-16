@@ -1,4 +1,4 @@
-[_] 48% Framework Requirements
+[_] 45% Framework Requirements
 	About
 		This document summarizes the best ideas from the patterns document.
 		It is also a master TODO list for Reflex.
@@ -259,6 +259,131 @@
 			[_] 0% Receiver data is not visible to the sender.
 			[_] 0% Message-scoped resources should be stored in the message's continuation.
 				[_] 0% Message cancelation triggers associated resource cleanup.
+	[_] 12% Distributed Messaging
+		[_] 0% General Tasks
+			[_] 0% Choose a transport.
+				[_] 0% ZeroMQ.
+					I'd like to use this, but it doesn't install on OSX.
+				[_] 0% XMPP.
+					Help Nick Perez with his stuff, especially Reflexifying it?
+					Inspired by http://code.google.com/p/serialxmpp/ ... serial over XMPP.
+				[_] 0% IRC
+					Ho ho ho!
+				[_] 0% Make it pluggable?
+					Ideally.
+					Not everyone wants to use the same language.
+					Introduces complexity.
+					Need a way to minimize additional overhead.
+						How much is this an issue?
+						Already introducing network delays.
+				[_] 0% Make it multiprotocol?
+					Ideally.
+					Not every network is homogenous.
+					Introduces complexity.
+					Need a way to minimize additional overhead.
+						How much is this an issue?
+						Already introducing network delays.
+				Use Erlang's?
+					Other languages support this.
+						Python: http://erlport.org/
+			[_] 0% Can we use a Reflex thing in Reflex to ferry under-Reflex messages?
+		[_] 25% Erlang Inspiration
+			[_] 0% Process ID / Pid
+				Mortals might understand Erlang processes to be akin to threads.
+				Each Erlang process tends to perform a single task.
+				Reflex's closest relative might be the object.
+			[_] 0% Pid ! Message
+				[_] 0% Send a message to a process.
+					Reflex's closest relative might be asynchronous remote method invocation.
+				[_] 0% Currently Reflex treats local method invocation as commands.
+					To extend this, we'd need proxy objects on the local side.
+						Proxy objects are deceptive---you can't call accessors on them, for instance.
+						However, Reflex::Trait::EmitsOnChange notifies interested parties when attributes change.
+				[_] 0% Alternatives.
+					[_] 0% String-and-parameter based messaging.
+						More flexible than proxy objects.
+						The design isn't as clean as proxy objects, however.
+			[X] 100% Erlang's "receive" BIF (Built In Function).
+				Erlang's "receive" acts as a blocking message receipt and dispatch table.
+					It's pretty close to the actor pattern.
+					Erlang can get away with this because its processes are small and cheap.
+				[X] 100% Reflex objects already receive messages via callbacks.
+			[_] 0% Erlang Port Mapper Daemon
+				Erlang Process Information
+					http://erlang.org/doc/apps/erts/crash_dump.html#id70963
+						What things Erlang knows about processes.
+					http://www.erlang.org/doc/reference_manual/processes.html
+						Erlang Processes.
+						Process registration.
+						Process links.
+						etc.
+				Erlang Port Information
+					http://erlang.org/doc/apps/erts/crash_dump.html#id67172
+						Kind of sparse information, but it's a lead to more details.
+					http://www.erlang.org/doc/reference_manual/ports.html
+						More about ports.
+				Erlang Process Mapping Daemon
+					http://erlang.org/doc/apps/erts/erl_dist_protocol.html
+						Started automatically when Erlang starts a distributed node.
+						Listens on a standard port.
+						Speaks a standard protocol.
+						Erlang BIFs map to epmd activities.
+						Uses DNS to find remote nodes.
+							When connecting to a remote pid, one uses name@host.
+							You at least need to know the remote host.
+							A bit rigid?
+				Erlang External Term Format
+					http://erlang.org/doc/apps/erts/erl_ext_dist.html
+					Used to serialize Erlang data between nodes.
+					We could use it---or provide it as an option---to speak directly with Erlang processes.
+				Interoperability with Other Languages
+					http://www.erlang.org/doc/tutorial/cnode.html
+						C Nodes are specifically nodes written in C.
+						Generically, they're nodes written in other languages.
+						Perl being one possibility.
+				Distributed Erlang
+					http://www.erlang.org/doc/reference_manual/distributed.html
+						General reference.
+			Erlang Namespace BIFs (Built In Functions)
+				register(Name, Pid)
+					$my_namespace{$name} = $pid;
+					Can now use $name wherever $pid would be used.
+				unregister(Name)
+					delete $my_namespace{$name}
+				whereis(Name)
+					return $my_namespace{$name}
+				registered()
+					return keys 0%my_namespace
+			Erlang Remote Process Management BIFs
+				spawn(Node, Module, Function, Args)
+					Connect to the remote Node.
+					Instantiate an object of Module.
+					Invoke its Function, with Args.
+					TODO - What does it return?
+				spawn_link(Node, Module, Function, Args)
+					Connect to the remote Node.
+					Instantiate an object of Module.
+					Invoke its function, with Args.
+					The linkage implies exception notification.
+				monitor_node(Node, Flag)
+					If Flag is true, begin monitoring the node.
+					Otherwise stop monitoring.
+					The local node will receive a {nodedown, Node} event if the remote Node ever goes down.
+				node()
+					Returns the current Node's name.
+				nodes()
+					Returns a list of known Node names.
+				node(Item)
+					Returns a Node's name, for a given Pid or Port.
+				disconnect_node(Nodename)
+					Disconnects from a remote node.
+			Erlang Group BIFs
+				group_leader()
+					Returns the Pid of the current Node's group leader?
+				group_leader(Leader, Pid)
+					Sets the group leader of process Pid to be Leader.
+			Other Erlang BIFs?
+				TODO
 	[_] 72% Common primitive classes must be provided.
 		[_] 50% Callback Abstractions
 			[X] 100% Reflex::Callback
@@ -383,7 +508,7 @@
 				[X] 100% Components that emit specific events require Wheel-like wrappers.
 					[X] 100% Is this worth supporting?
 						No.  The Session subscriber can detect any events emitted by the component.
-		[_] 80% Basic Modules	
+		[_] 80% Basic Modules
 			[X] 100% Reflex::Base
 			[X] 100% Reflex::Role::Reactive
 			[_] 0% MooseX::Role::Reactive
