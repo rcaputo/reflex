@@ -126,7 +126,10 @@
 		[X] 100% Procedural design should be supported.
 			Some people will prefer procedural design.
 			[X] Objects are their own condvars.
-				$object->wait() waits for the object to finish/destruct.
+				$object->next() waits for the object to emit a new event.
+			[X] 100% Wait for a particular event or one of several events.
+				A lot of time we're just waiting for an object to enter a particular state.
+				Event order is maintained; intermediate events are discarded.
 		[_] 0% Determine whether "role" is a confusing name.
 			Alternatives:
 				part

@@ -609,11 +609,25 @@ sub run_all {
 	$singleton_session_id = undef;
 }
 
+# TODO - Added semantics to wait for a specific event.
+# Need to document that.
+
 sub next {
 	my $self = shift;
-
 	$self->promise() || $self->promise(Reflex::Callback::Promise->new());
-	return $self->promise()->next();
+
+	return $self->promise()->next() unless @_;
+
+	# TODO - It's user friendly to accept a list and build a hash
+	# internally, but that adds runtime CPU overhead.  On the other
+	# hand, passing in a hashref with dummy values kind of sucks for the
+	# user.  I'd like to discuss the relative merits and costs of each
+	# option with someone.
+
+	my %which = map { $_ => 1 } @_;
+	while (my $next = $self->promise()->next()) {
+		return $next if exists $which{$next->{name}};
+	}
 }
 
 1;
