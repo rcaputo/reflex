@@ -33,6 +33,22 @@ sub next {
 	return shift @$queue;
 }
 
+sub merge_into {
+	my ($self, $other_promise) = @_;
+
+	# Retain old queue for the moment.
+	my $old_queue = $self->queue();
+
+	# Redirect this promise into the other promise's queue.
+	$self->queue( $other_promise->queue() );
+
+	# If this promise contains events, move then into the other queue.
+	# TODO - Order is not maintained.
+	push @{$other_promise->queue()}, @$old_queue;
+
+	undef;
+}
+
 1;
 
 __END__
