@@ -568,7 +568,7 @@
 								Workers from multiple pools may be needed to fully complete a job.
 						Worker pool.
 							A group of related workers that share common resources.
-						Lifeguard.
+						Pool Manager.
 							An object that manages a worker pool's resources.
 							This object may also consider workers to be resources.
 					Generic Design
