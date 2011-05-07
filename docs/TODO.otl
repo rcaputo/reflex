@@ -1,4 +1,4 @@
-[_] 44% Framework Requirements
+[_] 37% Framework Requirements
 	About
 		This document summarizes the best ideas from the patterns document.
 		It is also a master TODO list for Reflex.
@@ -352,19 +352,56 @@
 					What happens if a component is actively processing messages but garbles outgoing messages due to an internal fault?
 				Channel Purger
 					Prevents 'left over' messages on a channel from disturbing tests or running systems.
-	[_] 50% Session Location Rules
-		[X] 100% Objects may be created in the same session as the creator.
-		[_] 0% Objects may be created in new sessions, separate from the creator.
-			[_] 0% New sessions may be started in the same process as the previous one.
-			[_] 0% New sessions may be started in new threads.
-				[_] 0% Investigate whether we want to support threads.
-					Threads support may be more efficient on Windows.
-					Perhaps transparently thread/fork depending on $^O.
-			[_] 0% New sessions may be started in other processes.
+	[_] 0% Session Location Rules
+		[_] 0% Sessions should only be exposed for POE compatibility.
+	[_] 0% Multiprocessor Concerns
+		[_] 0% Reflex must support multiple processors with minimal syntax.
+		[_] 0% Define units of concurrency.
+			[_] 0% New objects may be started in other processes.
 				[_] 0% Processes may be forked at session creation time.
 					Caveat: The new session is executed in isolation.
 				[_] 0% Processes may be already established and attached to.
-			[_] 0% Consider POE::Component::IKC for the backbone between processes.
+				[_] 0% Processes may be local to the current machine.
+				[_] 0% Processes may also be located on other machines.
+					[_] 0% Ad-hoc remote processes.
+						Started by ssh, inetd, or other means.
+					[_] 0% Remote services.
+						[_] 0% Already running.
+						[_] 0% Started as needed, and running as long as needed.
+			[_] 0% New objects may be run in other threads.
+				[_] 0% Investigate whether we want to support threads directly.
+					Threads support may be more efficient on Windows.
+					Perhaps transparently thread/fork depending on $^O.
+					Or use fork() only, and allow Perl to choose whether to use processes or threads.
+		[_] 0% Define possible locations for concurrency units.
+			[_] 0% Local to the current machine.
+				Fork and exec a thin manager to proxy the object.
+				The manager instantiates the object in the subprocess.
+			[_] 0% On a remote machine.
+				Requires a valid network between machines.
+				Attach to an existing service on the remote machine.
+				Create an ad-hoc service on the remote machine.
+			[_] 0% Normalize as much as possible.
+				Use services locally to minimize special cases?
+		[_] 0% Possible RPC transports.
+			Requirements
+				Good at any distance.  Equally good for localhost and internetworked RPC.
+				Multi-language convenience.
+				Ability to support multiple transports.
+					Concurrently would be "nice to have".
+					However a single transport of any type would also be nice.
+			POE::Component::IKC
+				Fails "multi-language convenience".
+			[_] 0% ZeroMQ
+				Chip Salzenberg recommends.
+				I've had trouble getting the Perl bindings built.
+				Lack of wide compatibility makes this troublesome.
+			[_] 0% AMQP
+				Investigate.
+			[_] 0% Thrift.
+				Investigate.
+			Multicast UDP
+				Fails "good at any distance".
 			[_] 0% Consider MDNS for finding objects.
 	[_] 0% Continuation Rules
 		[_] 0% Continuations may be associated with objects.
