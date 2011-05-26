@@ -13,15 +13,15 @@ extends 'Ttl::Bin';
 use Ttl::Not;
 use Ttl::And;
 
-use Reflex::Trait::Observed;
+use Reflex::Trait::Watched;
 
-observes and => (
+watches and => (
   isa     => 'Ttl::And',
   handles => [qw(a b)],
 	setup   => sub { Ttl::And->new() },
 );
 
-observes not => (
+watches not => (
   isa     => 'Ttl::Not',
 	setup   => sub { Ttl::Not->new() },
 );

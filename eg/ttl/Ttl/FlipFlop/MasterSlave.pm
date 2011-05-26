@@ -19,15 +19,15 @@ use Ttl::Latch::ClockedNandRS;
 use Ttl::Not;
 
 use Reflex::Trait::EmitsOnChange;
-use Reflex::Trait::Observed;
+use Reflex::Trait::Watched;
 
-observes cnrs1 => (
+watches cnrs1 => (
 	isa => 'Ttl::Latch::ClockedNandRS',
 	handles => ['r', 's'],
 );
 
-observes cnrs2 => ( isa => 'Ttl::Latch::ClockedNandRS' );
-observes not   => ( isa => 'Ttl::Not'                  );
+watches cnrs2 => ( isa => 'Ttl::Latch::ClockedNandRS' );
+watches not   => ( isa => 'Ttl::Not'                  );
 
 sub BUILD {
 	my $self = shift;

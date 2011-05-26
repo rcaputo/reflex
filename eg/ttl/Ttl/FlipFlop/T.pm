@@ -7,10 +7,10 @@ use Moose;
 extends 'Reflex::Base';
 use Ttl::FlipFlop::D;
 
-use Reflex::Trait::Observed;
+use Reflex::Trait::Watched;
 use Reflex::Trait::EmitsOnChange;
 
-observes dff => (
+watches dff => (
 	isa => 'Ttl::FlipFlop::D',
 	handles => ['preset','clear','clock'],
 );

@@ -26,9 +26,9 @@ use Test::More tests => 3;
 	extends 'Reflex::Base';
 	use Reflex::Interval;
 	use Reflex::Callbacks qw(gather_cb);
-	use Reflex::Trait::Observed;
+	use Reflex::Trait::Watched;
 
-	observes ticker => (
+	watches ticker => (
 		isa     => 'Reflex::Interval',
 		setup   => { interval => 1, auto_repeat => 1 },
 	);

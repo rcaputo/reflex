@@ -19,13 +19,13 @@ use Moose;
 extends 'Reflex::Base';
 use Ttl::Nor;
 
-use Reflex::Trait::Observed;
+use Reflex::Trait::Watched;
 use Reflex::Trait::EmitsOnChange;
 
-observes nor_r => ( isa => 'Ttl::Nor', handles => { r => 'a' } );
-observes nor_s => ( isa => 'Ttl::Nor', handles => { s => 'b' } );
-emits    q     => ( isa => 'Bool'                              );
-emits    not_q => ( isa => 'Bool'                              );
+watches nor_r => ( isa => 'Ttl::Nor', handles => { r => 'a' } );
+watches nor_s => ( isa => 'Ttl::Nor', handles => { s => 'b' } );
+emits   q     => ( isa => 'Bool'                              );
+emits   not_q => ( isa => 'Bool'                              );
 
 sub on_nor_s_out {
 	my ($self, $args) = @_;

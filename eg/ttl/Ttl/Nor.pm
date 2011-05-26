@@ -13,11 +13,11 @@ extends 'Ttl::Bin';
 use Ttl::Not;
 use Ttl::Or;
 
-use Reflex::Role::Observed;
+use Reflex::Role::Watched;
 
 # Ttl::Or handles a and b input for Ttl::Nor.
-observes or  => ( isa => 'Ttl::Or', handles => [qw(a b)] );
-observes not => ( isa => 'Ttl::Not'                      );
+watches or  => ( isa => 'Ttl::Or', handles => [qw(a b)] );
+watches not => ( isa => 'Ttl::Not'                      );
 
 sub BUILD {
   my $self = shift;

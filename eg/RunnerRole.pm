@@ -77,7 +77,7 @@ __END__
 
 extends 'Reflex::Base';
 
-use Reflex::Trait::Observed;
+use Reflex::Trait::Watched;
 use Reflex::PID;
 
 use Carp qw(croak);
@@ -87,7 +87,7 @@ use Symbol qw(gensym);
 
 __END__
 
-observes process => ( isa => 'Maybe[Reflex::PID]', is => 'rw' );
+watches process => ( isa => 'Maybe[Reflex::PID]', is => 'rw' );
 
 has [qw(stdin stdout stderr)] => (
 	isa => 'Maybe[FileHandle]',

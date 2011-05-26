@@ -11,7 +11,7 @@ extends 'Reflex::Base';
 use Ttl::TriNand;
 
 use Reflex::Trait::EmitsOnChange;
-use Reflex::Trait::Observed;
+use Reflex::Trait::Watched;
 
 emits clear  => ( isa => 'Bool' );
 emits clock  => ( isa => 'Bool' );
@@ -100,11 +100,11 @@ sub on_tri6_out {
 	$self->tri5->c($args->{value});
 }
 
-observes tri1 => ( isa => 'Ttl::TriNand' );
-observes tri2 => ( isa => 'Ttl::TriNand' );
-observes tri3 => ( isa => 'Ttl::TriNand' );
-observes tri4 => ( isa => 'Ttl::TriNand' );
-observes tri5 => ( isa => 'Ttl::TriNand' );
-observes tri6 => ( isa => 'Ttl::TriNand' );
+watches tri1 => ( isa => 'Ttl::TriNand' );
+watches tri2 => ( isa => 'Ttl::TriNand' );
+watches tri3 => ( isa => 'Ttl::TriNand' );
+watches tri4 => ( isa => 'Ttl::TriNand' );
+watches tri5 => ( isa => 'Ttl::TriNand' );
+watches tri6 => ( isa => 'Ttl::TriNand' );
 
 1;

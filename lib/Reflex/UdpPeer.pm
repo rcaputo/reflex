@@ -66,7 +66,7 @@ Use it as a helper.
 
 	has port => ( isa => 'Int', is => 'ro' );
 
-	observes peer => (
+	watches peer => (
 		isa     => 'Maybe[Reflex::UdpPeer]',
 		setup   => sub {
 			my $self = shift;

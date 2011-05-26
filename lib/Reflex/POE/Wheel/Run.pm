@@ -3,7 +3,7 @@ use Moose;
 extends 'Reflex::POE::Wheel';
 use POE::Wheel::Run;
 use Reflex::PID;
-use Reflex::Trait::Observed;
+use Reflex::Trait::Watched qw(watches);
 
 # These are class methods, returning static class data.
 # TODO - What's the proper way to do this with Moose?
@@ -84,7 +84,7 @@ sub valid_params {
 
 # Also handle signals.
 
-observes sigchild_watcher => (
+watches sigchild_watcher => (
 	isa   => 'Maybe[Reflex::PID]',
 	role  => 'sigchld',
 );
@@ -123,10 +123,10 @@ Reflex::POE::Wheel::Run - Represent POE::Wheel::Run as a Reflex class.
 
 Unfortunately there isn't a concise, completely executable example for
 the synopsis at this time.  Please see eg-07-wheel-run.pl and
-eg-08-observer-trait.pl in the distribution's eg directory for longer
+eg-08-watched-trait.pl in the distribution's eg directory for longer
 but fully executable ones.
 
-	observes child => (
+	watches child => (
 		isa => 'Reflex::POE::Wheel::Run|Undef',
 	);
 

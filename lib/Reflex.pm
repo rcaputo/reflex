@@ -53,9 +53,9 @@ Reflex - Class library for flexible, reactive programs.
 		use Moose;
 		extends 'Reflex::Base';
 		use Reflex::Interval;
-		use Reflex::Trait::Observed;
+		use Reflex::Trait::Watched qw(watches);
 
-		observes ticker => (
+		watches ticker => (
 			isa     => 'Reflex::Interval',
 			setup   => { interval => 1, auto_repeat => 1 },
 		);
@@ -103,16 +103,16 @@ warnings, strict, and base instead.  Reflex::Base provides emit().
 
 The next object uses Echoer.  It creates an Echoer and pings it to get
 started.  It also reacts to "pong" events by pinging the Echoer again.
-Reflex::Trait::Observed (via its exported observes() declarative
-syntax) implicitly watches the object in echoer(), mapping its "pong"
-event to the on_echoer_pong() method.
+Reflex::Trait::Watched (via its exported watches() declarative syntax)
+implicitly watches the object in echoer(), mapping its "pong" event to
+the on_echoer_pong() method.
 
 	package Pinger;
 	use Moose;
 	extends 'Reflex::Base';
-	use Reflex::Trait::Observed;
+	use Reflex::Trait::Watched;
 
-	observes echoer => (
+	watches echoer => (
 		isa     => 'Echoer',
 		default => sub { Echoer->new() },
 	);
@@ -248,7 +248,7 @@ work with them using these adapters.
 
 =item Reflex::POE::Postback - Communicate with POE components expecting
 
-=item Reflex::POE::Session - Observe events from a POE::Session object.
+=item Reflex::POE::Session - Watch events from a POE::Session object.
 
 =item Reflex::POE::Wheel - Base class for POE::Wheel wrappers.
 
@@ -307,7 +307,7 @@ process management.
 
 =over 2
 
-=item Reflex::PID - Observe the exit of a subprocess by its SIGCHLD signal.
+=item Reflex::PID - Watch the exit of a subprocess by its SIGCHLD signal.
 
 =item Reflex::Signal - Generic signal watcher and base class for specific
 
@@ -328,19 +328,19 @@ it eventually, and you're welcome to help.
 
 Reflex also implements signal/slot style object interaction, through
 emit() and watch() methods.  These traits were inspired by Smalltalk's
-observable object attributes.
+watchable object attributes.
 
 =over 2
 
 =item Reflex::Trait::EmitsOnChange - Emit an event when an attribute’s value
 
-=item Reflex::Trait::Observed - Automatically watch Reflex objects.
+=item Reflex::Trait::Watched - Automatically watch Reflex objects.
 
 =back
 
 Reflex::Trait::EmitsOnchange exports a declarative emits() function
-that simplifies use of this trait.  Likewise, Reflex::Trait::Observed
-exports observes() to simplify its use.
+that simplifies use of this trait.  Likewise, Reflex::Trait::Watched
+exports watches() to simplify its use.
 
 =head1 ASSISTANCE
 

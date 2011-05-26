@@ -21,12 +21,12 @@ use Moose;
 extends 'Reflex::Base';
 use Ttl::And;
 
-use Reflex::Trait::Observed;
+use Reflex::Trait::Watched;
 use Reflex::Trait::EmitsOnChange;
 
-observes and_ab => ( isa => 'Ttl::And', handles => [qw(a b)]    );
-observes and_c  => ( isa => 'Ttl::And', handles => { c => 'b' } );
-emits    out    => ( isa => 'Bool'                              );
+watches and_ab => ( isa => 'Ttl::And', handles => [qw(a b)]    );
+watches and_c  => ( isa => 'Ttl::And', handles => { c => 'b' } );
+emits   out    => ( isa => 'Bool'                              );
 
 sub BUILD {
 	my $self = shift;

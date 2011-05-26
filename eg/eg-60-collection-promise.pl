@@ -56,7 +56,7 @@ my $collectible_id = 1;
 	use Moose;
 	with 'Reflex::Role::Collectible';
 	extends 'Reflex::Base';  # TODO - Implicit in Reflex::Role::Collectible?
-	use Reflex::Trait::Observed;
+	use Reflex::Trait::Watched;
 	use Reflex::Interval;
 
 	has id => (
@@ -70,7 +70,7 @@ my $collectible_id = 1;
 		default => 0,
 	);
 
-	observes timer => (
+	watches timer => (
 		is => 'rw',
 		isa => 'Maybe[Reflex::Interval]',
 		setup => sub {

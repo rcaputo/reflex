@@ -13,14 +13,14 @@ use lib qw(../lib);
 	use Moose;
 	extends 'Reflex::Base';
 	use Reflex::UdpPeer;
-	use Reflex::Trait::Observed qw(observes);
+	use Reflex::Trait::Watched qw(watches);
 
 	has port => (
 		isa     => 'Int',
 		is      => 'ro',
 	);
 
-	observes peer => (
+	watches peer => (
 		isa     => 'Maybe[Reflex::UdpPeer]',
 		setup   => sub {
 			my $self = shift;

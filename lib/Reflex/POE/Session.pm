@@ -47,7 +47,7 @@ __END__
 
 =head1 NAME
 
-Reflex::POE::Session - Observe events from a POE::Session object.
+Reflex::POE::Session - Watch events from a POE::Session object.
 
 =head1 SYNOPSIS
 

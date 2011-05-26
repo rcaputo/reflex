@@ -9,9 +9,9 @@ use lib qw(../lib);
 	use Moose;
 	extends 'Reflex::Base';
 	use Reflex::Interval;
-	use Reflex::Trait::Observed;
+	use Reflex::Trait::Watched;
 
-	observes ticker => (
+	watches ticker => (
 		isa   => 'Reflex::Interval',
 		setup => { interval => 1, auto_repeat => 1 },
 	);

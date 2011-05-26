@@ -47,7 +47,7 @@ The original source of an event can be accessed with this method
 
 =head2 get_last_emitter
 
-The final emitter (the one the observer was explicitly watching) can be
+The final emitter (the one the watcher was explicitly watching) can be
 accessed with this method
 
 =head2 get_all_emitters

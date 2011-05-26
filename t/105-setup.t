@@ -6,7 +6,7 @@ use lib qw(../lib);
 
 use Test::More tests => 5;
 
-# Exercise the new "setup" option for emitters and observers.
+# Exercise the new "setup" option for emitters and watchers.
 
 {
 	package Counter;
@@ -14,14 +14,14 @@ use Test::More tests => 5;
 	extends 'Reflex::Base';
 	use Reflex::Interval;
 	use Reflex::Trait::EmitsOnChange;
-	use Reflex::Trait::Observed;
+	use Reflex::Trait::Watched;
 
 	emits count => (
 		isa     => 'Int',
 		default => 0,
 	);
 
-	observes ticker => (
+	watches ticker => (
 		isa   => 'Reflex::Interval',
 		setup => sub {
 			Reflex::Interval->new( interval => 0.1, auto_repeat => 1 )
@@ -38,11 +38,11 @@ use Test::More tests => 5;
 	package Watcher;
 	use Moose;
 	extends 'Reflex::Base';
-	use Reflex::Trait::Observed;
+	use Reflex::Trait::Watched;
 
 	use Test::More;
 
-	observes counter => (
+	watches counter => (
 		isa   => 'Counter|Undef',
 		setup => sub { Counter->new() },
 	);

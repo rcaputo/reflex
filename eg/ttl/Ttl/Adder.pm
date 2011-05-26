@@ -32,16 +32,16 @@ use Ttl::Xor;
 use Ttl::And;
 use Ttl::Or;
 
-emits      a       => ( isa => 'Bool'     );
-emits      b       => ( isa => 'Bool'     );
-emits      cin     => ( isa => 'Bool'     );
-observes   xor_ab  => ( isa => 'Ttl::Xor' );
-observes   xor_cin => ( isa => 'Ttl::Xor' );
-observes   and_ab  => ( isa => 'Ttl::And' );
-observes   and_cin => ( isa => 'Ttl::And' );
-observes   or_cout => ( isa => 'Ttl::Or'  );
-emits      sum     => ( isa => 'Bool'     );
-emits      cout    => ( isa => 'Bool'     );
+emits     a       => ( isa => 'Bool'     );
+emits     b       => ( isa => 'Bool'     );
+emits     cin     => ( isa => 'Bool'     );
+watches   xor_ab  => ( isa => 'Ttl::Xor' );
+watches   xor_cin => ( isa => 'Ttl::Xor' );
+watches   and_ab  => ( isa => 'Ttl::And' );
+watches   and_cin => ( isa => 'Ttl::And' );
+watches   or_cout => ( isa => 'Ttl::Or'  );
+emits     sum     => ( isa => 'Bool'     );
+emits     cout    => ( isa => 'Bool'     );
 
 sub on_my_a {
 	my ($self, $args) = @_;

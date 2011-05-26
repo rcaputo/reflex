@@ -13,7 +13,7 @@ use lib qw(../lib);
 	use Moose;
 	extends 'Reflex::Base';
 	use Reflex::POE::Session;
-	use Reflex::Trait::Observed;
+	use Reflex::Trait::Watched;
 
 	use POE qw(Component::IRC);
 
@@ -22,7 +22,7 @@ use lib qw(../lib);
 		is  => 'rw',
 	);
 
-	observes poco_watcher => (
+	watches poco_watcher => (
 		isa   => 'Reflex::POE::Session',
 		role  => 'poco',
 	);

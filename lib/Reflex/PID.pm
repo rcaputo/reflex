@@ -32,7 +32,7 @@ __END__
 
 =head1 NAME
 
-Reflex::PID - Observe the exit of a subprocess by its SIGCHLD signal.
+Reflex::PID - Watch the exit of a subprocess by its SIGCHLD signal.
 
 =head1 SYNOPSIS
 
@@ -41,7 +41,7 @@ Reflex::PID - Observe the exit of a subprocess by its SIGCHLD signal.
 
 	use Reflex::PID;
 
-	observes pid_watcher => (
+	watches pid_watcher => (
 		isa   => 'Reflex::PID|Undef',
 		role  => 'process',
 	);

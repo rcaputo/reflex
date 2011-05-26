@@ -23,22 +23,22 @@ use Moose;
 extends 'Reflex::Base';
 use Ttl::Latch::ClockedNandRS;
 
-observes nand_j => (
+watches nand_j => (
 	isa     => 'Ttl::Nand',
 	handles => { j => 'a' },
 );
 
-observes nand_k => (
+watches nand_k => (
 	isa     => 'Ttl::Nand',
 	handles => { k => 'b' },
 );
 
-observes trinand_preset => (
+watches trinand_preset => (
 	isa     => 'Ttl::TriNand',
 	handles => { preset => 'a' },
 );
 
-observes trinand_clear => (
+watches trinand_clear => (
 	isa     => 'Ttl::TriNand',
 	handles => { clear => 'c' },
 );

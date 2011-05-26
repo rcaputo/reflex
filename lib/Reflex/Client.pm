@@ -10,7 +10,7 @@ use Reflex::Stream;
 
 extends 'Reflex::Connector';
 with 'Reflex::Role::Collectible';
-use Reflex::Trait::Observed;
+use Reflex::Trait::Watched qw(watches);
 
 has protocol => (
 	is      => 'rw',
@@ -18,7 +18,7 @@ has protocol => (
 	default => 'Reflex::Stream',
 );
 
-observes connection => (
+watches connection => (
 	isa     => 'Maybe[Reflex::Stream]',
 	# Maps $self->put() to $self->connection()->put().
 	# TODO - Would be nice to have something like this for outbout

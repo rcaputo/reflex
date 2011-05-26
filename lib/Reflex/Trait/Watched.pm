@@ -1,10 +1,10 @@
-package Reflex::Trait::Observed;
+package Reflex::Trait::Watched;
 use Moose::Role;
 use Scalar::Util qw(weaken);
 use Reflex::Callbacks qw(cb_role);
 
 use Moose::Exporter;
-Moose::Exporter->setup_import_methods( with_caller => [ qw( observes ) ]);
+Moose::Exporter->setup_import_methods( with_caller => [ qw( watches ) ]);
 
 has setup => (
 	isa     => 'CodeRef|HashRef',
@@ -107,9 +107,9 @@ has setup => (
 #	},
 #);
 
-### Observed declarative syntax.
+### Watched declarative syntax.
 
-sub observes {
+sub watches {
 	my ($caller, $name, %etc) = @_;
 	my $meta = Class::MOP::class_of($caller);
 	push @{$etc{traits}}, __PACKAGE__;
@@ -117,8 +117,8 @@ sub observes {
 	$meta->add_attribute($name, %etc);
 }
 
-package Moose::Meta::Attribute::Custom::Trait::Reflex::Trait::Observed;
-sub register_implementation { 'Reflex::Trait::Observed' }
+package Moose::Meta::Attribute::Custom::Trait::Reflex::Trait::Watched;
+sub register_implementation { 'Reflex::Trait::Watched' }
 
 1;
 
@@ -126,7 +126,7 @@ __END__
 
 =head1 NAME
 
-Reflex::Trait::Observed - Automatically watch Reflex objects.
+Reflex::Trait::Watched - Automatically watch Reflex objects.
 
 =head1 SYNOPSIS
 
@@ -136,13 +136,13 @@ Reflex::Trait::Observed - Automatically watch Reflex objects.
 	has clock => (
 		isa     => 'Reflex::Interval',
 		is      => 'rw',
-		traits  => [ 'Reflex::Trait::Observed' ],
+		traits  => [ 'Reflex::Trait::Watched' ],
 		setup   => { interval => 1, auto_repeat => 1 },
 	);
 
 =head1 DESCRIPTION
 
-Reflex::Trait::Observed modifies a member to automatically observe any
+Reflex::Trait::Watched modifies a member to automatically watch() any
 Reflex::Base object stored within it.  In the SYNOPSIS, storing a
 Reflex::Interval in the clock() attribute allows the owner to watch the
 timer's events.
@@ -172,9 +172,9 @@ attribute's name is its default role.
 
 =head1 Declarative Syntax
 
-Reflex::Trait::Observed exports a declarative observes() function,
+Reflex::Trait::Watched exports a declarative watches() function,
 which acts almost identically to Moose's has() but with a couple
-convenient defaults: The Observed trait is added, and the attribute is
+convenient defaults: The Watched trait is added, and the attribute is
 given "rw" access by default.
 
 =head1 CAVEATS

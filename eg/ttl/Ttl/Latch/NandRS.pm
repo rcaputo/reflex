@@ -19,13 +19,13 @@ use Moose;
 extends 'Reflex::Base';
 use Ttl::Nand;
 
-use Reflex::Trait::Observed;
+use Reflex::Trait::Watched;
 use Reflex::Trait::EmitsOnChange;
 
-observes nand_r => ( isa => 'Ttl::Nand', handles => { r => 'b' } );
-observes nand_s => ( isa => 'Ttl::Nand', handles => { s => 'a' } );
-emits    q      => ( isa => 'Bool'                               );
-emits    not_q  => ( isa => 'Bool'                               );
+watches nand_r => ( isa => 'Ttl::Nand', handles => { r => 'b' } );
+watches nand_s => ( isa => 'Ttl::Nand', handles => { s => 'a' } );
+emits   q      => ( isa => 'Bool'                               );
+emits   not_q  => ( isa => 'Bool'                               );
 
 sub on_nand_s_out {
 	my ($self, $args) = @_;

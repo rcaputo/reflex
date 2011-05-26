@@ -18,9 +18,9 @@ use lib qw(../lib);
 	package Pinger;
 	use Moose;
 	extends 'Reflex::Base';
-	use Reflex::Trait::Observed;
+	use Reflex::Trait::Watched;
 
-	observes echoer => (
+	watches echoer => (
 		isa     => 'Echoer',
 		default => sub { Echoer->new() },
 	);

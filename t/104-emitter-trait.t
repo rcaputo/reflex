@@ -14,12 +14,12 @@ use Test::More tests => 4;
 	extends 'Reflex::Base';
 	use Reflex::Interval;
 	use Reflex::Trait::EmitsOnChange;
-	use Reflex::Trait::Observed;
+	use Reflex::Trait::Watched;
 
 	use Test::More;
 
-	emits     count   => ( isa => 'Int', default => 0 );
-	observes  ticker  => ( isa => 'Maybe[Reflex::Interval]' );
+	emits    count   => ( isa => 'Int', default => 0 );
+	watches  ticker  => ( isa => 'Maybe[Reflex::Interval]' );
 
 	sub BUILD {
 		my $self = shift;
@@ -44,11 +44,11 @@ use Test::More tests => 4;
 	package Watcher;
 	use Moose;
 	extends 'Reflex::Base';
-	use Reflex::Trait::Observed;
+	use Reflex::Trait::Watched;
 
 	use Test::More;
 
-	observes counter => ( isa => 'Maybe[Counter]' );
+	watches counter => ( isa => 'Maybe[Counter]' );
 
 	sub BUILD {
 		my $self = shift;

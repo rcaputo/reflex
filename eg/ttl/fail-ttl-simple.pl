@@ -9,9 +9,9 @@ use lib qw(lib);
 	use Moose;
 	extends 'Reflex::Base';
 	use Ttl::And;
-	use Reflex::Trait::Observed;
+	use Reflex::Trait::Watched;
 
-	observes ander => ( isa => 'Ttl::And' );
+	watches ander => ( isa => 'Ttl::And' );
 
 	sub BUILD {
 		my $self = shift;

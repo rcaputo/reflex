@@ -219,7 +219,7 @@ after BUILD => sub {
 
 	foreach my $setup (
 		grep {
-			$_->does('Reflex::Trait::EmitsOnChange') || $_->does('Reflex::Trait::Observed')
+			$_->does('Reflex::Trait::EmitsOnChange') || $_->does('Reflex::Trait::Watched')
 		}
 		$self->meta()->get_all_attributes()
 	) {
