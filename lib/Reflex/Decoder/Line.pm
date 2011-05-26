@@ -4,8 +4,6 @@ use Moose;
 with 'Reflex::Role::Decoding';
 with 'Reflex::Role::Decoding::Stream';
 
-use Reflex::Codec::Message::Empty;
-
 has newline => ( is => 'rw', isa => 'Str', default => "\x0D\x0A" );
 
 # <doy>
@@ -18,9 +16,7 @@ has newline => ( is => 'rw', isa => 'Str', default => "\x0D\x0A" );
 sub shift {
 	my $self = shift;
 
-	return Reflex::Codec::Message::Empty->new() unless
-
-	my $next = $self->messages()->[0];
+	return unless my $next = $self->messages()->[0];
 	return $self->next_message() unless $next->isa(
 		'Reflex::Codec::Message::Stream'
 	);

@@ -21,12 +21,11 @@ $decoder->push_eof();
 use YAML; print YAML::Dump($decoder);
 while (my $next = $decoder->shift()) {
 	use YAML; print YAML::Dump($next);
-	last if $next->isa('Reflex::Codec::Message::Empty');
 }
 
 __END__
 
-% perl -I../lib eg-02-encoding.pl 
+% perl -I../lib eg-02-encoding.pl
 --- !!perl/hash:Reflex::Decoder::Line
 messages:
   - !!perl/hash:Reflex::Codec::Message::Stream
@@ -54,8 +53,5 @@ is_combinable: 0
 octets: test line four
 priority: 500
 --- !!perl/hash:Reflex::Codec::Message::Eof
-is_combinable: 0
-priority: 500
---- !!perl/hash:Reflex::Codec::Message::Empty
 is_combinable: 0
 priority: 500
