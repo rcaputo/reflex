@@ -1,4 +1,6 @@
 package Reflex::Trait::EmitsOnChange;
+# vim: ts=2 sw=2 noexpandtab
+
 use Moose::Role;
 use Scalar::Util qw(weaken);
 

@@ -1,4 +1,6 @@
 package EchoStream;
+# vim: ts=2 sw=2 noexpandtab
+
 use Moose;
 extends 'Reflex::Stream';
 

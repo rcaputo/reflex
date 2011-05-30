@@ -1,7 +1,9 @@
 package Reflex::PID;
+# vim: ts=2 sw=2 noexpandtab
 
 use Moose;
 extends 'Reflex::Base';
+use Reflex::Callbacks qw(make_emitter);
 
 has pid => (
 	is        => 'ro',
@@ -16,10 +18,9 @@ has active => (
 );
 
 with 'Reflex::Role::PidCatcher' => {
-	pid           => 'pid',
-	active        => 'active',
-	cb_exit       => 'on_exit',
-	ev_exit       => 'exit',
+	att_pid       => 'pid',
+	att_active    => 'active',
+	cb_exit       => make_emitter(on_exit => "exit"),
 	method_start  => 'start',
 	method_stop   => 'stop',
 	method_pause  => 'pause',

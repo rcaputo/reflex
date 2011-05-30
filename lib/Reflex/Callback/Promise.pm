@@ -1,4 +1,5 @@
 package Reflex::Callback::Promise;
+# vim: ts=2 sw=2 noexpandtab
 
 use Moose;
 extends qw(Reflex::Callbacks Reflex::Callback);

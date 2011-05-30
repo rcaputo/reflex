@@ -1,20 +1,18 @@
 package Reflex::Acceptor;
+# vim: ts=2 sw=2 noexpandtab
 
 use Moose;
 extends 'Reflex::Base';
+use Reflex::Callbacks qw(make_emitter make_terminal_emitter);
 
-has listener => (
-	is        => 'rw',
-	isa       => 'FileHandle',
-	required  => 1
-);
+has listener => ( is => 'rw', isa => 'FileHandle', required => 1);
+has active => ( is => 'ro', isa => 'Bool', default => 1 );
 
 with 'Reflex::Role::Accepting' => {
-	listener      => 'listener',
-	cb_accept     => 'on_accept',
-	ev_accept     => 'accept',
-	cb_error      => 'on_error',
-	ev_error      => 'error',
+	att_active    => 'active',
+	att_listener  => 'listener',
+	cb_accept     => make_emitter(on_accept => "accept"),
+	cb_error      => make_terminal_emitter(on_error => "error"),
 	method_pause  => 'pause',
 	method_resume => 'resume',
 	method_stop   => 'stop',

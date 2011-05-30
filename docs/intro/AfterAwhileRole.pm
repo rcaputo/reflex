@@ -1,23 +1,23 @@
 package AfterAwhileRole;
 use Reflex::Role;
 
-attribute_parameter name    => "name";
-attribute_parameter awhile  => "awhile";
-callback_parameter  cb      => qw( on name done );
+# TODO - Is att_name really needed?
+attribute_parameter att_awhile => "awhile";
+attribute_parameter att_name   => "name";
+callback_parameter  cb         => qw( on att_name done );
 
 role {
 	my $role_param = shift;
 
-	my $cb_done   = $role_param->cb();
-	my $awhile    = $role_param->awhile();
+	my $att_awhile = $role_param->att_awhile();
+	my $cb_done    = $role_param->cb();
 
-	method_emit $cb_done => "done";
+	requires $att_awhile, $p->att_name(), $cb_done;
 
 	sub BUILD {}
-
 	after BUILD => sub {
 		my $self = shift;
-		sleep($self->$awhile());
+		sleep($self->$att_awhile());
 		$self->$cb_done();
 	};
 };

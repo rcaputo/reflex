@@ -1,3 +1,4 @@
+# vim: ts=2 sw=2 noexpandtab
 # A TCP echo client.
 # Strawman use cases for Reflex::Stream and Reflex::Connector.
 

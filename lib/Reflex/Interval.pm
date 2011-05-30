@@ -1,21 +1,22 @@
 package Reflex::Interval;
+# vim: ts=2 sw=2 noexpandtab
 
 use Moose;
 extends 'Reflex::Base';
+use Reflex::Callbacks qw(make_emitter);
 
 has interval    => ( isa => 'Num', is  => 'ro' );
 has auto_repeat => ( isa => 'Bool', is => 'ro', default => 1 );
 has auto_start  => ( isa => 'Bool', is => 'ro', default => 1 );
 
 with 'Reflex::Role::Interval' => {
-	interval      => "interval",
-	auto_start    => "auto_start",
-	auto_repeat   => "auto_repeat",
-	cb_tick       => "on_tick",
-	ev_tick       => "tick",
-	method_start  => "start",
-	method_stop   => "stop",
-	method_repeat => "repeat",
+	att_auto_repeat => "auto_repeat",
+	att_auto_start  => "auto_start",
+	att_interval    => "interval",
+	cb_tick         => make_emitter(on_tick => "tick"),
+	method_repeat   => "repeat",
+	method_start    => "start",
+	method_stop     => "stop",
 };
 
 1;

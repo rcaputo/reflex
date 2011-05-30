@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+# vim: ts=2 sw=2 noexpandtab
 
 use warnings;
 use strict;
@@ -12,6 +13,7 @@ use lib qw(../lib);
 	use Moose;
 	extends 'Reflex::Base';
 	use IO::Socket::INET;
+	use Reflex::Callbacks qw(make_error_handler);
 
 	has socket => (
 		is        => 'ro',
@@ -19,8 +21,17 @@ use lib qw(../lib);
 		required  => 1,
 	);
 
+	has active => (
+		is        => 'ro',
+		isa       => 'Bool',
+		default   => 1,
+	);
+
+	make_error_handler("on_socket_error");
+
 	with 'Reflex::Role::Recving' => {
-		handle      => 'socket',
+		att_handle  => 'socket',
+		att_active  => 'active',
 		method_send => 'send',
 	};
 

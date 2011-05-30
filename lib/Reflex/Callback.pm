@@ -1,4 +1,5 @@
 package Reflex::Callback;
+# vim: ts=2 sw=2 noexpandtab
 
 use Moose;
 

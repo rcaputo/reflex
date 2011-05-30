@@ -1,4 +1,4 @@
-# $Id$
+# vim: ts=2 sw=2 noexpandtab
 
 # Logical NOR gate.  Built from NOT + OR.
 # a b out

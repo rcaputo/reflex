@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+# vim: ts=2 sw=2 expandtab
 
 # This example illustrates explicit callbacks via object methods.  A
 # ThingWithCallbacks will call methods on objects defined in this

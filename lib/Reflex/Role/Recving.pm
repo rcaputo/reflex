@@ -1,17 +1,16 @@
 package Reflex::Role::Recving;
+# vim: ts=2 sw=2 noexpandtab
+
 use Reflex::Role;
 
-attribute_parameter handle => "socket";
+attribute_parameter att_active  => "active";
+attribute_parameter att_handle  => "socket";
+callback_parameter  cb_datagram => qw( on att_handle datagram );
+callback_parameter  cb_error    => qw( on att_handle error );
+method_parameter    method_send => qw( send att_handle _ );
+method_parameter    method_stop => qw( stop att_handle _ );
 
-callback_parameter  cb_datagram => qw( on handle datagram );
-callback_parameter  cb_error    => qw( on handle error );
-
-callback_parameter  ev_datagram => qw( _ handle datagram );
-callback_parameter  ev_error    => qw( _ handle error );
-
-method_parameter    method_send => qw( send handle _ );
-method_parameter    method_stop => qw( stop handle _ );
-
+# TODO - attribute_parameter?
 parameter max_datagram_size => (
 	isa     => 'Int',
 	is      => 'rw',
@@ -21,18 +20,21 @@ parameter max_datagram_size => (
 role {
 	my $p = shift;
 
-	my $h           = $p->handle();
+	my $att_active  = $p->att_active();
+	my $att_handle  = $p->att_handle();
 	my $cb_datagram = $p->cb_datagram();
 	my $cb_error    = $p->cb_error();
 	my $max_dg_size = $p->max_datagram_size();
 
+	requires $att_active, $att_handle, $cb_datagram, $cb_error;
+
 	method $p->method_stop() => sub {
 		my $self = shift;
-		my $method = "stop_${h}_readable";
+		my $method = "stop_${att_handle}_readable";
 		$self->$method();
 	};
 
-	method "on_${h}_readable" => sub {
+	method "on_${att_handle}_readable" => sub {
 		my ($self, $args) = @_;
 
 		my $remote_address = recv(
@@ -72,7 +74,7 @@ role {
 
 		# Success!
 		return if send(
-			$self->$h,
+			$self->$att_handle,
 			$args->{datagram},
 			0,
 			$args->{remote_addr},
@@ -88,12 +90,9 @@ role {
 	};
 
 	with 'Reflex::Role::Readable' => {
-		handle => $h,
+		att_active => $att_active,
+		att_handle => $att_handle,
 	};
-
-	# Default callbacks that re-emit their parameters.
-	method_emit           $cb_datagram  => $p->ev_datagram();
-	method_emit_and_stop  $cb_error     => $p->ev_error();
 };
 
 1;

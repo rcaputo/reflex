@@ -1,4 +1,6 @@
 package Reflex::Role::Decoding::Stream;
+# vim: ts=2 sw=2 noexpandtab
+
 use Reflex::Role;
 use Reflex::Codec::Message::Stream;
 use Reflex::Codec::Message::Eof;

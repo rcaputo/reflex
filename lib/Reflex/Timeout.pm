@@ -1,32 +1,20 @@
 package Reflex::Timeout;
+# vim: ts=2 sw=2 noexpandtab
 
 use Moose;
 extends 'Reflex::Base';
+use Reflex::Callbacks qw(make_emitter);
 
 has delay       => ( isa => 'Num', is  => 'ro' );
 has auto_start  => ( isa => 'Bool', is => 'ro', default => 1 );
 
-# TODO - There is a flaw in the design.
-#
-# Reflex::Timeout = cb_timeout => "on_done"
-# Reflex::Role::Timeout = method_emit $cb_timeout => $p->ev_done()
-#
-# However, the user's on_done => callback() only works because the
-# emitted event is "done".  And this "done" is a constant, which means
-# we pretty much have to use "on_done" here, or the chain of events is
-# broken.
-#
-# Somehow we must make the chain of events work no matter what
-# cb_timeout is set to here.
-
 with 'Reflex::Role::Timeout' => {
-	delay         => "delay",
-	cb_timeout    => "on_done",
-	ev_timeout    => "done",
-	auto_start    => "auto_start",
-	method_start  => "start",
-	method_stop   => "stop",
-	method_reset  => "reset",
+	att_auto_start => "auto_start",
+	att_delay      => "delay",
+	cb_timeout     => make_emitter(on_done => "done"),
+	method_reset   => "reset",
+	method_start   => "start",
+	method_stop    => "stop",
 };
 
 1;

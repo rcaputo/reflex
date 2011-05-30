@@ -1,4 +1,4 @@
-[_] 37% Framework Requirements
+[_] 40% Framework Requirements
 	About
 		This document summarizes the best ideas from the patterns document.
 		It is also a master TODO list for Reflex.
@@ -821,6 +821,67 @@
 				Allow the programmer to choose this overhead, only when it's likely to be necessary.
 			[_] 0% Remove the default emit()s.
 			[_] 0% Provide a consumer syntax to concisely specify emit()s at "with" time.
+	[_] 80% Parameterized role cleanup.
+		[X] 100% Role units of reactive behavior should not emit() events.
+			[X] 100% Remove event_parameter() from Reflex::Role.
+			[X] 100% Remove use of event_parameter() entirely.
+				[X] 100% Remove event_parameters declarations.
+				[X] 100% Sort the role parameter declarations.
+				[X] 100% Remove $ev_ variables.
+		[X] 100% Roles should not define default public "interface" callbacks.
+			[X] 100% Roles should require consumers to define cb_* callbacks.
+			[X] 100% Consumers should define cb_* methods, often in terms of Reflex::Callbacks make_emitter() or make_terminal_emitter().
+			[X] 100% Remove default $cb_* methods from roles.
+		[X] 100% Attribute parameters should begin with att_ to avoid confusion with simple value parameters.
+			[X] 100% Rename the attribute_parameters declarations.
+			[X] 100% Rename corresponding variables in the parameterized roles.
+			[X] 100% Rename attribute parameters in the consumers.
+			[X] 100% Require consumers to define the attributes.
+				[X] 100% The various parameters automatically add their named things to the list of required methods.
+				[X] 100% Make sure this plan works.
+					[X] 100% It doesn't.
+						The things being required depend on the values of specific parameters.
+						These values aren't known at role definition time.
+						They are known at role composition time.
+					[X] 100% Go back to explicit requires().
+			[X] 100% Rename references in callback_parameter declarations.
+			[X] 100% Rename references in method_parameter declarations.
+			[X] 100% Remove the default methods.
+				[X] 100% Implement the methods in the consumers.
+				[X] 100% Remove the methods from the roles.
+		[X] 100% Test all examples.
+			[X] 100% eg-02-encoding.pl
+			[X] 100% eg-04-inheritance.pl
+			[X] 100% eg-05-composition.pl
+			[X] 100% eg-06-moose-roles.pl
+			[X] 100% eg-07-wheel-run.pl
+			[X] 100% eg-08-watched-trait.pl
+			[X] 100% eg-11-poco-postback.pl
+			[X] 100% eg-12-poco-event.pl
+			[X] 100% eg-13-irc-bot.pl
+			[X] 100% eg-14-synopsis.pl
+			[X] 100% eg-15-ipc-run.pl
+			[X] 100% eg-16-timer-inheritance.pl
+			[X] 100% eg-17-inheritance-no-moose.pl
+			[X] 100% eg-18-synopsis-no-moose.pl
+			[X] 100% eg-30-promise-timer.pl
+			[X] 100% eg-31-promise-object.pl
+			[X] 100% eg-32-promise-tiny.pl
+			[X] 100% eg-33-all-callbacks.pl
+			[X] 100% eg-34-tcp-server-echo.pl
+			[X] 100% eg-35-tcp-client.pl
+			[X] 100% eg-36-tiny-coderefs.pl
+			[X] 100% eg-37-ping-pong.pl
+			[X] 100% eg-38-promise-client.pl
+			[X] 100% eg-39-signals.pl
+			[X] 100% eg-40-proxy.pl
+			[X] 100% eg-41-signal-twice.pl
+			[X] 100% eg-42-reflex-in-poe.pl
+			[X] 100% eg-50-timeout.pl
+			[X] 100% eg-51-wakeup.pl
+			[X] 100% eg-60-collection-promise.pl
+			[X] 100% test-observer.pl
+		[_] 0% Revise all documentation.
 Philosophy
 	Boolean role parameters are opportunities for new roles or role subclasses.
 		Static behaviors should be determined at role consumption time.

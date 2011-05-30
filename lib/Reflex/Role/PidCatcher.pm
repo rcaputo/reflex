@@ -1,22 +1,17 @@
 package Reflex::Role::PidCatcher;
+# vim: ts=2 sw=2 noexpandtab
+
 use Reflex::Role;
 
 use Scalar::Util qw(weaken);
 
-attribute_parameter pid => "pid";
-
-parameter active => (
-	isa       => 'Str',
-	default   => 'active',
-);
-
-callback_parameter  cb_exit       => qw( on pid exit );
-event_parameter     ev_exit       => qw( _ pid exit );
-
-method_parameter    method_start  => qw( start pid _ );
-method_parameter    method_stop   => qw( stop pid _ );
-method_parameter    method_pause  => qw( pause pid _ );
-method_parameter    method_resume => qw( resume pid _ );
+attribute_parameter att_active    => "active";
+attribute_parameter att_pid       => "pid";
+callback_parameter  cb_exit       => qw( on att_pid exit );
+method_parameter    method_pause  => qw( pause att_pid _ );
+method_parameter    method_resume => qw( resume att_pid _ );
+method_parameter    method_start  => qw( start att_pid _ );
+method_parameter    method_stop   => qw( stop att_pid _ );
 
 # A session may only watch a distinct pid once.
 # So we must map each distinct pid to all the interested objects.
@@ -57,9 +52,11 @@ sub deliver {
 role {
 	my $p = shift;
 
-	my $pid           = $p->pid();
-	my $active        = $p->active();
+	my $att_active    = $p->att_active();
+	my $att_pid       = $p->att_pid();
 	my $cb_exit       = $p->cb_exit();
+
+	requires $att_active, $att_pid, $cb_exit;
 
 	my $method_start  = $p->method_start();
 	my $method_stop   = $p->method_stop();
@@ -70,8 +67,9 @@ role {
 	sub BUILD {}
 
 	after BUILD => sub {
-		return unless $active;
-		shift()->$method_start();
+		my $self = shift();
+		return unless $self->$att_active();
+		$self->$method_start();
 		return;
 	};
 
@@ -85,7 +83,7 @@ role {
 	method $method_start => sub {
 		my $self = shift;
 
-		my $pid_value = $self->$pid();
+		my $pid_value = $self->$att_pid();
 
 		# Register this object with that PID.
 		$callbacks{$pid_value}->{$self->session_id()}->{$self} = [
@@ -109,7 +107,7 @@ role {
 		# Be in the session associated with this object.
 		return unless $self->call_gate($method_pause);
 
-		$POE::Kernel::poe_kernel->sig_child($self->$pid(), undef);
+		$POE::Kernel::poe_kernel->sig_child($self->$att_pid(), undef);
 	};
 
 	method $method_resume => sub {
@@ -119,14 +117,14 @@ role {
 		return unless $self->call_gate($method_resume);
 
 		$POE::Kernel::poe_kernel->sig_child(
-			$self->$pid(), "signal_happened", ref($self)
+			$self->$att_pid(), "signal_happened", ref($self)
 		);
 	};
 
 	method $method_stop => sub {
 		my $self = shift;
 
-		my $pid_value = $self->$pid();
+		my $pid_value = $self->$att_pid();
 
 		# Nothing to do?
 		return unless exists $callbacks{$pid_value}->{$self->session_id()};
@@ -144,8 +142,6 @@ role {
 			$self->$method_pause();
 		}
 	};
-
-	method_emit $cb_exit => $p->ev_exit();
 };
 
 __END__

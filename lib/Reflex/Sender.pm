@@ -1,4 +1,5 @@
 package Reflex::Sender;
+# vim: ts=2 sw=2 noexpandtab
 
 #ABSTRACT: The _sender access object
 

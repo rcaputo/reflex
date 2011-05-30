@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+# vim: ts=2 sw=2 noexpandtab
 
 # Use Reflex without Moose.  For people who don't like Moose.
 

@@ -1,4 +1,6 @@
 package Reflex::POE::Wheel::Run;
+# vim: ts=2 sw=2 noexpandtab
+
 use Moose;
 extends 'Reflex::POE::Wheel';
 use POE::Wheel::Run;

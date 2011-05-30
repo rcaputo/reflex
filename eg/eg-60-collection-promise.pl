@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+# vim: ts=2 sw=2 noexpandtab
 
 # Agorman's concerns:
 #
@@ -167,6 +168,12 @@ my $tcp = PromiseCollection->new();
 
 while (my $e = $tcp->next) {
 	my $sender = $e->{arg}{_sender}->get_first_emitter();
+
+	unless ($sender) {
+		warn "--- Why is the sender undefined";
+		next;
+	}
+
 	printf(
 		"promise collection got a result of %s! id => %s, value => %s\n",
 		ref($sender), $sender->id, $e->{arg}{value}

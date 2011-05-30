@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+# vim: ts=2 sw=2 noexpandtab
 
 # This test attaches an event emitter to its watcher at the time the
 # emitter is created.  This is more concise than discrete watch()

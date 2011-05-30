@@ -1,6 +1,9 @@
 package Reflex::UdpPeer;
+# vim: ts=2 sw=2 noexpandtab
+
 use Moose;
 extends 'Reflex::Base';
+use Reflex::Callbacks qw(make_emitter make_terminal_emitter);
 
 has socket => (
 	is        => 'rw',
@@ -8,14 +11,19 @@ has socket => (
 	required  => 1,
 );
 
+has active => (
+	is        => 'rw',
+	isa       => 'Bool',
+	default   => 1,
+);
+
 with 'Reflex::Role::Recving' => {
-	handle      => 'socket',
+	att_handle  => 'socket',
+	att_active  => 'active',
 	method_send => 'send',
 	method_stop => 'stop',
-	cb_datagram => 'on_datagram',
-	cb_error    => 'on_error',
-	ev_datagram => 'datagram',
-	ev_error    => 'error',
+	cb_datagram => make_emitter(on_datagram => "datagram"),
+	cb_error    => make_terminal_emitter(on_error => "error"),
 };
 
 1;

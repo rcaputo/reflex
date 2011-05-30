@@ -3,6 +3,8 @@
 # Collectible/Collection contract.
 
 package Reflex::Collection;
+# vim: ts=2 sw=2 noexpandtab
+
 use Moose;
 use Moose::Exporter;
 use Reflex::Callbacks qw(cb_method);

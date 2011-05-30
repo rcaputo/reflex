@@ -1,29 +1,31 @@
 package Reflex::Role::InStreaming;
+# vim: ts=2 sw=2 noexpandtab
+
 use Reflex::Role;
 
-attribute_parameter handle      => "handle";
-
-callback_parameter  cb_data     => qw( on handle data );
-callback_parameter  cb_error    => qw( on handle error );
-callback_parameter  cb_closed   => qw( on handle closed );
-
-callback_parameter  ev_error    => qw( _ handle error );
-
-method_parameter    method_stop => qw( stop handle _ );
+attribute_parameter att_handle  => "handle";
+callback_parameter  cb_closed   => qw( on att_handle closed );
+callback_parameter  cb_data     => qw( on att_handle data );
+callback_parameter  cb_error    => qw( on att_handle error );
+method_parameter    method_stop => qw( stop att_handle _ );
 
 role {
 	my $p = shift;
 
-	my $h           = $p->handle();
+	my $att_handle  = $p->att_handle();
 	my $cb_error    = $p->cb_error();
-	my $method_read = "_on_${h}_readable";
+
+	requires(
+		$att_handle,
+		$p->cb_closed(), $p->cb_data(), $cb_error,
+	);
+
+	my $method_read = "_on_${att_handle}_readable";
 
 	with 'Reflex::Role::Collectible';
 
-	method_emit_and_stop $cb_error => $p->ev_error();
-
 	with 'Reflex::Role::Reading' => {
-		handle      => $h,
+		att_handle  => $att_handle,
 		cb_data     => $p->cb_data(),
 		cb_error    => $cb_error,
 		cb_closed   => $p->cb_closed(),
@@ -31,7 +33,7 @@ role {
 	};
 
 	with 'Reflex::Role::Readable' => {
-		handle      => $h,
+		att_handle  => $att_handle,
 		active      => 1,
 		cb_ready    => $method_read,
 		method_stop => $p->method_stop(),

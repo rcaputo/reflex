@@ -1,4 +1,6 @@
 package Reflex::Role::Readable;
+# vim: ts=2 sw=2 noexpandtab
+
 use Reflex::Role;
 
 # TODO - Reflex::Role::Readable and Writable are nearly identical.
@@ -7,28 +9,23 @@ use Reflex::Role;
 
 use Scalar::Util qw(weaken);
 
-attribute_parameter handle => "handle";
-
-parameter active => (
-	isa     => 'Bool',
-	default => 1,
-);
-
-callback_parameter  cb_ready      => qw( on handle readable );
-method_parameter    method_pause  => qw( pause handle readable );
-method_parameter    method_resume => qw( resume handle readable );
-method_parameter    method_stop   => qw( stop handle readable );
+attribute_parameter att_handle    => "handle";
+attribute_parameter att_active    => "active";
+callback_parameter  cb_ready      => qw( on att_handle readable );
+method_parameter    method_pause  => qw( pause att_handle readable );
+method_parameter    method_resume => qw( resume att_handle readable );
+method_parameter    method_stop   => qw( stop att_handle readable );
 
 role {
 	my $p = shift;
 
-	my $h = $p->handle();
-	my $active = $p->active();
+	my $att_active = $p->att_active();
+	my $att_handle = $p->att_handle();
+	my $cb_name    = $p->cb_ready();
 
-	my $cb_name       = $p->cb_ready();
-	my $setup_name    = "_setup_${h}_readable";
+	requires $att_active, $att_handle, $cb_name;
 
-	requires $cb_name;
+	my $setup_name = "_setup_${att_handle}_readable";
 
 	method $setup_name => sub {
 		my ($self, $arg) = @_;
@@ -39,33 +36,33 @@ role {
 		my $envelope = [ $self, $cb_name ];
 		weaken $envelope->[0];
 		$POE::Kernel::poe_kernel->select_read(
-			$self->$h(), 'select_ready', $envelope,
+			$self->$att_handle(), 'select_ready', $envelope,
 		);
 
-		return if $active;
+		return if $self->$att_active();
 
-		$POE::Kernel::poe_kernel->select_pause_read($self->$h());
+		$POE::Kernel::poe_kernel->select_pause_read($self->$att_handle());
 	};
 
 	my $method_pause = $p->method_pause();
 	method $method_pause => sub {
 		my $self = shift;
 		return unless $self->call_gate($method_pause);
-		$POE::Kernel::poe_kernel->select_pause_read($self->$h());
+		$POE::Kernel::poe_kernel->select_pause_read($self->$att_handle());
 	};
 
 	my $method_resume = $p->method_resume();
 	method $p->method_resume => sub {
 		my $self = shift;
 		return unless $self->call_gate($method_resume);
-		$POE::Kernel::poe_kernel->select_resume_read($self->$h());
+		$POE::Kernel::poe_kernel->select_resume_read($self->$att_handle());
 	};
 
 	my $method_stop = $p->method_stop();
 	method $method_stop => sub {
 		my $self = shift;
 		return unless $self->call_gate($method_stop);
-		$POE::Kernel::poe_kernel->select_read($self->$h(), undef);
+		$POE::Kernel::poe_kernel->select_read($self->$att_handle(), undef);
 	};
 
 	# Work around a Moose edge case.
@@ -82,11 +79,8 @@ role {
 	# Turn off watcher during destruction.
 	after DEMOLISH => sub {
 		my $self = shift;
-		$POE::Kernel::poe_kernel->select_read($self->$h(), undef);
+		$POE::Kernel::poe_kernel->select_read($self->$att_handle(), undef);
 	};
-
-	# Default callbacks that re-emit their parameters.
-	#method $cb_name => emit_an_event("readable");
 };
 
 1;

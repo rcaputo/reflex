@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+# vim: ts=2 sw=2 noexpandtab
 
 # Demonstrate subprocesses without POE::Wheel::Run.
 # Test case for upcoming Reflex::Run, which drives IPC::Run.

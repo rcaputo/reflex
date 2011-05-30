@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+# vim: ts=2 sw=2 noexpandtab
 
 # Using POE::Component::IRC.  That component requires the user to
 # register for events.  The new Reflex::POE::Session watcher is used

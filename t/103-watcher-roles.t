@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+# vim: ts=2 sw=2 expandtab
 
 # Reflex supports "role-based" callbacks where events are mapped to
 # handlers through a handler naming convention.  The cb_role()

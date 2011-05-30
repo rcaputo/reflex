@@ -1,4 +1,5 @@
 package Reflex::Role::Collectible;
+# vim: ts=2 sw=2 noexpandtab
 
 # A Moose role that implements the Collectible side of the
 # Collectible/Collection contract.  See Reflex::Collection.

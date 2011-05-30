@@ -1,4 +1,5 @@
 package Reflex::POE::Event;
+# vim: ts=2 sw=2 noexpandtab
 
 use Moose;
 use Carp qw(croak);

@@ -1,6 +1,8 @@
 # Four-input binary to hexadecimal digit decoder.
 # Cheats by not simulating all the inner circuitry.
 
+# vim: ts=2 sw=2 noexpandtab
+
 package Ttl::HexDecoder;
 use Moose;
 extends 'Reflex::Base';

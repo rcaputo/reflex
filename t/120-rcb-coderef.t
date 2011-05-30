@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+# vim: ts=2 sw=2 expandtab
 
 # This example illustrates implicit and explicit callbacks via plain
 # coderefs.  Coderef callbacks are clear and concise.  They allow

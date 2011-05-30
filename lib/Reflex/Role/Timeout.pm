@@ -1,27 +1,30 @@
 package Reflex::Role::Timeout;
+# vim: ts=2 sw=2 noexpandtab
+
 use Reflex::Role;
 use Scalar::Util qw(weaken);
 
-attribute_parameter delay       => "delay";
-attribute_parameter auto_start  => "auto_start";
-
-method_parameter    method_stop   => qw( stop delay _ );
-method_parameter    method_start  => qw( start delay _ );
-method_parameter    method_reset  => qw( reset delay _ );
-
-callback_parameter  cb_timeout    => qw( on delay done );
-event_parameter     ev_timeout    => qw( _ delay done );
+attribute_parameter att_auto_start => "auto_start";
+attribute_parameter att_delay      => "delay";
+callback_parameter  cb_timeout     => qw( on att_delay done );
+method_parameter    method_reset   => qw( reset att_delay _ );
+method_parameter    method_start   => qw( start att_delay _ );
+method_parameter    method_stop    => qw( stop att_delay _ );
 
 role {
 	my $p = shift;
 
-	my $delay         = $p->delay();
-	my $timer_id_name = "${delay}_timer_id";
+	my $att_delay     = $p->att_delay();
+	my $auto_start    = $p->att_auto_start();
+	my $cb_timeout    = $p->cb_timeout();
+
+	requires $att_delay, $auto_start, $cb_timeout;
+
+	my $method_reset  = $p->method_reset();
 	my $method_start  = $p->method_start();
 	my $method_stop   = $p->method_stop();
-	my $method_reset  = $p->method_reset();
-	my $cb_timeout    = $p->cb_timeout();
-	my $auto_start    = $p->auto_start();
+
+	my $timer_id_name = "${att_delay}_timer_id";
 
 	has $timer_id_name => (
 		isa => 'Maybe[Str]',
@@ -42,8 +45,8 @@ role {
 		# Switch to the proper session.
 		return unless $self->call_gate($method_start);
 
-		# If the args include "delay", then let's reset delay().
-		$self->$delay( $args->{delay} ) if exists $args->{delay};
+		# If the args include "delay", then let's reset att_delay().
+		$self->$att_delay( $args->{delay} ) if exists $args->{delay};
 
 		# Stop a previous alarm.
 		$self->$method_stop() if defined $self->$timer_id_name();
@@ -57,7 +60,7 @@ role {
 		$self->$timer_id_name(
 			$POE::Kernel::poe_kernel->delay_set(
 				'timer_due',
-				$self->$delay(),
+				$self->$att_delay(),
 				$envelope,
 			)
 		);
@@ -82,8 +85,6 @@ role {
 		$POE::Kernel::poe_kernel->alarm_remove($self->$timer_id_name());
 		$self->$timer_id_name(undef);
 	};
-
-	method_emit $cb_timeout => $p->ev_timeout();
 };
 
 1;

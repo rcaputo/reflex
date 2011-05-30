@@ -1,3 +1,4 @@
+# vim: ts=2 sw=2 noexpandtab
 # A TCP echo client that looks like it's blocking when it's not.
 
 use lib qw(../lib);

@@ -1,26 +1,26 @@
 package Reflex::Role::Accepting;
+# vim: ts=2 sw=2 noexpandtab
+
 use Reflex::Role;
 
-attribute_parameter listener => "listener";
-
-callback_parameter  cb_accept     => qw( on listener accept );
-event_parameter     ev_accept     => qw( _  listener accept );
-
-callback_parameter  cb_error      => qw( on listener error  );
-event_parameter     ev_error      => qw( _  listener error  );
-
-method_parameter    method_pause  => qw( pause listener _ );
-method_parameter    method_resume => qw( resume listener _ );
-method_parameter    method_stop   => qw( stop listener _ );
+attribute_parameter att_active    => "active";
+attribute_parameter att_listener  => "listener";
+callback_parameter  cb_accept     => qw( on att_listener accept );
+callback_parameter  cb_error      => qw( on att_listener error  );
+method_parameter    method_pause  => qw( pause att_listener _ );
+method_parameter    method_resume => qw( resume att_listener _ );
+method_parameter    method_stop   => qw( stop att_listener _ );
 
 role {
 	my $p = shift;
 
-	my $listener  = $p->listener();
-	my $cb_accept = $p->cb_accept();
-	my $cb_error  = $p->cb_error();
+	my $att_listener = $p->att_listener();
+	my $cb_accept    = $p->cb_accept();
+	my $cb_error     = $p->cb_error();
 
-	method "on_${listener}_readable" => sub {
+	requires $att_listener, $cb_accept, $cb_error;
+
+	method "on_${att_listener}_readable" => sub {
 		my ($self, $args) = @_;
 
 		my $peer = accept(my ($socket), $args->{handle});
@@ -48,12 +48,9 @@ role {
 		return;
 	};
 
-	method_emit $cb_accept  => $p->ev_accept();
-	method_emit $cb_error   => $p->ev_error();   # TODO - Retryable ones.
-
 	with 'Reflex::Role::Readable' => {
-		handle        => $listener,
-		active        => 1,
+		att_handle    => $att_listener,
+		att_active    => $p->att_active(),
 		method_pause  => $p->method_pause(),
 		method_resume => $p->method_resume(),
 		method_stop   => $p->method_stop(),
@@ -84,10 +81,8 @@ Reflex::Role::Accepting - add connection accepting to a class
 
 	with 'Reflex::Role::Accepting' => {
 		listener      => 'listener',
-		cb_accept     => 'on_accept',
-		cb_error      => 'on_error',
-		ev_accept     => 'accept',
-		ev_error      => 'error',
+		cb_accept     => make_emitter(on_accept => "accept"),
+		cb_error      => make_emitter(on_error => "error"),
 		method_pause  => 'pause',
 		method_resume => 'resume',
 		method_stop   => 'stop',
@@ -104,10 +99,7 @@ allow the consumer to customize the role's behavior.
 	listener      key - name of attribute with the listening socket
 
 	cb_accept     method to call with accepted sockets (on_${listner}_accept)
-	ev_accept     event for default cb_accept to emit (${listener}_accept)
-
 	cb_error      method to call with errors (on_${listener}_error)
-	ev_error			event for default cb_error to emit (${listener}_error)
 
 	method_pause  method to pause accepting
 	method_resume method to resume accepting

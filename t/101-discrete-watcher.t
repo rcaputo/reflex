@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+# vim: ts=2 sw=2 noexpandtab
 
 # Reflex APIs are built in layers.  This test exercises Reflex's
 # low-level watcher API.  There are much more concise and convenient

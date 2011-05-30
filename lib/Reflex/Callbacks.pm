@@ -1,4 +1,5 @@
 package Reflex::Callbacks;
+# vim: ts=2 sw=2 noexpandtab
 
 # Reflex::Callbacks is a callback manager.  It encapsulates the
 # callbacks for an object.  Via deliver(), it maps event names to the
@@ -31,7 +32,15 @@ Moose::Exporter->setup_import_methods(
 			cb_role
 			gather_cb
 		)
-	]
+	],
+	with_caller => [
+		qw(
+			make_emitter
+			make_terminal_emitter
+			make_error_handler
+			make_null_handler
+		)
+	],
 );
 
 use Carp qw(croak);
@@ -182,6 +191,89 @@ sub deliver {
 	$event =~ s/^(on_)?/on_/;
 
 	$self->callback_map()->{$event}->deliver($event, $arg);
+}
+
+sub make_emitter {
+	my $caller = shift();
+
+	my $meta = Class::MOP::class_of($caller);
+
+	my ($method_name, $event_name) = @_;
+
+	my $method = $meta->method_metaclass->wrap(
+		package_name => $caller,
+		name         => $method_name,
+		body         => sub {
+			my ($self, $args) = @_;
+			$self->emit(event => $event_name, args => $args);
+		},
+	);
+
+	$meta->add_method($method_name => $method);
+
+	return $method_name;
+}
+
+sub make_terminal_emitter {
+	my $caller = shift();
+
+	my $meta = Class::MOP::class_of($caller);
+
+	my ($method_name, $event_name) = @_;
+
+	my $method = $meta->method_metaclass->wrap(
+		package_name => $caller,
+		name         => $method_name,
+		body         => sub {
+			my ($self, $args) = @_;
+			$self->emit(event => $event_name, args => $args);
+			$self->stopped();
+		},
+	);
+
+	$meta->add_method($method_name => $method);
+
+	return $method_name;
+}
+
+sub make_error_handler {
+	my $caller = shift();
+
+	my $meta = Class::MOP::class_of($caller);
+
+	my ($method_name, $event_name) = @_;
+
+	my $method = $meta->method_metaclass->wrap(
+		package_name => $caller,
+		name         => $method_name,
+		body         => sub {
+			my ($self, $args) = @_;
+			warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
+			$self->stopped();
+		},
+	);
+
+	$meta->add_method($method_name => $method);
+
+	return $method_name;
+}
+
+sub make_null_handler {
+	my $caller = shift();
+
+	my $meta = Class::MOP::class_of($caller);
+
+	my ($method_name, $event_name) = @_;
+
+	my $method = $meta->method_metaclass->wrap(
+		package_name => $caller,
+		name         => $method_name,
+		body         => sub { undef },
+	);
+
+	$meta->add_method($method_name => $method);
+
+	return $method_name;
 }
 
 1;

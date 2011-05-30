@@ -1,34 +1,34 @@
 package Reflex::Role::Reading;
+# vim: ts=2 sw=2 noexpandtab
+
 use Reflex::Role;
 
-attribute_parameter handle    => "handle";
-
-callback_parameter cb_data    => qw( on handle data );
-callback_parameter cb_error   => qw( on handle error );
-callback_parameter cb_closed  => qw( on handle closed );
-
-event_parameter ev_data   => qw( _ handle data );
-event_parameter ev_closed => qw( _ handle closed );
-
-# Matches Reflex::Role::Readable's default callback.
+# The method_read parameter matches Reflex::Role::Readable's default
+# callback.
 # TODO - Any way we can coordinate this so it's obvious in the code
 # but not too verbose?
-method_parameter  method_read => qw( read handle _ );
+
+attribute_parameter att_handle  => "handle";
+callback_parameter  cb_closed   => qw( on att_handle closed );
+callback_parameter  cb_data     => qw( on att_handle data );
+callback_parameter  cb_error    => qw( on att_handle error );
+method_parameter    method_read => qw( read att_handle _ );
 
 role {
 	my $p = shift;
 
-	my $h           = $p->handle();
+	my $att_handle  = $p->att_handle();
+	my $cb_closed   = $p->cb_closed();
 	my $cb_data     = $p->cb_data();
 	my $cb_error    = $p->cb_error();
-	my $cb_closed   = $p->cb_closed();
 	my $method_read = $p->method_read();
 
-	requires $cb_error;
+	requires $att_handle, $cb_closed, $cb_data, $cb_error;
 
 	method $method_read => sub {
 		my ($self, $arg) = @_;
 
+		# TODO - Hardcoding this at 65536 isn't very flexible.
 		my $octet_count = sysread($arg->{handle}, my $buffer = "", 65536);
 
 		# Got data.
@@ -53,18 +53,6 @@ role {
 		);
 		return; # Nothing.
 	};
-
-	# Default callbacks that re-emit their parameters.
-
-	method_emit           $cb_data    => $p->ev_data();
-	method_emit_and_stop  $cb_closed  => $p->ev_closed();
-
-#	my $ev_closed = $p->ev_closed();
-#	method $cb_closed => sub {
-#		my ($self, $args) = @_;
-#		$self->emit(event => $ev_closed, args => $args);
-#		$self->stopped();
-#	};
 };
 
 1;
@@ -95,8 +83,8 @@ TODO - Changed again.
 		my $cb_error    = $p->cb_error();
 		my $method_read = "on_${h}_readable";
 
-		method_emit_and_stop $cb_error => $p->ev_error();
-
+		method-emit_and_stop $cb_error => $p->ev_error();
+TODO - Changed.
 		with 'Reflex::Role::Reading' => {
 			handle      => $h,
 			cb_data     => $p->cb_data(),

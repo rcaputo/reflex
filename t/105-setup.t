@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+# vim: ts=2 sw=2 expandtab
 
 use warnings;
 use strict;

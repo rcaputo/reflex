@@ -3,22 +3,22 @@ use Reflex::Role;
 use Reflex::Interval;
 use Reflex::Callbacks qw(cb_method);
 
-attribute_parameter name    => "name";
-attribute_parameter awhile  => "awhile";
-callback_parameter  cb      => qw( on name done );
+attribute_parameter att_awhile => "awhile";
+attribute_parameter att_name   => "name";
+callback_parameter  cb         => qw( on att_name done );
 
 role {
 	my $role_param = shift;
 
-	my $role_name = $role_param->name();
-	my $cb_done   = $role_param->cb();
-	my $awhile    = $role_param->awhile();
+	my $att_awhile = $role_param->att_awhile();
+	my $att_name   = $role_param->att_name();
+	my $cb_done    = $role_param->cb();
+
+	requires $att_awhile, $att_name, $cb_done;
 
 	my $timer_member = "_${role_name}_timer";
 
 	has $timer_member => ( is => 'rw', isa => 'Reflex::Interval' );
-
-	method_emit $cb_done => "done";
 
 	sub BUILD {}
 

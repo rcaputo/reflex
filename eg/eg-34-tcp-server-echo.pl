@@ -1,3 +1,4 @@
+# vim: ts=2 sw=2 noexpandtab
 # A TCP echo server.
 # Implements and demonstrates collections of related objects.
 # Also composition to create a simple echo server.

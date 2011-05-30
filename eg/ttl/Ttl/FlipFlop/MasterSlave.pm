@@ -1,4 +1,4 @@
-# $Id$
+# vim: ts=2 sw=2 noexpandtab
 
 # Edge-triggered RS (master/slave) filp-flop.
 #

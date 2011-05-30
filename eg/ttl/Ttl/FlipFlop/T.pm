@@ -1,4 +1,4 @@
-# $Id$
+# vim: ts=2 sw=2 noexpandtab
 
 # T flip-flop.  Basically a D flip-flop with _q fed into d.
 

@@ -1,13 +1,15 @@
 package Reflex::Wakeup;
+# vim: ts=2 sw=2 noexpandtab
 
 use Moose;
 extends 'Reflex::Base';
+use Reflex::Callbacks qw(make_emitter);
 
 has when => ( isa => 'Num', is  => 'rw' );
 
 with 'Reflex::Role::Wakeup' => {
-	when          => "when",
-	cb_wakeup     => "on_time",
+	att_when      => "when",
+	cb_wakeup     => make_emitter(on_time => "time"),
 	method_stop   => "stop",
 	method_reset  => "reset",
 };

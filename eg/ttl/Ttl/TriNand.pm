@@ -1,4 +1,4 @@
-# $Id$
+# vim: ts=2 sw=2 noexpandtab
 
 # Three-input logical NAND gate.  Built from TriAnd + Not.
 # a b c out

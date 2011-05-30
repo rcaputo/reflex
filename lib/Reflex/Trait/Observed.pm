@@ -1,4 +1,6 @@
 package Reflex::Trait::Observed;
+# vim: ts=2 sw=2 noexpandtab
+
 use Moose::Role;
 with qw(Reflex::Trait::Watched);
 

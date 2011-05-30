@@ -1,19 +1,22 @@
 package Reflex::Role::Writing;
+# vim: ts=2 sw=2 noexpandtab
+
 use Reflex::Role;
 
-attribute_parameter handle        => "handle";
-method_parameter    method_put    => qw( put handle _ );
-method_parameter    method_flush  => qw( flush handle _ );
-callback_parameter  cb_error      => qw( on handle error );
+attribute_parameter att_handle    => "handle";
+callback_parameter  cb_error      => qw( on att_handle error );
+method_parameter    method_flush  => qw( flush att_handle _ );
+method_parameter    method_put    => qw( put att_handle _ );
 
 role {
 	my $p = shift;
 
-	my $h             = $p->handle();
+	my $att_handle    = $p->att_handle();
 	my $cb_error      = $p->cb_error();
-	my $method_flush  = $p->method_flush();
 
-	requires $cb_error;
+	requires $att_handle, $cb_error;
+
+	my $method_flush  = $p->method_flush();
 
 	has out_buffer => (
 		is      => 'rw',
@@ -25,7 +28,7 @@ role {
 		my ($self, $arg) = @_;
 
 		my $out_buffer = $self->out_buffer();
-		my $octet_count = syswrite($self->$h(), $$out_buffer);
+		my $octet_count = syswrite($self->$att_handle(), $$out_buffer);
 
 		# Hard error.
 		unless (defined $octet_count) {
@@ -66,7 +69,7 @@ role {
 		# Try to flush 'em all.
 		while (@chunks) {
 			my $next = shift @chunks;
-			my $octet_count = syswrite($self->$h(), $next);
+			my $octet_count = syswrite($self->$att_handle(), $next);
 
 			# Hard error.
 			unless (defined $octet_count) {
@@ -106,6 +109,9 @@ Reflex::Role::Writing - add buffered non-blocking syswrite() to a class
 
 =head1 SYNOPSIS
 
+TODO - Changed again.  It would be stellar if I could include a
+different bit of code as a synopsis or something, huh?
+
 	package OutputStreaming;
 	use Reflex::Role;
 
@@ -118,18 +124,18 @@ Reflex::Role::Writing - add buffered non-blocking syswrite() to a class
 	role {
 		my $p = shift;
 
-		my $h         = $p->handle();
+		my $att_handle         = $p->handle();
 		my $cb_error  = $p->cb_error();
 
 		with 'Reflex::Role::Writing' => {
-			handle        => $h,
+			handle        => $att_handle,
 			cb_error      => $p->cb_error(),
 			method_put    => $p->method_put(),
 			method_flush  => $p->method_flush(),
 		};
 
 		with 'Reflex::Role::Writable' => {
-			handle        => $h,
+			handle        => $att_handle,
 			cb_ready      => $p->method_flush(),
 		};
 

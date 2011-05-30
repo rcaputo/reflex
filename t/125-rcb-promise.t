@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+# vim: ts=2 sw=2 expandtab
 
 # This example illustrates explicit a promise-like form of callback.
 # The promise acts as an event pipeline.  Events emitted from the

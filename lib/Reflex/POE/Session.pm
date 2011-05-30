@@ -1,4 +1,5 @@
 package Reflex::POE::Session;
+# vim: ts=2 sw=2 noexpandtab
 
 use Moose;
 extends 'Reflex::Base';

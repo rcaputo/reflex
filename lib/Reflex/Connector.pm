@@ -1,32 +1,21 @@
 package Reflex::Connector;
+# vim: ts=2 sw=2 noexpandtab
 
 use Moose;
 extends 'Reflex::Base';
+use Reflex::Callbacks qw(make_emitter);
 
-has socket => (
-	is        => 'rw',
-	isa       => 'FileHandle',
-);
-
-has port => (
-	is => 'ro',
-	isa => 'Int',
-);
-
-has address => (
-	is      => 'ro',
-	isa     => 'Str',
-	default => '127.0.0.1',
-);
+has active => ( is => 'ro', isa => 'Bool', default => 1 );
+has address => ( is => 'ro', isa => 'Str', default => '127.0.0.1',);
+has port => ( is => 'ro', isa => 'Int',);
+has socket => ( is => 'rw', isa => 'FileHandle' );
 
 with 'Reflex::Role::Connecting' => {
-	connector     => 'socket',      # Default!
-	address       => 'address',     # Default!
-	port          => 'port',        # Default!
-	cb_success    => 'on_connection',
-	cb_error      => 'on_error',
-	ev_success    => 'connection',
-	ev_error      => 'error',
+	att_connector => 'socket',      # Default!
+	att_address   => 'address',     # Default!
+	att_port      => 'port',        # Default!
+	cb_success    => make_emitter(on_connection => "connection"),
+	cb_error      => make_emitter(on_error => "error"),
 };
 
 1;

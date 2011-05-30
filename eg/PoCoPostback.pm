@@ -1,4 +1,5 @@
 package PoCoPostback;
+# vim: ts=2 sw=2 noexpandtab
 
 # A component that accepts postbacks to return messages.
 

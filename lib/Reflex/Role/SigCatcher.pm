@@ -1,21 +1,17 @@
 package Reflex::Role::SigCatcher;
+# vim: ts=2 sw=2 noexpandtab
+
 use Reflex::Role;
 
 use Scalar::Util qw(weaken);
 
-attribute_parameter signal => "signal";
-
-parameter active => (
-	isa       => 'Str',
-	default   => 'active',
-);
-
-callback_parameter  cb_signal     => qw( on signal caught );
-event_parameter     ev_signal     => qw( _ signal caught );
-method_parameter    method_start  => qw( start signal _ );
-method_parameter    method_stop   => qw( stop signal _ );
-method_parameter    method_pause  => qw( pause signal _ );
-method_parameter    method_resume => qw( resume signal _ );
+attribute_parameter att_active    => "active";
+attribute_parameter att_signal    => "signal";
+callback_parameter  cb_signal     => qw( on att_signal caught );
+method_parameter    method_pause  => qw( pause att_signal _ );
+method_parameter    method_resume => qw( resume att_signal _ );
+method_parameter    method_start  => qw( start att_signal _ );
+method_parameter    method_stop   => qw( stop att_signal _ );
 
 # A session may only watch a distinct signal once.
 # So we must map each distinct signal to all the interested objects.
@@ -67,9 +63,11 @@ sub deliver {
 role {
 	my $p = shift;
 
-	my $signal        = $p->signal();
-	my $active        = $p->active();
+	my $att_signal    = $p->att_signal();
+	my $att_active    = $p->att_active();
 	my $cb_signal     = $p->cb_signal();
+
+	requires $att_signal, $att_active, $cb_signal;
 
 	my $method_start  = $p->method_start();
 	my $method_stop   = $p->method_stop();
@@ -80,7 +78,7 @@ role {
 	sub BUILD {}
 
 	after BUILD => sub {
-		return unless $active;
+		return unless $att_active;
 		shift()->$method_start();
 		return;
 	};
@@ -95,7 +93,7 @@ role {
 	method $method_start => sub {
 		my $self = shift;
 
-		my $sig_name = $self->$signal();
+		my $sig_name = $self->$att_signal();
 
 		# Register this object with that signal.
 		$callbacks{$sig_name}->{$self->session_id()}->{$self} = [
@@ -119,7 +117,7 @@ role {
 		# Be in the session associated with this object.
 		return unless $self->call_gate($method_pause);
 
-		$POE::Kernel::poe_kernel->sig($self->$signal(), undef);
+		$POE::Kernel::poe_kernel->sig($self->$att_signal(), undef);
 	};
 
 	method $method_resume => sub {
@@ -129,14 +127,14 @@ role {
 		return unless $self->call_gate($method_resume);
 
 		$POE::Kernel::poe_kernel->sig(
-			$self->$signal(), "signal_happened", ref($self)
+			$self->$att_signal(), "signal_happened", ref($self)
 		);
 	};
 
 	method $method_stop => sub {
 		my $self = shift;
 
-		my $sig_name = $self->$signal();
+		my $sig_name = $self->$att_signal();
 
 		# Nothing to do?
 		return unless exists $callbacks{$sig_name}->{$self->session_id()};
@@ -152,8 +150,6 @@ role {
 			$self->$method_pause();
 		}
 	};
-
-	method_emit $cb_signal => $p->ev_signal();
 };
 
 __END__
@@ -180,7 +176,7 @@ Reflex::Role::SigCatcher - add signal catching behavior to a class
 		isa     => 'Bool',
 		default => 1,
 	);
-
+TODO - Changed.
 	with 'Reflex::Role::SigCatcher' => {
 		signal        => 'signal',
 		active        => 'active',

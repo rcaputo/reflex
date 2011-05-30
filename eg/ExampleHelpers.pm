@@ -1,6 +1,8 @@
 ## Used in the examples to reduce LOC by declaring fucntions that are used
 ## over and over in this module
 
+# vim: ts=2 sw=2 noexpandtab
+
 package ExampleHelpers;
 
 use warnings;

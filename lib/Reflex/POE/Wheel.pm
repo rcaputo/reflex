@@ -1,4 +1,6 @@
 package Reflex::POE::Wheel;
+# vim: ts=2 sw=2 noexpandtab
+
 use Moose;
 extends 'Reflex::Base';
 use Scalar::Util qw(weaken);

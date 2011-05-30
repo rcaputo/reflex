@@ -1,31 +1,31 @@
 package Reflex::Role::Connecting;
+# vim: ts=2 sw=2 noexpandtab
+
 use Reflex::Role;
 
 use Errno qw(EWOULDBLOCK EINPROGRESS);
 use Socket qw(SOL_SOCKET SO_ERROR inet_aton pack_sockaddr_in);
 
-attribute_parameter socket  => "socket";
-attribute_parameter address => "address";
-attribute_parameter port    => "port";
-
-callback_parameter  cb_success  => qw( on socket success );
-callback_parameter  cb_error    => qw( on socket error );
-
-event_parameter     ev_success  => qw( _ socket success );
-event_parameter     ev_error    => qw( _ socket error );
+attribute_parameter att_address => "address";
+attribute_parameter att_port    => "port";
+attribute_parameter att_socket  => "socket";
+callback_parameter  cb_error    => qw( on att_socket error );
+callback_parameter  cb_success  => qw( on att_socket success );
 
 role {
 	my $p = shift;
 
-	my $socket      = $p->socket();
-	my $address     = $p->address();
-	my $port        = $p->port();
+	my $att_address = $p->att_address();
+	my $att_port    = $p->att_port();
+	my $att_socket  = $p->att_socket();
 
-	my $cb_success  = $p->cb_success();
 	my $cb_error    = $p->cb_error();
+	my $cb_success  = $p->cb_success();
 
-	my $internal_writable = "on_" . $socket . "_writable";
-	my $internal_stop     = "stop_" . $socket . "_writable";
+	requires $att_address, $att_port, $att_socket, $cb_error, $cb_success;
+
+	my $internal_writable = "on_${att_socket}_writable";
+	my $internal_stop     = "stop_${att_socket}_writable";
 
 	# Work around a Moose edge case.
 	sub BUILD {}
@@ -40,28 +40,30 @@ role {
 		# make the socket non-blocking if we connect() first.
 
 		# Create a handle if we need to.
-		unless ($self->$socket()) {
-			$self->$socket(IO::Socket::INET->new(Proto => 'tcp'));
+		unless ($self->$att_socket()) {
+			$self->$att_socket(IO::Socket::INET->new(Proto => 'tcp'));
 		}
 
-		my $handle = $self->$socket();
+		my $att_handle = $self->$att_socket();
 
 		my $packed_address;
-		if ($handle->isa("IO::Socket::INET")) {
+		if ($att_handle->isa("IO::Socket::INET")) {
 			# TODO - Need a non-bollocking resolver.
-			my $inet_address = inet_aton($self->$address());
-			$packed_address = pack_sockaddr_in($self->$port(), $inet_address);
+			my $inet_address = inet_aton($self->$att_address());
+			$packed_address = pack_sockaddr_in(
+				$self->$att_port(), $inet_address
+			);
 		}
 		else {
-			die "unknown socket class: ", ref($handle);
+			die "unknown socket class: ", ref($att_handle);
 		}
 
 		# TODO - Make sure we're in the right session.
-		my $method_start = "start_${socket}_writable";
+		my $method_start = "start_${att_socket}_writable";
 		$self->$method_start();
 
 		# Begin connecting.
-		unless (connect($handle, $packed_address)) {
+		unless (connect($att_handle, $packed_address)) {
 			if ($! and ($! != EINPROGRESS) and ($! != EWOULDBLOCK)) {
 				$self->$cb_error(
 					{
@@ -106,11 +108,8 @@ role {
 		return;
 	};
 
-	method_emit $cb_success => $p->ev_success();
-	method_emit $cb_error   => $p->ev_error();
-
 	with 'Reflex::Role::Writable' => {
-		handle  => $socket,
+		att_handle => $att_socket,
 	};
 };
 
@@ -144,7 +143,7 @@ Reflex::Role::Connecting - add non-blocking client connecting to a class
 		isa     => 'Str',
 		default => '127.0.0.1',
 	);
-
+TODO - Changed.
 	with 'Reflex::Role::Connecting' => {
 		connector   => 'socket',      # Default!
 		address     => 'address',     # Default!

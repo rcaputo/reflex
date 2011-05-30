@@ -1,4 +1,5 @@
 package PoCoEvent;
+# vim: ts=2 sw=2 noexpandtab
 
 # A component that accepts an event name to which return messages are
 # posted.  In this case, the component builds a postback for the

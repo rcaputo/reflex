@@ -1,4 +1,5 @@
 package Reflex::POE::Postback;
+# vim: ts=2 sw=2 noexpandtab
 
 # TODO - Not Moose, unless Moose allows us to create blessed coderefs.
 

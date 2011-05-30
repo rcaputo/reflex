@@ -1,4 +1,5 @@
 package Reflex::Role::Reactive;
+# vim: ts=2 sw=2 noexpandtab
 
 use Moose::Role;
 
@@ -188,9 +189,9 @@ has watched_objects => (
 #);
 
 has promise => (
-	is => 'rw',
-	isa => 'Reflex::Callback::Promise',
-	default => sub { Reflex::Callback::Promise->new() },
+	is      => 'rw',
+	isa     => 'Maybe[Reflex::Callback::Promise]',
+	default => undef,
 );
 
 has emits_seen => (

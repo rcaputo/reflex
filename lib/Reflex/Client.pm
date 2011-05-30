@@ -5,6 +5,8 @@
 # refinement.
 
 package Reflex::Client;
+# vim: ts=2 sw=2 noexpandtab
+
 use Moose;
 use Reflex::Stream;
 

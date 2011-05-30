@@ -1,23 +1,26 @@
 package Reflex::Role::Wakeup;
+# vim: ts=2 sw=2 noexpandtab
+
 use Reflex::Role;
 use Scalar::Util qw(weaken);
 
-attribute_parameter when          => "when";
-
-method_parameter    method_stop   => qw( stop when _ );
-method_parameter    method_reset  => qw( reset when _ );
-callback_parameter  cb_wakeup     => qw( on when wakeup );
+attribute_parameter att_when      => "when";
+callback_parameter  cb_wakeup     => qw( on att_when wakeup );
+method_parameter    method_reset  => qw( reset att_when _ );
+method_parameter    method_stop   => qw( stop att_when _ );
 
 role {
 	my $p = shift;
 
-	my $when          = $p->when();
+	my $att_when      = $p->att_when();
+	my $cb_wakeup     = $p->cb_wakeup();
 
-	my $timer_id_name = "${when}_timer_id";
+	requires $att_when, $cb_wakeup;
 
 	my $method_reset  = $p->method_reset();
 	my $method_stop   = $p->method_stop();
-	my $cb_wakeup     = $p->cb_wakeup();
+
+	my $timer_id_name = "${att_when}_timer_id";
 
 	has $timer_id_name => (
 		isa => 'Maybe[Str]',
@@ -29,7 +32,7 @@ role {
 
 	after BUILD => sub {
 		my ($self, $args) = @_;
-		$self->$method_reset( { when => $self->$when() } );
+		$self->$method_reset( { when => $self->$att_when() } );
 	};
 
 	method $method_reset => sub {
@@ -37,11 +40,11 @@ role {
 
 		# Switch to the proper session.
 		return unless (
-			defined $self->$when() and $self->call_gate($method_reset)
+			defined $self->$att_when() and $self->call_gate($method_reset)
 		);
 
 		# If the args include "when", then let's reset when().
-		$self->$when( $args->{when} ) if exists $args->{when};
+		$self->$att_when( $args->{when} ) if exists $args->{when};
 
 		# Stop a previous alarm.
 		$self->$method_stop() if defined $self->$timer_id_name();
@@ -55,7 +58,7 @@ role {
 		$self->$timer_id_name(
 			$POE::Kernel::poe_kernel->alarm_set(
 				'timer_due',
-				$self->$when(),
+				$self->$att_when(),
 				$envelope,
 			)
 		);
@@ -76,10 +79,8 @@ role {
 		$self->$timer_id_name(undef);
 	};
 
-	method $cb_wakeup => sub {
-		my ($self, $args) = @_;
-		$self->emit(event => "time", args => $args);
-		$self->$method_stop();
+	after $cb_wakeup => sub {
+		shift()->$method_stop();
 	};
 };
 

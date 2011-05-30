@@ -1,3 +1,4 @@
+# vim: ts=2 sw=2 expandtab
 use warnings;
 use strict;
 use Test::More;

@@ -1,60 +1,57 @@
 package Reflex::Role::Streaming;
+# vim: ts=2 sw=2 noexpandtab
+
 use Reflex::Role;
 
-attribute_parameter handle      => "handle";
-callback_parameter  cb_data     => qw( on handle data );
-callback_parameter  cb_error    => qw( on handle error );
-callback_parameter  cb_closed   => qw( on handle closed );
-method_parameter    method_put  => qw( put handle _ );
-method_parameter    method_stop => qw( stop handle _ );
-
-event_parameter     ev_data     => qw( _ handle data );
-event_parameter     ev_error    => qw( _ handle error );
-event_parameter     ev_closed   => qw( _ handle closed );
+attribute_parameter att_active  => "active";
+attribute_parameter att_handle  => "handle";
+callback_parameter  cb_closed   => qw( on att_handle closed );
+callback_parameter  cb_data     => qw( on att_handle data );
+callback_parameter  cb_error    => qw( on att_handle error );
+method_parameter    method_put  => qw( put att_handle _ );
+method_parameter    method_stop => qw( stop att_handle _ );
 
 role {
 	my $p = shift;
 
-	my $h           = $p->handle();
+	my $att_active  = $p->att_active();
+	my $att_handle  = $p->att_handle();
 	my $cb_error    = $p->cb_error();
-	my $ev_error    = $p->ev_error();
-	my $method_read = "_on_${h}_readable";
+
+	requires $att_handle, $p->cb_closed(), $p->cb_data(), $cb_error;
+
 	my $method_put  = $p->method_put();
 
-	my $method_writable      = "_on_${h}_writable";
-	my $internal_flush       = "_do_${h}_flush";
-	my $internal_put         = "_do_${h}_put";
-	my $pause_writable       = "_pause_${h}_writable";
-	my $resume_writable      = "_resume_${h}_writable";
-	my $stop_handle_readable = "stop_${h}_readable";
-	my $stop_handle_writable = "stop_${h}_writable";
+	my $internal_flush       = "_do_${att_handle}_flush";
+	my $internal_put         = "_do_${att_handle}_put";
+	my $method_read          = "_on_${att_handle}_readable";
+	my $method_writable      = "_on_${att_handle}_writable";
+	my $pause_writable       = "_pause_${att_handle}_writable";
+	my $resume_writable      = "_resume_${att_handle}_writable";
+	my $stop_handle_readable = "stop_${att_handle}_readable";
+	my $stop_handle_writable = "stop_${att_handle}_writable";
 
 	with 'Reflex::Role::Collectible';
 
-	method_emit_and_stop $cb_error => $ev_error;
-
 	with 'Reflex::Role::Reading' => {
-		handle      => $h,
+		att_handle  => $att_handle,
 		cb_data     => $p->cb_data(),
-		ev_data     => $p->ev_data(),
 		cb_error    => $cb_error,
-		ev_error    => $ev_error,
 		cb_closed   => $p->cb_closed(),
-		ev_closed   => $p->ev_closed(),
 		method_read => $method_read,
 	};
 
 	with 'Reflex::Role::Readable' => {
-		handle      => $h,
-		active      => 1,
+		att_handle  => $att_handle,
+		att_active  => $att_active,
 		cb_ready    => $method_read,
 	};
 
 	with 'Reflex::Role::Writing' => {
-		handle      => $h,
-		cb_error    => $cb_error,
-		ev_error    => $ev_error,
-		method_put  => $internal_put,
+		att_handle   => $att_handle,
+		cb_error     => $cb_error,
+		method_put   => $internal_put,
+		method_flush => $internal_flush,
 	};
 
 	method $method_writable => sub {
@@ -67,8 +64,8 @@ role {
 	};
 
 	with 'Reflex::Role::Writable' => {
-		handle      => $h,
-		cb_ready    => $method_writable,
+		att_handle   => $att_handle,
+		cb_ready     => $method_writable,
 		method_pause => $pause_writable,
 	};
 

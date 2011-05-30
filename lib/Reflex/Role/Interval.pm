@@ -1,28 +1,31 @@
 package Reflex::Role::Interval;
+# vim: ts=2 sw=2 noexpandtab
+
 use Reflex::Role;
 use Scalar::Util qw(weaken);
 
-attribute_parameter interval    => "interval";
-attribute_parameter auto_repeat => "auto_repeat";
-attribute_parameter auto_start  => "auto_start";
-
-method_parameter    method_start  => qw( start name _ );
-method_parameter    method_stop   => qw( stop interval _ );
-method_parameter    method_repeat => qw( repeat interval _ );
-
-callback_parameter  cb_tick       => qw( on interval tick );
-event_parameter     ev_tick       => qw( _ interval tick );
+attribute_parameter att_auto_repeat => "auto_repeat";
+attribute_parameter att_auto_start  => "auto_start";
+attribute_parameter att_interval    => "interval";
+callback_parameter  cb_tick         => qw( on att_interval tick );
+method_parameter    method_repeat   => qw( repeat att_interval _ );
+method_parameter    method_start    => qw( start att_interval _ );
+method_parameter    method_stop     => qw( stop att_interval _ );
 
 role {
 	my $p = shift;
 
-	my $interval      = $p->interval();
-	my $timer_id_name = "${interval}_timer_id";
-	my $method_repeat = $p->method_repeat();
-	my $method_stop   = $p->method_stop();
-	my $auto_start    = $p->auto_start();
-	my $auto_repeat   = $p->auto_repeat();
-	my $cb_tick       = $p->cb_tick();
+	my $att_auto_repeat = $p->att_auto_repeat();
+	my $att_auto_start  = $p->att_auto_start();
+	my $att_interval    = $p->att_interval();
+	my $cb_tick         = $p->cb_tick();
+
+	requires $att_auto_repeat, $att_auto_start, $att_interval, $cb_tick;
+
+	my $method_repeat   = $p->method_repeat();
+	my $method_stop     = $p->method_stop();
+
+	my $timer_id_name   = "${att_interval}_timer_id";
 
 	has $timer_id_name => (
 		isa => 'Maybe[Str]',
@@ -34,7 +37,7 @@ role {
 
 	after BUILD => sub {
 		my ($self, $args) = @_;
-		$self->$method_repeat() if $self->$auto_start();
+		$self->$method_repeat() if $self->$att_auto_start();
 	};
 
 	method $method_repeat => sub {
@@ -42,7 +45,7 @@ role {
 
 		# Switch to the proper session.
 		return unless (
-			defined $self->$interval() and $self->call_gate($method_repeat)
+			defined $self->$att_interval() and $self->call_gate($method_repeat)
 		);
 
 		# Stop a previous alarm.
@@ -57,7 +60,7 @@ role {
 		$self->$timer_id_name(
 			$POE::Kernel::poe_kernel->delay_set(
 				'timer_due',
-				$self->$interval(),
+				$self->$att_interval(),
 				$envelope,
 			)
 		);
@@ -78,11 +81,9 @@ role {
 		$self->$timer_id_name(undef);
 	};
 
-	my $ev_tick = $p->ev_tick();
-	method $cb_tick => sub {
+	after $cb_tick => sub {
 		my ($self, $args) = @_;
-		$self->emit(event => $ev_tick, args => $args);
-		$self->$method_repeat() if $self->$auto_repeat();
+		$self->$method_repeat() if $self->$att_auto_repeat();
 	};
 };
 

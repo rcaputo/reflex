@@ -1,4 +1,4 @@
-# $Id$
+# vim: ts=2 sw=2 noexpandtab
 
 # Three-input logical AND gate.  Built from a couple ANDs.
 # a b c out

@@ -1,4 +1,5 @@
 package Reflex::Decoder::Line;
+# vim: ts=2 sw=2 noexpandtab
 
 use Moose;
 with 'Reflex::Role::Decoding';

@@ -1,7 +1,9 @@
 package Reflex::Signal;
+# vim: ts=2 sw=2 noexpandtab
 
 use Moose;
 extends 'Reflex::Base';
+use Reflex::Callbacks qw(make_emitter);
 
 has signal => (
 	is        => 'ro',
@@ -16,10 +18,9 @@ has active => (
 );
 
 with 'Reflex::Role::SigCatcher' => {
-	signal        => 'signal',
-	active        => 'active',
-	cb_signal     => 'on_signal',
-	ev_signal     => 'signal',
+	att_signal    => 'signal',
+	att_active    => 'active',
+	cb_signal     => make_emitter(on_signal => "signal"),
 	method_start  => 'start',
 	method_stop   => 'stop',
 	method_pause  => 'pause',

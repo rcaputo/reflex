@@ -1,24 +1,21 @@
 package Reflex::Stream;
+# vim: ts=2 sw=2 noexpandtab
 
 use Moose;
 extends 'Reflex::Base';
+use Reflex::Callbacks qw(make_emitter make_terminal_emitter);
 
-has handle => (
-	is        => 'rw',
-	isa       => 'FileHandle',
-	required  => 1
-);
+has handle => ( is => 'rw', isa => 'FileHandle', required => 1 );
+has active => ( is => 'ro', isa => 'Bool', default => 1 );
 
 with 'Reflex::Role::Streaming' => {
-	handle      => 'handle',
+	att_active  => 'active',
+	att_handle  => 'handle',
 	method_put  => 'put',
 	method_stop => 'stop',
-	cb_error    => 'on_error',
-	cb_data     => 'on_data',
-	cb_closed   => 'on_closed',
-	ev_error    => 'error',
-	ev_data     => 'data',
-	ev_closed   => 'closed',
+	cb_error    => make_emitter(on_error => "error"),
+	cb_data     => make_emitter(on_data  => "data"),
+	cb_closed   => make_terminal_emitter(on_closed => "closed"),
 };
 
 1;
