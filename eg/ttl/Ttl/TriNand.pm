@@ -21,8 +21,8 @@ extends 'Reflex::Base';
 use Ttl::TriAnd;
 use Ttl::Not;
 
-use Reflex::Trait::EmitsOnChange;
-use Reflex::Trait::Watched;
+use Reflex::Trait::EmitsOnChange qw(emits);
+use Reflex::Trait::Watched qw(watches);
 
 watches tri_and => ( isa => 'Ttl::TriAnd', handles => [qw(a b c)] );
 watches not     => ( isa => 'Ttl::Not'                            );

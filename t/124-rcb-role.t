@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# vim: ts=2 sw=2 expandtab
+# vim: ts=2 sw=2 noexpandtab
 
 # This example illustrates explicit callbacks via Reflex roles.  An
 # object is assigned a role to play in its owner.  Event names are

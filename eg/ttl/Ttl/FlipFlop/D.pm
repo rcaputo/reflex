@@ -10,8 +10,8 @@ use Moose;
 extends 'Reflex::Base';
 use Ttl::TriNand;
 
-use Reflex::Trait::EmitsOnChange;
-use Reflex::Trait::Watched;
+use Reflex::Trait::EmitsOnChange qw(emits);
+use Reflex::Trait::Watched qw(watches);
 
 emits clear  => ( isa => 'Bool' );
 emits clock  => ( isa => 'Bool' );

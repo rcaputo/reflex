@@ -57,7 +57,7 @@ my $collectible_id = 1;
 	use Moose;
 	with 'Reflex::Role::Collectible';
 	extends 'Reflex::Base';  # TODO - Implicit in Reflex::Role::Collectible?
-	use Reflex::Trait::Watched;
+	use Reflex::Trait::Watched qw(watches);
 	use Reflex::Interval;
 
 	has id => (

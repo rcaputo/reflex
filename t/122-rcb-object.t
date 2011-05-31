@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# vim: ts=2 sw=2 expandtab
+# vim: ts=2 sw=2 noexpandtab
 
 # This example illustrates explicit callbacks via objects, where
 # callback events are mapped to handlers by name.  Methods may be

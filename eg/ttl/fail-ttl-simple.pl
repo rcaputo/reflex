@@ -10,7 +10,7 @@ use lib qw(lib);
 	use Moose;
 	extends 'Reflex::Base';
 	use Ttl::And;
-	use Reflex::Trait::Watched;
+	use Reflex::Trait::Watched qw(watches);
 
 	watches ander => ( isa => 'Ttl::And' );
 

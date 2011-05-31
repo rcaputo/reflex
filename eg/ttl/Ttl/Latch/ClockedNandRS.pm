@@ -18,8 +18,8 @@ extends 'Reflex::Base';
 use Ttl::Nand;
 use Ttl::Latch::NandRS;
 
-use Reflex::Trait::EmitsOnChange;
-use Reflex::Trait::Watched;
+use Reflex::Trait::EmitsOnChange qw(emits);
+use Reflex::Trait::Watched qw(watches);
 
 watches nand_not_r => ( isa => 'Ttl::Nand', handles => { not_r => 'b' } );
 watches nand_s     => ( isa => 'Ttl::Nand', handles => { s     => 'a' } );

@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# vim: ts=2 sw=2 expandtab
+# vim: ts=2 sw=2 noexpandtab
 
 # This example illustrates explicit callbacks via classes, where
 # callback events are mapped to class methods by name.  Methods may be

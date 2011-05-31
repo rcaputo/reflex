@@ -9,8 +9,8 @@ use lib qw(lib);
 	package Counter;
 	use Moose;
 	extends 'Reflex::Base';
-	use Reflex::Trait::EmitsOnChange;
-	use Reflex::Trait::Watched;
+	use Reflex::Trait::EmitsOnChange qw(emits);
+	use Reflex::Trait::Watched qw(watches);
 
 	use Ttl::FlipFlop::T;
 	use Ttl::HexDecoder;
@@ -83,7 +83,7 @@ use lib qw(lib);
 	use Moose;
 	extends 'Reflex::Base';
 	use Reflex::Interval;
-	use Reflex::Trait::Watched;
+	use Reflex::Trait::Watched qw(watches);
 
 	watches counter  => ( isa => 'Counter' );
 	watches clock    => ( isa => 'Reflex::Interval' );

@@ -19,8 +19,8 @@ use Moose;
 extends 'Reflex::Base';
 use Ttl::Nor;
 
-use Reflex::Trait::Watched;
-use Reflex::Trait::EmitsOnChange;
+use Reflex::Trait::Watched qw(watches);
+use Reflex::Trait::EmitsOnChange qw(emits);
 
 watches nor_r => ( isa => 'Ttl::Nor', handles => { r => 'a' } );
 watches nor_s => ( isa => 'Ttl::Nor', handles => { s => 'b' } );

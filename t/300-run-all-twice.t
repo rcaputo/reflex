@@ -1,4 +1,4 @@
-# vim: ts=2 sw=2 expandtab
+# vim: ts=2 sw=2 noexpandtab
 {
 	package Runner;
 	use Moose;

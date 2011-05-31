@@ -13,7 +13,7 @@ use lib qw(../lib);
 	use Moose;
 	extends 'Reflex::Base';
 	use Reflex::POE::Wheel::Run;
-	use Reflex::Trait::Watched;
+	use Reflex::Trait::Watched qw(watches);
 
 	watches child => (
 		isa     => 'Maybe[Reflex::POE::Wheel::Run]',

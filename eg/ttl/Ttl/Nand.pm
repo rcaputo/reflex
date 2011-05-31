@@ -13,7 +13,7 @@ extends 'Ttl::Bin';
 use Ttl::Not;
 use Ttl::And;
 
-use Reflex::Trait::Watched;
+use Reflex::Trait::Watched qw(watches);
 
 watches and => (
   isa     => 'Ttl::And',

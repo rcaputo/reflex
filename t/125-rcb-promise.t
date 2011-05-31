@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# vim: ts=2 sw=2 expandtab
+# vim: ts=2 sw=2 noexpandtab
 
 # This example illustrates explicit a promise-like form of callback.
 # The promise acts as an event pipeline.  Events emitted from the
@@ -27,7 +27,7 @@ use Test::More tests => 3;
 	extends 'Reflex::Base';
 	use Reflex::Interval;
 	use Reflex::Callbacks qw(gather_cb);
-	use Reflex::Trait::Watched;
+	use Reflex::Trait::Watched qw(watches);
 
 	watches ticker => (
 		isa     => 'Reflex::Interval',

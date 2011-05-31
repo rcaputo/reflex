@@ -18,8 +18,8 @@ extends 'Reflex::Base';
 use Ttl::Latch::ClockedNandRS;
 use Ttl::Not;
 
-use Reflex::Trait::EmitsOnChange;
-use Reflex::Trait::Watched;
+use Reflex::Trait::EmitsOnChange qw(emits);
+use Reflex::Trait::Watched qw(watches);
 
 watches cnrs1 => (
 	isa => 'Ttl::Latch::ClockedNandRS',

@@ -21,8 +21,8 @@ use Moose;
 extends 'Reflex::Base';
 use Ttl::And;
 
-use Reflex::Trait::Watched;
-use Reflex::Trait::EmitsOnChange;
+use Reflex::Trait::Watched qw(watches);
+use Reflex::Trait::EmitsOnChange qw(emits);
 
 watches and_ab => ( isa => 'Ttl::And', handles => [qw(a b)]    );
 watches and_c  => ( isa => 'Ttl::And', handles => { c => 'b' } );

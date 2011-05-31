@@ -75,7 +75,7 @@ __END__
 
 extends 'Reflex::Base';
 
-use Reflex::Trait::Watched;
+use Reflex::Trait::Watched qw(watches);
 use Reflex::PID;
 
 use Carp qw(croak);

@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# vim: ts=2 sw=2 expandtab
+# vim: ts=2 sw=2 noexpandtab
 
 use warnings;
 use strict;
@@ -14,8 +14,8 @@ use Test::More tests => 5;
 	use Moose;
 	extends 'Reflex::Base';
 	use Reflex::Interval;
-	use Reflex::Trait::EmitsOnChange;
-	use Reflex::Trait::Watched;
+	use Reflex::Trait::EmitsOnChange qw(emits);
+	use Reflex::Trait::Watched qw(watches);
 
 	emits count => (
 		isa     => 'Int',
@@ -39,7 +39,7 @@ use Test::More tests => 5;
 	package Watcher;
 	use Moose;
 	extends 'Reflex::Base';
-	use Reflex::Trait::Watched;
+	use Reflex::Trait::Watched qw(watches);
 
 	use Test::More;
 

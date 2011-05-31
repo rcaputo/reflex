@@ -24,7 +24,7 @@ __END__
 
 =head1 NAME
 
-Reflex::Acceptor - non-blocking client socket acceptor
+Reflex::Acceptor - a non-blocking server (client socket acceptor)
 
 =head1 SYNOPSIS
 
@@ -33,12 +33,9 @@ Reflex::Acceptor - non-blocking client socket acceptor
 	use Moose;
 	extends 'Reflex::Acceptor';
 	use Reflex::Collection;
-	use EchoStream;  # See eg directory.
+	use EchoStream;
 
-	# From Reflex::Collection.
-	has_many clients => (
-		handles => { remember_client => "remember" },
-	);
+	has_many clients => ( handles => { remember_client => "remember" } );
 
 	sub on_accept {
 		my ($self, $args) = @_;

@@ -19,8 +19,8 @@ use Moose;
 extends 'Reflex::Base';
 use Ttl::Nand;
 
-use Reflex::Trait::Watched;
-use Reflex::Trait::EmitsOnChange;
+use Reflex::Trait::Watched qw(watches);
+use Reflex::Trait::EmitsOnChange qw(emits);
 
 watches nand_r => ( isa => 'Ttl::Nand', handles => { r => 'b' } );
 watches nand_s => ( isa => 'Ttl::Nand', handles => { s => 'a' } );

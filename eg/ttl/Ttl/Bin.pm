@@ -6,7 +6,7 @@ package Ttl::Bin;
 use Moose;
 extends 'Reflex::Base';
 
-use Reflex::Trait::EmitsOnChange;
+use Reflex::Trait::EmitsOnChange qw(emits);
 
 emits a   => ( isa => 'Bool', event => 'change' );
 emits b   => ( isa => 'Bool', event => 'change' );

@@ -14,7 +14,7 @@ use lib qw(../lib);
 	use Moose;
 	extends 'Reflex::Base';
 	use Reflex::POE::Session;
-	use Reflex::Trait::Watched;
+	use Reflex::Trait::Watched qw(watches);
 
 	use POE qw(Component::IRC);
 

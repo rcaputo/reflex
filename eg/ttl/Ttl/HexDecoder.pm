@@ -7,7 +7,7 @@ package Ttl::HexDecoder;
 use Moose;
 extends 'Reflex::Base';
 
-use Reflex::Trait::EmitsOnChange;
+use Reflex::Trait::EmitsOnChange qw(emits);
 
 emits ones   => ( isa => 'Bool', event => 'change' );
 emits twos   => ( isa => 'Bool', event => 'change' );
