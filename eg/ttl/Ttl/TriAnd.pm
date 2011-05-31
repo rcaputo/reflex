@@ -30,19 +30,19 @@ emits   out    => ( isa => 'Bool'                              );
 
 sub BUILD {
 	my $self = shift;
-  $self->and_ab( Ttl::And->new() );
-  $self->and_c( Ttl::And->new() );
+	$self->and_ab( Ttl::And->new() );
+	$self->and_c( Ttl::And->new() );
 }
 
 sub on_and_ab_out {
-  my ($self, $args) = @_;
-  $self->and_c->a($args->{value});
+	my ($self, $args) = @_;
+	$self->and_c->a($args->{value});
 }
 
 sub on_and_c_out {
-  my ($self, $args) = @_;
+	my ($self, $args) = @_;
 	warn $args->{value};
-  $self->out($args->{value});
+	$self->out($args->{value});
 }
 
 1;

@@ -30,18 +30,18 @@ emits   out     => ( isa => 'Bool'                                );
 
 sub BUILD {
 	my $self = shift;
-  $self->tri_and( Ttl::TriAnd->new() );
-  $self->not( Ttl::Not->new() );
+	$self->tri_and( Ttl::TriAnd->new() );
+	$self->not( Ttl::Not->new() );
 }
 
 sub on_tri_and_out {
-  my ($self, $args) = @_;
-  $self->not->in($args->{value});
+	my ($self, $args) = @_;
+	$self->not->in($args->{value});
 }
 
 sub on_not_out {
-  my ($self, $args) = @_;
-  $self->out($args->{value});
+	my ($self, $args) = @_;
+	$self->out($args->{value});
 }
 
 1;

@@ -121,13 +121,13 @@ Reflex::Collection - Autmatically manage a collection of collectible objects
 		);
 	}
 
-    sub broadcast {
-        my ($self, $message) = @_;
+		sub broadcast {
+				my ($self, $message) = @_;
 
-        foreach my $handle ($self->get_objects) {
-            $handle->put($message);
-        }
-    }
+				foreach my $handle ($self->get_objects) {
+						$handle->put($message);
+				}
+		}
 
 	1;
 

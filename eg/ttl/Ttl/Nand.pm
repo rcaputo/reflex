@@ -16,24 +16,24 @@ use Ttl::And;
 use Reflex::Trait::Watched qw(watches);
 
 watches and => (
-  isa     => 'Ttl::And',
-  handles => [qw(a b)],
+	isa     => 'Ttl::And',
+	handles => [qw(a b)],
 	setup   => sub { Ttl::And->new() },
 );
 
 watches not => (
-  isa     => 'Ttl::Not',
+	isa     => 'Ttl::Not',
 	setup   => sub { Ttl::Not->new() },
 );
 
 sub on_and_out {
-  my ($self, $args) = @_;
-  $self->not->in($args->{value});
+	my ($self, $args) = @_;
+	$self->not->in($args->{value});
 }
 
 sub on_not_out {
-  my ($self, $args) = @_;
-  $self->out($args->{value});
+	my ($self, $args) = @_;
+	$self->out($args->{value});
 }
 
 1;

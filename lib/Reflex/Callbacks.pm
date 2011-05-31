@@ -331,7 +331,7 @@ Reflex::Callback::Method to invoke the corresponding object method.
 	my $object = bless {};
 	my @cbs = cb_object($object, "event");
 
-  # ... is equivalent to:
+	# ... is equivalent to:
 
 	use Reflex::Callback::Method;
 	my $object = bless {};

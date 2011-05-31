@@ -20,19 +20,19 @@ watches or  => ( isa => 'Ttl::Or', handles => [qw(a b)] );
 watches not => ( isa => 'Ttl::Not'                      );
 
 sub BUILD {
-  my $self = shift;
-  $self->or( Ttl::Or->new() );
-  $self->not( Ttl::Not->new() );
+	my $self = shift;
+	$self->or( Ttl::Or->new() );
+	$self->not( Ttl::Not->new() );
 }
 
 sub on_or_out {
-  my ($self, $args) = @_;
-  $self->not->in($args->{value});
+	my ($self, $args) = @_;
+	$self->not->in($args->{value});
 }
 
 sub on_not_out {
-  my ($self, $args) = @_;
-  $self->out($args->{value});
+	my ($self, $args) = @_;
+	$self->out($args->{value});
 }
 
 1;

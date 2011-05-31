@@ -137,8 +137,8 @@ role {
 		unless (scalar keys %$sw) {
 			delete $callbacks{$pid_value}->{$self->session_id()};
 			delete $callbacks{$pid_value} unless (
-        scalar keys %{$callbacks{$pid_value}}
-      );
+				scalar keys %{$callbacks{$pid_value}}
+			);
 			$self->$method_pause();
 		}
 	};
@@ -152,34 +152,34 @@ Reflex::Role::PidCatcher - add async process reaping behavior to a class
 
 =head1 SYNOPSIS
 
-  package Reflex::PID;
+	package Reflex::PID;
 
-  use Moose;
-  extends 'Reflex::Base';
+	use Moose;
+	extends 'Reflex::Base';
 
-  has pid => (
-    is        => 'ro',
-    isa       => 'Int',
-    required  => 1,
-  );
+	has pid => (
+		is        => 'ro',
+		isa       => 'Int',
+		required  => 1,
+	);
 
-  has active => (
-    is      => 'ro',
-    isa     => 'Bool',
-    default => 1,
-  );
+	has active => (
+		is      => 'ro',
+		isa     => 'Bool',
+		default => 1,
+	);
 
-  with 'Reflex::Role::PidCatcher' => {
-    pid						=> 'pid',
-    active        => 'active',
-    cb_exit       => 'on_exit',
-    method_start  => 'start',
-    method_stop   => 'stop',
-    method_pause  => 'pause',
-    method_resume => 'resume',
-  };
+	with 'Reflex::Role::PidCatcher' => {
+		pid						=> 'pid',
+		active        => 'active',
+		cb_exit       => 'on_exit',
+		method_start  => 'start',
+		method_stop   => 'stop',
+		method_pause  => 'pause',
+		method_resume => 'resume',
+	};
 
-  1;
+	1;
 
 =head1 DESCRIPTION
 

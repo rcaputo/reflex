@@ -29,13 +29,13 @@ __END__
 % perl -I../lib eg-02-encoding.pl
 --- !!perl/hash:Reflex::Decoder::Line
 messages:
-  - !!perl/hash:Reflex::Codec::Message::Stream
-    is_combinable: 1
-    octets: 'test line one<nl>test line two<nl>test line three<nl>test line four<nl>'
-    priority: 500
-  - !!perl/hash:Reflex::Codec::Message::Eof
-    is_combinable: 0
-    priority: 500
+	- !!perl/hash:Reflex::Codec::Message::Stream
+		is_combinable: 1
+		octets: 'test line one<nl>test line two<nl>test line three<nl>test line four<nl>'
+		priority: 500
+	- !!perl/hash:Reflex::Codec::Message::Eof
+		is_combinable: 0
+		priority: 500
 newline: '<nl>'
 --- !!perl/hash:Reflex::Codec::Message::Datagram
 is_combinable: 0

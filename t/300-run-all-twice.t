@@ -12,7 +12,7 @@
 		is => 'rw',
 		isa => 'ScalarRef',
 	);
-	
+
 	has wheel => (
 		isa => 'Reflex::POE::Wheel::Run|Undef',
 		is  => 'rw',

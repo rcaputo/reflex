@@ -64,23 +64,23 @@ This BUILD method is from eg-12-poco-event.pl in Reflex's eg
 directory.  It's for an App (application) class that must request
 service from a POE component by posting an event.
 
-  sub BUILD {
-    my $self = shift;
-    $self->component( PoCoEvent->new() );
+	sub BUILD {
+		my $self = shift;
+		$self->component( PoCoEvent->new() );
 
-    # Make sure it runs within the object's POE::Session.
-    $self->run_within_session(
-      sub {
-        $self->component->request(
-          Reflex::POE::Event->new(
-            object  => $self,
-            method  => "on_component_result",
-            context => { cookie => 123 },
-          ),
-        );
-      }
-    );
-  }
+		# Make sure it runs within the object's POE::Session.
+		$self->run_within_session(
+			sub {
+				$self->component->request(
+					Reflex::POE::Event->new(
+						object  => $self,
+						method  => "on_component_result",
+						context => { cookie => 123 },
+					),
+				);
+			}
+		);
+	}
 
 App's constructor runs within its creator's session, which may not be
 the correct one to be sending the event.  run_within_session()

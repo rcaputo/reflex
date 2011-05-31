@@ -140,7 +140,7 @@ Inspiration:
 17:18      kthakore : dngor: right ..
 17:18      kthakore : but how do I plug it into Bot::BasicBot
 17:19         dngor : When you get the trigger from Bot::BasicBot, open a
-                      socket, send a request, and wait for a response.
+											socket, send a request, and wait for a response.
 17:19         dngor : You could use IO::Socket::INET and
 											$poe_kernel->select_read(), or something higher level.
 17:19      kthakore : http://github.com/PerlGameDev/SDL/blob/master/tools/SDLBot.pl
@@ -148,12 +148,12 @@ Inspiration:
 17:20         dngor : If the server is localhost, the connect() will tend to
 											pass or fail pretty quickly... unless your firewall is
 											interfering with localhost.  So blocking is generally not
-                      a problem.
+											a problem.
 17:20      kthakore : I mean I know BasicBot uses Poe
 17:20         dngor : Presumably Bot::BasicBot passes it to you, in the
-                      standard POE way.  If not, POE::Kernel exports it.
+											standard POE way.  If not, POE::Kernel exports it.
 17:21         dngor : Hm.  There's an excellent exercise.  Using Reflex INSIDE
-                      POE components.
+											POE components.
 17:21         dngor : Bot::BasicBot + Reflex::Client
 17:22      kthakore : dngor: whut is reflex ... and how do I use it?
 17:23         dngor : It's neither here nor there.  I'm just brainstorming aloud.
