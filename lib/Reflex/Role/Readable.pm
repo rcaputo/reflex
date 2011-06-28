@@ -79,7 +79,7 @@ role {
 	# Turn off watcher during destruction.
 	after DEMOLISH => sub {
 		my $self = shift;
-		$POE::Kernel::poe_kernel->select_read($self->$att_handle(), undef);
+		$self->$method_stop();
 	};
 };
 

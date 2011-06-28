@@ -46,6 +46,7 @@ sub _create_singleton_session {
 
 			_start => sub {
 				# No-op to satisfy assertions.
+				$_[KERNEL]->alias_set("alias_" . $_[SESSION]->ID);
 				undef;
 			},
 			_stop => sub {
@@ -150,6 +151,7 @@ sub session_id {
 has watchers => (
 	isa     => 'HashRef',
 	is      => 'rw',
+	lazy    => 1,
 	default => sub { {} },
 );
 
@@ -158,6 +160,7 @@ has watchers => (
 has watchers_by_event => (
 	isa     => 'HashRef',
 	is      => 'rw',
+	lazy    => 1,
 	default => sub { {} },
 );
 
@@ -166,12 +169,14 @@ has watchers_by_event => (
 has watched_object_events => (
 	isa     => 'HashRef',
 	is      => 'rw',
+	lazy    => 1,
 	default => sub { {} },
 );
 
 has watched_objects => (
 	isa     => 'HashRef',
 	is      => 'rw',
+	lazy    => 1,
 	default => sub { {} },
 );
 
@@ -265,23 +270,31 @@ after BUILD => sub {
 	CALLBACK: while (my ($param, $value) = each %$args) {
 		next unless $param =~ /^on_(\S+)/;
 
+		my $event = $1;
+
 		if (ref($value) eq "CODE") {
 			$value = Reflex::Callback::CodeRef->new(
 				object    => $self,
 				code_ref  => $value,
 			);
 		}
+		elsif (ref($value) eq "ARRAY") {
+			$value = Reflex::Callback::Method->new(
+				object => $value->[0],
+				method_name => $value->[1],
+			);
+		}
 
 		# There is an object, so we have a watcher.
 		if ($value->object()) {
-			$value->object()->watch($self, $1 => $value);
+			$value->object()->watch($self, $event => $value);
 			next CALLBACK;
 		}
 
 		# TODO - Who is the watcher?
 		# TODO - Optimization!  watch() takes multiple event/callback
 		# pairs.  We can combine them into a hash and call watch() once.
-		$self->watch($self, $1 => $value);
+		$self->watch($self, $event => $value);
 		next CALLBACK;
 	}
 
@@ -300,6 +313,31 @@ sub watch {
 	while (my ($event, $callback) = each %callbacks) {
 		$event =~ s/^on_//;
 
+		if (ref $callback) {
+			if (blessed($callback)) {
+				unless ($callback->isa('Reflex::Callback')) {
+					croak "Can't use $callback as a callback";
+				}
+			}
+			elsif (ref($callback) eq "CODE") {
+				# Coerce sub{} into Reflex::Callback.
+				$callback = Reflex::Callback::CodeRef->new(
+					object    => $self,
+					code_ref  => $callback,
+				);
+			}
+			else {
+				croak "Can't use $callback as a callback."
+			}
+		}
+		else {
+			# Coerce method name into a callback.
+			$callback = Reflex::Callback::Method->new(
+				object      => $self,
+				method_name => $callback,
+			);
+		}
+
 		my $interest = {
 			callback  => $callback,
 			event     => $event,
@@ -312,7 +350,7 @@ sub watch {
 			weaken $self->watched_objects()->{$watched_id};
 
 			# Keep this object's session alive.
-			$POE::Kernel::poe_kernel->refcount_increment($self->session_id, "in_use");
+			#$POE::Kernel::poe_kernel->refcount_increment($self->session_id, "in_use");
 		}
 
 		push @{$self->watched_object_events()->{$watched_id}->{$event}}, $interest;
@@ -428,6 +466,7 @@ sub emit {
 	# This event isn't watched.
 
 	my $deliver_event = $event;
+	#warn $deliver_event;
 	unless (exists $self->watchers_by_event()->{$deliver_event}) {
 		if ($self->promise()) {
 			$self->promise()->deliver($event, $callback_args);
@@ -551,7 +590,7 @@ sub ignore {
 			delete $self->watched_objects()->{$watched_id};
 
 			# Decrement the session's use count.
-			$POE::Kernel::poe_kernel->refcount_decrement($self->session_id, "in_use");
+			#$POE::Kernel::poe_kernel->refcount_decrement($self->session_id, "in_use");
 		}
 		$watched->_stop_watchers($self, \@events);
 	}
@@ -562,7 +601,7 @@ sub ignore {
 		$watched->_stop_watchers($self);
 
 		# Decrement the session's use count.
-		$POE::Kernel::poe_kernel->refcount_decrement($self->session_id, "in_use");
+		#$POE::Kernel::poe_kernel->refcount_decrement($self->session_id, "in_use");
 	}
 }
 

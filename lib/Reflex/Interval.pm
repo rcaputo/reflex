@@ -5,8 +5,8 @@ use Moose;
 extends 'Reflex::Base';
 use Reflex::Callbacks qw(make_emitter);
 
-has interval    => ( isa => 'Num', is  => 'ro' );
-has auto_repeat => ( isa => 'Bool', is => 'ro', default => 1 );
+has interval    => ( isa => 'Num', is  => 'rw' );
+has auto_repeat => ( isa => 'Bool', is => 'rw', default => 1 );
 has auto_start  => ( isa => 'Bool', is => 'ro', default => 1 );
 
 with 'Reflex::Role::Interval' => {

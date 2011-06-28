@@ -14,11 +14,13 @@ method_parameter    method_stop    => qw( stop att_delay _ );
 role {
 	my $p = shift;
 
-	my $att_delay     = $p->att_delay();
-	my $auto_start    = $p->att_auto_start();
-	my $cb_timeout    = $p->cb_timeout();
+	my $att_delay      = $p->att_delay();
+	my $att_auto_start = $p->att_auto_start();
+	my $cb_timeout     = $p->cb_timeout();
 
-	requires $att_delay, $auto_start, $cb_timeout;
+	requires $att_delay, $cb_timeout;
+
+	has $att_auto_start  => ( is => 'ro', isa => 'Bool', default => 1 );
 
 	my $method_reset  = $p->method_reset();
 	my $method_start  = $p->method_start();
@@ -36,7 +38,7 @@ role {
 
 	after BUILD => sub {
 		my ($self, $args) = @_;
-		$self->$method_start() if $self->$auto_start();
+		$self->$method_start() if $self->$att_auto_start();
 	};
 
 	my $code_start = sub {
@@ -106,12 +108,12 @@ Reflex::Role::Timeout - set a wakeup callback for a relative delay
 	has auto_start  => ( isa => 'Bool', is => 'ro', default => 1 );
 
 	with 'Reflex::Role::Timeout' => {
-		delay         => "delay",
-		cb_timeout    => "on_done",
-		auto_start    => "auto_start",
-		method_start  => "start",
-		method_stop   => "stop",
-		method_reset  => "reset",
+		delay          => "delay",
+		cb_timeout     => "on_done",
+		att_auto_start => "auto_start",
+		method_start   => "start",
+		method_stop    => "stop",
+		method_reset   => "reset",
 	};
 
 	1;

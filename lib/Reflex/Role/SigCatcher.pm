@@ -117,6 +117,11 @@ role {
 		# Be in the session associated with this object.
 		return unless $self->call_gate($method_pause);
 
+		$POE::Kernel::poe_kernel->refcount_decrement(
+			$self->session_id(),
+			"signals_keep_alive"
+		);
+
 		$POE::Kernel::poe_kernel->sig($self->$att_signal(), undef);
 	};
 
@@ -125,6 +130,11 @@ role {
 
 		# Be in the session associated with this object.
 		return unless $self->call_gate($method_resume);
+
+		$POE::Kernel::poe_kernel->refcount_increment(
+			$self->session_id(),
+			"signals_keep_alive"
+		);
 
 		$POE::Kernel::poe_kernel->sig(
 			$self->$att_signal(), "signal_happened", ref($self)

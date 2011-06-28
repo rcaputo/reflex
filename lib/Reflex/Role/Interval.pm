@@ -20,7 +20,10 @@ role {
 	my $att_interval    = $p->att_interval();
 	my $cb_tick         = $p->cb_tick();
 
-	requires $att_auto_repeat, $att_auto_start, $att_interval, $cb_tick;
+	requires $att_interval, $cb_tick;
+
+	has $att_auto_repeat => ( is => 'ro', isa => 'Bool', default => 1 );
+	has $att_auto_start  => ( is => 'ro', isa => 'Bool', default => 1 );
 
 	my $method_repeat   = $p->method_repeat();
 	my $method_stop     = $p->method_stop();
