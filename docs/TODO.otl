@@ -1,11 +1,16 @@
 [_] 40% Framework Requirements
-	About
+	About this Document
 		This document summarizes the best ideas from the patterns document.
 		It is also a master TODO list for Reflex.
 		It's in Vim Outliner Format.
-			Basically just an outline where tab indents denote levels.
-			The "[_] 0%" is ongoing progress, managed by Vim Outliner.
-			http://sites.google.com/site/vimoutlinerinfo/ ... version 0.3.4 or later required.
+			A plain-text outline where tabs indicate indent levels.
+			Editing is easier using http://sites.google.com/site/vimoutlinerinfo/ ... version 0.3.4 or later.
+			Suggestions welcome for a concise, plain-text outline format that's widely supported and software-neutral.
+		Typography
+			"[_]" is a checkbox denoting an incomplete to-do item.
+			"[X]" denotes a completed to-do item.
+			Checkboxes are followed by percentages of completion, including sub-items.
+			Items without checkboxes---like the one you're currently reading---are just notes.
 		The docs/patterns.otl document tries to enumerate all available options.
 			Even ones that have been discarded.
 			Even ones we'd like to do but may never get around to.
@@ -13,35 +18,36 @@
 			Volunteers are welcome.
 		A later specification document will attempt to reconcile the requirements into a syntax and semantics.
 			This will probably become the documentation. :)
-	Desirable Qualities
-		Best practices should be encouraged.
-			Base classes should set precedents for best practices.
-			The design should encourage continued use of best practices.
-		Substandard qualities should be possible but gently discouraged.
-			People like to have options.
-			People like to exercise those options, whether or not they're good.
-			It's not the framework's duty to prevent people from doing what they want.
-	Undesirable Qualities
-		Avoid implicit constructs.
-			Implicit constructs cause action without visible indication.
-			They are disorienting.
-			They interfere with comprehension.
-		Avoid unnecessary magic.
-			Magic is scary.
-			It also implies action at a distance.
-		Avoid cleverness.
-			Cleverness leads to brittle design.
-			It also leads to unnecessary magic.
-			It also leads to implicit constructs.
-		Avoid metaphors.
-			Metaphors are harmful when writing abstract frameworks.
-			Metaphors are useful tools for creating systems that mimic real things.
-				When designed properly, metaphors provide conceptual and contextual information about a framework.
-			Metaphors are contradictory to abstract design.
-				Metaphors provide specific conceptual frameworks.
-				System designs that fit within these frameworks are elegant.
-				Systems that wish to use other concepts are generally awkward.
-				Adapters can connect between metaphors, but they should not be needed.
+	Project Philosophy
+		Desirable Qualities
+			Best practices should be encouraged.
+				Base classes should set precedents for best practices.
+				The design should encourage continued use of best practices.
+			Substandard qualities should be possible but gently discouraged.
+				People like to have options.
+				People like to exercise those options, whether or not they're good.
+				It's not the framework's duty to prevent people from doing what they want.
+		Undesirable Qualities
+			Avoid implicit constructs.
+				Implicit constructs cause action without visible indication.
+				They are disorienting.
+				They interfere with comprehension.
+			Avoid unnecessary magic.
+				Magic is scary.
+				It also implies action at a distance.
+			Avoid cleverness.
+				Cleverness leads to brittle design.
+				It also leads to unnecessary magic.
+				It also leads to implicit constructs.
+			Avoid metaphors.
+				Metaphors are harmful when writing abstract frameworks.
+				Metaphors are useful tools for creating systems that mimic real things.
+					When designed properly, metaphors provide conceptual and contextual information about a framework.
+				Metaphors are contradictory to abstract design.
+					Metaphors provide specific conceptual frameworks.
+					System designs that fit within these frameworks are elegant.
+					Systems that wish to use other concepts are generally awkward.
+					Adapters can connect between metaphors, but they should not be needed.
 	[_] 16% Documentation Requirements
 		Many "requirements" are really recommended conventions.
 		For example:
