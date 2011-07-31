@@ -186,7 +186,7 @@ sub gather_cb {
 
 sub deliver {
 	my ($self, $event, $arg) = @_;
-	$arg //= {};
+	$arg ||= {};
 
 	$event =~ s/^(on_)?/on_/;
 
