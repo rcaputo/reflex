@@ -30,7 +30,13 @@ sub attribute_parameter {
 
 	my ($name, $default) = @_;
 
-	$meta->add_parameter($name, ( isa => 'Str', default => $default ) );
+	$meta->add_parameter(
+		$name, (
+			is      => 'rw',
+			isa     => 'Str',
+			default => $default
+		)
+	);
 }
 
 sub method_parameter {
@@ -51,6 +57,7 @@ sub method_parameter {
 	$meta->add_parameter(
 		$name,
 		(
+			is      => 'rw',
 			isa     => 'Str',
 			lazy    => 1,
 			default => sub {
@@ -85,6 +92,7 @@ sub callback_parameter {
 	$meta->add_parameter(
 		$name,
 		(
+			is      => 'rw',
 			isa     => 'Str',
 			lazy    => 1,
 			default => sub {
