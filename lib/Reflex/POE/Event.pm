@@ -39,13 +39,13 @@ sub BUILD {
 }
 
 sub deliver {
-	my ($self, $args) = @_;
+	my ($self, $event) = @_;
 
 	$POE::Kernel::poe_kernel->post(
 		$self->object()->session_id(), "call_gate_method",
 		$self->object(), $self->method(), {
 			context   => $self->context(),
-			response  => [ @$args ],
+			response  => $event,
 		}
 	);
 }
@@ -135,10 +135,10 @@ constructor.  Consider this event and its callback:
 	);
 
 	sub callback {
-		my ($self, $args) = @_;
+		my ($self, $event) = @_;
 		print(
-			"Our context: $args->{context}{abc}\n",
-			"POE args: @{$args->{response}}\n"
+			"Our context: ", $event->context()->{abc}, "\n",
+			"POE args: @{$event->response()}\n"
 		);
 	}
 

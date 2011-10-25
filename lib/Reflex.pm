@@ -103,7 +103,7 @@ method from Reflex::Role::Reactive.
 	sub ping {
 		my ($self, $args) = @_;
 		print "Echoer was pinged!\n";
-		$self->emit( event => "pong" );
+		$self->emit( -name => "pong" );
 	}
 
 The next object uses Echoer.  It creates an Echoer and pings it to get

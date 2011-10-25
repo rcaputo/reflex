@@ -4,6 +4,7 @@ package Reflex::Role::PidCatcher;
 use Reflex::Role;
 
 use Scalar::Util qw(weaken);
+use Reflex::Event::SigChild;
 
 attribute_parameter att_active    => "active";
 attribute_parameter att_pid       => "pid";
@@ -29,20 +30,21 @@ sub deliver {
 	# TODO - Diagnostic warning/error?
 	return unless exists $callbacks{$pid};
 
-	# Calculate the event arguments based on the signal name.
-	my %event_args = (
-		signal	=> $signal_name,
-		pid			=> $pid,
-		exit		=> $exit,
-	);
-
 	# Deliver the signal.
 	# TODO - map() magic to speed this up?
 
 	foreach my $callback_recs (values %{$callbacks{$pid}}) {
 		foreach my $callback_rec (values %$callback_recs) {
 			my ($object, $method) = @$callback_rec;
-			$object->$method(\%event_args);
+
+			$object->$method(
+				Reflex::Event::SigChild->new(
+					_emitters => [ $object ],
+					signal    => $signal_name,
+					pid       => $pid,
+					exit      => $exit,
+				)
+			);
 		}
 	}
 }

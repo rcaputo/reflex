@@ -45,8 +45,8 @@ Inherit it.
 	extends 'Reflex::UdpPeer';
 
 	sub on_socket_datagram {
-		my ($self, $args) = @_;
-		my $data = $args->{datagram};
+		my ($self, $datagram) = @_;
+		my $data = $datagram->octets();
 
 		if ($data =~ /^\s*shutdown\s*$/) {
 			$self->stop_socket_readable();
@@ -54,14 +54,18 @@ Inherit it.
 		}
 
 		$self->send(
-			datagram    => $data,
-			remote_addr => $args->{remote_addr},
+			datagram => $data,
+			peer     => $datagram->peer(),
 		);
 	}
 
 	sub on_socket_error {
-		my ($self, $args) = @_;
-		warn "$args->{op} error $args->{errnum}: $args->{errstr}";
+		my ($self, $error) = @_;
+		warn(
+			$error->function(),
+			" error ", $error->number(),
+			": ", $error->string(),
+		);
 		$self->destruct();
 	}
 

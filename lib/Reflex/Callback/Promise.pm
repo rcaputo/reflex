@@ -15,9 +15,9 @@ has queue => (
 
 # Delivering to a promise enqueues the message.
 sub deliver {
-	my ($self, $event, $arg) = @_;
+	my ($self, $event) = @_;
 	confess "promise queue overflow in $self" if (
-		push(@{$self->queue()}, { name => $event, arg => $arg }) > 100
+		push(@{$self->queue()}, $event) > 100
 	);
 }
 

@@ -41,11 +41,11 @@ use lib qw(../lib);
 	}
 
 	sub on_component_result {
-		my ($self, $args) = @_;
+		my ($self, $event) = @_;
 		print(
 			"Got component response:\n",
-			"  postback context: $args->{context}{cookie}\n",
-			"  call-back result: $args->{response}[0]\n",
+			"  postback context: ", $event->context()->{cookie}, "\n",
+			"  call-back result: ", $event->response()->[0], "\n",
 		);
 
 		# Ok, we're done.

@@ -2,6 +2,8 @@ package Reflex::Role::Wakeup;
 # vim: ts=2 sw=2 noexpandtab
 
 use Reflex::Role;
+use Reflex::Event::Wakeup;
+
 use Scalar::Util qw(weaken);
 
 attribute_parameter att_when      => "when";
@@ -52,7 +54,7 @@ role {
 		# Put a weak $self in an envelope that can be passed around
 		# without strenghtening the object.
 
-		my $envelope = [ $self, $cb_wakeup ];
+		my $envelope = [ $self, $cb_wakeup, 'Reflex::Event::Wakeup' ];
 		weaken $envelope->[0];
 
 		$self->$timer_id_name(

@@ -14,7 +14,7 @@
 	);
 
 	has wheel => (
-		isa => 'Reflex::POE::Wheel::Run|Undef',
+		isa => 'Maybe[Reflex::POE::Wheel::Run]',
 		is  => 'rw',
 	);
 
@@ -39,32 +39,37 @@
 	}
 
 	sub on_child_stdout {
-		my ($self, $args) = @_;
-		VERBOSE and Test::More::diag("stdout: $args->{output}");
+		my ($self, $stdout) = @_;
+		VERBOSE and Test::More::diag("stdout: " . $stdout->octets());
 		${$self->count()}++;
 	}
 
 	sub on_child_stderr {
-		my ($self, $args) = @_;
-		VERBOSE and Test::More::diag("stderr: $args->{output}");
+		my ($self, $stderr) = @_;
+		VERBOSE and Test::More::diag("stderr: " . $stderr->octets());
 	}
 
 	sub on_child_error {
-		my ($self, $args) = @_;
-		return if $args->{operation} eq "read";
+		my ($self, $error) = @_;
+		return if $error->function() eq "read";
 		VERBOSE and Test::More::diag(
-			"$args->{operation} error $args->{errnum}: $args->{errstr}"
+			$error->function() .
+			" error " . $error->number() .
+			": " . $error->string()
 		);
 	}
 
 	sub on_child_close {
-		my ($self, $args) = @_;
+		my ($self, $event) = @_;
 		VERBOSE and Test::More::diag("child closed all output");
 	}
 
 	sub on_child_signal {
-		my ($self, $args) = @_;
-		VERBOSE and Test::More::diag("child $args->{pid} exited: $args->{exit}");
+		my ($self, $child) = @_;
+		VERBOSE and Test::More::diag(
+			"child " . $child->pid() .
+			" exited: " . $child->exit()
+		);
 		$self->wheel(undef);
 	}
 }

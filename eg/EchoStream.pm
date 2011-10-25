@@ -5,8 +5,8 @@ use Moose;
 extends 'Reflex::Stream';
 
 sub on_data {
-	my ($self, $args) = @_;
-	$self->put($args->{data});
+	my ($self, $data) = @_;
+	$self->put($data->octets());
 }
 
 sub DEMOLISH {

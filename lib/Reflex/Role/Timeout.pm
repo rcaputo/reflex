@@ -2,6 +2,8 @@ package Reflex::Role::Timeout;
 # vim: ts=2 sw=2 noexpandtab
 
 use Reflex::Role;
+use Reflex::Event::Timeout;
+
 use Scalar::Util qw(weaken);
 
 attribute_parameter att_auto_start => "auto_start";
@@ -56,7 +58,7 @@ role {
 		# Put a weak $self in an envelope that can be passed around
 		# without strenghtening the object.
 
-		my $envelope = [ $self, $cb_timeout ];
+		my $envelope = [ $self, $cb_timeout, 'Reflex::Event::Timeout' ];
 		weaken $envelope->[0];
 
 		$self->$timer_id_name(

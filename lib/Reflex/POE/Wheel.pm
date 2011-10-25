@@ -24,8 +24,8 @@ sub BUILD {
 	}
 
 	# Map methods to events in the wheel parameters.
-	my $event_to_index = $self->event_to_index();
-	while (my ($wheel_param, $event_idx) = each %$event_to_index) {
+	my $events_to_indices = $self->events_to_indices();
+	while (my ($wheel_param, $event_idx) = each %$events_to_indices) {
 		$args->{$wheel_param} = "wheel_event_$event_idx";
 	}
 
@@ -70,27 +70,28 @@ sub deliver {
 	my ($class, $event_idx, @event_args) = @_;
 
 	# Map parameter offsets to named parameters.
-	my $param_names = $class->event_param_names()->[$event_idx];
+	my ($event_type, $event_name, @field_names) = $class->index_to_event(
+		$event_idx
+	);
 
 	my $i = 0;
-	my %event_args = map { $_ => $event_args[$i++] } @$param_names;
+	my %event_args = map { $_ => $event_args[$i++] } @field_names;
 
 	# Get the wheel that sent us an event.
 
-	my $wheel_id = $event_args{wheel_id};
+	my $wheel_id = delete $event_args{wheel_id};
+	delete $event_args{_discard_};
 
 	# Get the Reflex::Base object that owns this wheel.
 
 	my $self = $wheel_id_to_object{$wheel_id};
 	die unless $self;
 
-	# Get the emitted event name associated with this event.
-	my $event_name = $self->event_emit_names()->[$event_idx];
-
 	# Emit the event.
 	$self->emit(
-		event => $event_name,
-		args  => \%event_args,
+		-name => $event_name,
+		-type => $event_type,
+		%event_args
 	);
 }
 

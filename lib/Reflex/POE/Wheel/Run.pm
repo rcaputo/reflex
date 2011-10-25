@@ -7,52 +7,41 @@ use POE::Wheel::Run;
 use Reflex::PID;
 use Reflex::Trait::Watched qw(watches);
 
+# TODO - Bored now.  use Reflex::Event qw(Flushed Octets Error EOF); ???
+
+use Reflex::Event::Flushed;
+use Reflex::Event::Octets;
+use Reflex::Event::Error;
+use Reflex::Event::EOF;
+
 # These are class methods, returning static class data.
 # TODO - What's the proper way to do this with Moose?
 
-sub event_to_index {
-	return(
-		{
-			StdinEvent  => 0,
-			StdoutEvent => 1,
-			StderrEvent => 2,
-			ErrorEvent  => 3,
-			CloseEvent  => 4,
-		},
-	);
+my %event_to_index = (
+	StdinEvent  => 0,
+	StdoutEvent => 1,
+	StderrEvent => 2,
+	ErrorEvent  => 3,
+	CloseEvent  => 4,
+);
+
+sub events_to_indices {
+	return \%event_to_index;
 }
 
-sub event_emit_names {
-	return(
-		[
-			'stdin',  # StdinEvent
-			'stdout', # StdoutEvent
-			'stderr', # StderrEvent
-			'error',  # ErrorEvent
-			'closed', # ClosedEvent
-		],
-	);
-}
+my @index_to_event = (
+	[ 'Reflex::Event::Flushed', 'stdin', 'wheel_id' ],
+	[ 'Reflex::Event::Octets', 'stdout', 'octets', 'wheel_id' ],
+	[ 'Reflex::Event::Octets', 'stderr', 'octets', 'wheel_id' ],
+	[
+		'Reflex::Event::Error', 'error', 'function', 'number', 'string', 'wheel_id'
+	],
+	[ 'Reflex::Event::EOF', 'closed', 'wheel_id' ],
+);
 
-sub event_param_names {
-	return(
-		[
-			# 0 = StdinEvent
-			[ "wheel_id" ],
-
-			# 1 = StdoutEvent
-			[ "output", "wheel_id" ],
-
-			# 2 = StderrEvent
-			[ "output", "wheel_id" ],
-
-			# 3 = ErrorEvent
-			[ "operation", "errnum", "errstr", "wheel_id", "handle_name" ],
-
-			# 4 = CloseEvent
-			[ "wheel_id" ],
-		]
-	);
+sub index_to_event {
+	my ($class, $index) = @_;
+	return @{$index_to_event[$index]};
 }
 
 sub wheel_class {
@@ -101,11 +90,8 @@ sub BUILD {
 
 # Rethrow our signal event.
 sub on_sigchld_exit {
-	my ($self, $args) = @_;
-	$self->emit(
-		event => 'signal',
-		args  => $args,
-	);
+	my ($self, $event) = @_;
+	$self->re_emit( $event, -name => 'signal' );
 }
 
 sub kill {
@@ -142,18 +128,18 @@ but fully executable ones.
 	}
 
 	sub on_child_stdout {
-		my ($self, $args) = @_;
-		print "stdout: $args->{output}\n";
+		my ($self, $event) = @_;
+		print "stdout: ", $event->output(), "\n";
 	}
 
 	sub on_child_close {
-		my ($self, $args) = @_;
+		my ($self, $event) = @_;
 		print "child closed all output\n";
 	}
 
 	sub on_child_signal {
-		my ($self, $args) = @_;
-		print "child $args->{pid} exited: $args->{exit}\n";
+		my ($self, $event) = @_;
+		print "child ", $event->pid(), " exited: ", $event->exit(), "\n";
 		$self->child(undef);
 	}
 

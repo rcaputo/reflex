@@ -6,6 +6,7 @@ package Reflex::POE::Postback;
 use warnings;
 use strict;
 use Scalar::Util qw(weaken);
+use Reflex::Event::Postback;
 
 my %owner_session_ids;
 
@@ -17,10 +18,13 @@ sub new {
 
 	my $self = bless sub {
 		$POE::Kernel::poe_kernel->post(
-			$object->session_id(), "call_gate_method", $object, $method, {
+			$object->session_id(), "call_gate_method", $object, $method,
+			Reflex::Event::Postback->new(
+				_emitters => [ $object ],
+				-name     => 'postback',
 				context   => $context,
 				response  => [ @_ ],
-			},
+			)
 		);
 	}, $class;
 
@@ -102,10 +106,10 @@ Reflex::POE::Postback when it was created.  In the case of the
 SYNOPSIS, that would be:
 
 	sub on_component_result {
-		my ($self, $arg) = @_;
+		my ($self, $event) = @_;
 
 		# Displays: 123
-		print $arg->{context}{cookie}, "\n";
+		print $event->context()->{cookie}, "\n";
 	}
 
 =head3 response
@@ -118,10 +122,10 @@ to the postback.  If we assume this postback call:
 Then the callback might look something like this:
 
 	sub on_component_result {
-		my ($self, $arg) = @_;
+		my ($self, $event) = @_;
 
 		# Displays: nine
-		print "$arg->{response}[-1]\n";
+		print $event->response()->[-1], "\n";
 	}
 
 =head1 CAVEATS

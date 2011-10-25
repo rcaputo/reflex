@@ -40,7 +40,7 @@ my $rot13_server_port = 12345;
 					my ($client, $response) = @_;
 					$mybot->say(
 						channel => $bot_event->{channel},
-						body    => $response->{data},
+						body    => $response->octets(),
 					);
 					$client->stop();
 				},
@@ -70,8 +70,8 @@ my $rot13_server_port = 12345;
 		extends 'Reflex::Stream';
 
 		sub on_data {
-			my ($self, $args) = @_;
-			my $text = $args->{data};
+			my ($self, $data) = @_;
+			my $text = $data->octets();
 			warn "Server has been asked to rot13('$text')...\n";
 			$text =~ tr[a-zA-Z][n-za-mN-ZA-M];
 			$self->put($text);
@@ -92,15 +92,15 @@ my $rot13_server_port = 12345;
 		has_many clients => ( handles => { remember_client => "remember" } );
 
 		sub on_accept {
-			my ($self, $args) = @_;
+			my ($self, $socket) = @_;
 			$self->remember_client(
-				Rot13EchoStream->new( handle => $args->{socket} )
+				Rot13EchoStream->new( handle => $socket->handle() )
 			);
 		}
 
 		sub on_error {
-			my ($self, $args) = @_;
-			warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
+			my ($self, $error) = @_;
+			warn $error->formatted(), "\n";
 			$self->stop();
 		}
 	}

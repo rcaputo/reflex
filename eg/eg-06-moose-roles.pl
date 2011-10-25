@@ -36,14 +36,14 @@ use lib qw(../lib);
 	};
 
 	sub on_socket_datagram {
-		my ($self, $arg) = @_;
+		my ($self, $datagram) = @_;
 
-		if ($arg->{datagram} =~ /^\s*shutdown\s*$/) {
+		if ($datagram->octets() =~ /^\s*shutdown\s*$/) {
 			$self->stop_socket_readable();
 			return;
 		}
 
-		$self->send(%$arg);
+		$self->send($datagram->_body());
 	}
 }
 

@@ -35,30 +35,30 @@ use lib qw(../lib);
 	}
 
 	sub on_child_stdout {
-		my ($self, $args) = @_;
-		print "stdout: $args->{output}\n";
-		$self->child()->kill() if $args->{output} =~ /moo\(last\)/;
+		my ($self, $stdout) = @_;
+		print "stdout: ", $stdout->octets(), "\n";
+		$self->child()->kill() if $stdout->octets() =~ /moo\(last\)/;
 	}
 
 	sub on_child_stderr {
-		my ($self, $args) = @_;
-		print "stderr: $args->{output}\n";
+		my ($self, $stderr) = @_;
+		print "stderr: ", $stderr->octets(), "\n";
 	}
 
 	sub on_child_error {
-		my ($self, $args) = @_;
-		return if $args->{operation} eq "read";
-		print "$args->{operation} error $args->{errnum}: $args->{errstr}\n";
+		my ($self, $error) = @_;
+		return if $error->function() eq "read";
+		print $error->formatted(), "\n";
 	}
 
 	sub on_child_close {
-		my ($self, $args) = @_;
+		my ($self, $eof) = @_;
 		print "child closed all output\n";
 	}
 
 	sub on_child_signal {
-		my ($self, $args) = @_;
-		print "child $args->{pid} exited: $args->{exit}\n";
+		my ($self, $child) = @_;
+		print "child ", $child->pid(), " exited: ", $child->exit(), "\n";
 		$self->child(undef);
 	}
 }

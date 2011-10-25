@@ -11,7 +11,7 @@ use lib qw(../lib);
 	sub ping {
 		my ($self, $args) = @_;
 		print "Echoer was pinged!\n";
-		$self->emit( event => "pong" );
+		$self->emit( -name => "pong" );
 	}
 }
 

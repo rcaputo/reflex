@@ -8,7 +8,6 @@ use Carp qw(carp croak);
 use Reflex;
 use Reflex::Callback::Promise;
 use Reflex::Callback::CodeRef;
-use Reflex::Sender;
 
 END {
 	#warn join "; ", keys %watchers;
@@ -59,16 +58,23 @@ sub _create_singleton_session {
 
 			timer_due => sub {
 				my $envelope = $_[ARG0];
-				my ($cb_object, $cb_method) = @$envelope;
-				$cb_object->$cb_method({});
+				my ($cb_object, $cb_method, $event_class) = @$envelope;
+				$cb_object->$cb_method(
+					$event_class->new(_emitters => [ $cb_object ])
+				);
 			},
 
 			### I/O manipulators and callbacks.
 
 			select_ready => sub {
 				my ($handle, $envelope, $mode) = @_[ARG0, ARG2];
-				my ($cb_object, $cb_method) = @$envelope;
-				$cb_object->$cb_method({ handle => $handle });
+				my ($cb_object, $cb_method, $event_class) = @$envelope;
+				$cb_object->$cb_method(
+					$event_class->new(
+						_emitters => [ $cb_object ],
+						handle    => $handle,
+					)
+				);
 			},
 
 			### Signals.
@@ -409,67 +415,88 @@ sub _is_watched {
 	push @{$self->watchers()->{$watcher_id}}, $interest;
 }
 
+my %loaded_event_types;
+
+sub re_emit {
+	my ($self, $event, %override_args) = @_;
+
+	my $new_event = $event->_clone(%override_args);
+	$new_event->push_emitter($self);
+
+	$self->_emit_event($new_event);
+}
+
 sub emit {
-	my ($self, @args) = @_;
+	my ($self, %args) = @_;
 
-	# TODO - Is there a better way to check parameters?  Checking them
-	# in custom code is tedious.  Calling check_args() is relatively
-	# slow.  Can we have our peanut butter and our chocolate together?
-
-	my $args = $self->check_args(
-		\@args,
-		[ 'event' ],
-		[ 'args' ],
+	my $event_type = delete $args{-type};
+	$event_type = 'Reflex::Event' unless (
+		defined $event_type and length $event_type
 	);
 
-	my $event         = $args->{event};
-	my $callback_args = $args->{args} || {};
+	my $event_name = delete $args{-name};
+	$event_name = "generic" unless (
+		defined $event_name and length $event_name
+	);
 
 	# TODO - Needs consideration:
 	# TODO - Underscores for Reflex parameters?
 	# TODO - Must be a hash reference.  Would be nice if non-hashref
 	# errors were pushed to the caller.
 
-	$callback_args->{_sender} ||= Reflex::Sender->new();
-	$callback_args->{_sender}->push_emitter($self);
+	my $event = $event_type->new(
+		_name     => $event_name,
+		_emitters => [ $self ],
+		%args
+	);
+
+	$self->_emit_event($event);
+}
+
+sub _emit_event {
+	my ($self, $event) = @_;
+
+	my $event_name = $event->_name();
 
 	# Look for self-handling of the event.
 	# TODO - can() calls are also candidates for caching.
 	# (AKA: Cache as cache can()?)
-	#
+
 	# TODO - Using the class name here is weak.
 	# It would be sweetest if we could find a better role name.
 
-	my $caller_role = caller();
+	my $caller_role = caller(1); # ref($self); # TODO - Need something better!
 	$caller_role =~ s/^Reflex::(?:Role::)?//;
 	$caller_role =~ tr[a-zA-Z0-9][_]cs;
 
-	my $self_method = "on_" . lc($caller_role) . "_" . $event;
+	my $self_method = "on_" . lc($caller_role) . "_" . $event_name;
 	#warn $self_method;
 	if ($self->can($self_method)) {
+
 		# Already seen this; we're recursing!  Break it up!
 		if ($self->emits_seen()->{"$self -> $self_method"}) {
 			$self->emits_seen({});
 			$poe_kernel->post(
 				$self->session_id(), 'call_gate_method',
-				$self, $self_method, $callback_args
+				$self, $self_method, $event,
 			);
 			return;
 		}
 
 		# Not recursing yet.  Give it a try!
 		$self->emits_seen()->{"$self -> $self_method"} = 1;
-		$self->$self_method($callback_args);
+		$self->$self_method($event);
 		return;
 	}
 
 	# This event isn't watched.
 
-	my $deliver_event = $event;
+	my $deliver_event = $event_name;
+
 	#warn $deliver_event;
 	unless (exists $self->watchers_by_event()->{$deliver_event}) {
 		if ($self->promise()) {
-			$self->promise()->deliver($event, $callback_args);
+			$self->promise()->deliver($event);
 			return;
 		}
 
@@ -500,14 +527,14 @@ sub emit {
 				$callback_rec->{watcher}->session_id() eq
 				$POE::Kernel::poe_kernel->get_active_session()->ID
 			) {
-				$callback->deliver($event, $callback_args);
+				$callback->deliver($event);
 				next CALLBACK;
 			}
 
 			# Different session.  Post it through.
 			$poe_kernel->post(
 				$callback_rec->{watcher}->session_id(), 'deliver_callback',
-				$callback, $event, $callback_args,
+				$callback, $event,
 				$callback_rec->{watcher}, $self, # keep objects alive a bit
 			);
 		}
@@ -516,33 +543,6 @@ sub emit {
 
 sub deliver {
 	die "@_";
-}
-
-sub check_args {
-	my ($self, $args, $required, $optional) = @_;
-
-	if (ref($args) eq 'ARRAY') {
-		croak "constructor parameters must be key/value pairs" if @$args % 2;
-		$args = { @$args };
-	}
-
-	unless (ref($args) eq 'HASH') {
-		croak "constructor parameters are an unknown type";
-	}
-
-	my @error;
-
-	if (my @missing = grep { !exists($args->{$_}) } @$required) {
-		push @error, "required parameters are missing: @missing";
-	}
-
-	my %all = map { $_ => 1 } @$required, @$optional;
-	if (my @excess = grep { !exists($all{$_}) } keys %$args) {
-		push @error, "unknown parameters: @excess";
-	}
-
-	return $args unless @error;
-	croak join "; ", @error;
 }
 
 # An object is demolished.
@@ -760,13 +760,11 @@ planned:
 		my ($self, $errfun) = @_;
 
 		$self->emit(
-			event => "failure",
-			args  => {
-				data    => undef,
-				errnum  => ($!+0),
-				errstr  => "$!",
-				errfun  => $errfun,
-			},
+			-name  => "failure",
+			data   => undef,
+			errnum => ($!+0),
+			errstr => "$!",
+			errfun => $errfun,
 		);
 
 		return;

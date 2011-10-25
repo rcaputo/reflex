@@ -26,13 +26,13 @@ with "Reflex::Role::Streaming" => {
 };
 
 sub on_client_data {
-  my ($self, $arg) = @_;
-  $self->put_server($arg->{data});
+  my ($self, $data) = @_;
+  $self->put_server($data->octets());
 }
 
 sub on_server_data {
-  my ($self, $arg) = @_;
-  $self->put_client($arg->{data});
+  my ($self, $data) = @_;
+  $self->put_client($data->octets());
 }
 
 1;

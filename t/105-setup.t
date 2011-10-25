@@ -49,10 +49,9 @@ use Test::More tests => 5;
 	);
 
 	sub on_counter_count {
-		my ($self, $args) = @_;
-		pass("Watcher sees counter count: $args->{value}/5");
-
-		$self->counter(undef) if $args->{value} >= 5;
+		my ($self, $count) = @_;
+		pass("Watcher sees counter count: " . $count->new_value() . "/5");
+		$self->counter(undef) if $count->new_value() >= 5;
 	}
 }
 

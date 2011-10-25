@@ -57,9 +57,9 @@ use Test::More tests => 4;
 	}
 
 	sub on_counter_count {
-		my ($self, $args) = @_;
-		pass("watcher sees counter count $args->{value}/3");
-		$self->counter(undef) if $args->{value} > 2;
+		my ($self, $event) = @_;
+		pass("watcher sees counter count " . $event->new_value() . "/3");
+		$self->counter(undef) if $event->new_value() > 2;
 	}
 }
 

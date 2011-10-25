@@ -1,4 +1,5 @@
 package ThingWithCallbacks;
+
 use Moose;
 
 # A demo class that delivers callbacks to its users.  I wanted to go even
@@ -6,6 +7,7 @@ use Moose;
 # the callbacks subproject's scope.  Not all callback types are
 # appropriate for timers, too.
 
+use Reflex::Event;
 use Reflex::Callbacks qw(gather_cb);
 
 has cb => ( is => 'rw', isa => 'Reflex::Callbacks' );
@@ -34,7 +36,9 @@ sub BUILD {
 
 sub run {
 	my $self = shift;
-	$self->cb()->deliver( event => {} );
+	$self->cb()->deliver(
+		Reflex::Event->new( _name => "event", _emitters => [ $self ] )
+	);
 }
 
 1;

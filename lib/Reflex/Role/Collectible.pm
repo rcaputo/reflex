@@ -8,12 +8,14 @@ use Moose::Role;
 
 sub stopped {
 	my $self = shift;
-	$self->emit( event => "stopped", args => {} );
+	$self->emit( -name => "stopped" );
 }
 
+# Experimental.
+
 sub result {
-	my ($self, $args) = @_;
-	$self->emit( event => "result", args => $args );
+	my ($self, %emit_args) = @_;
+	$self->emit(%emit_args, -name => "result");
 }
 
 1;

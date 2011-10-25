@@ -38,18 +38,23 @@ Reflex::Acceptor - a non-blocking server (client socket acceptor)
 	has_many clients => ( handles => { remember_client => "remember" } );
 
 	sub on_accept {
-		my ($self, $args) = @_;
+		my ($self, $event) = @_;
 		$self->remember_client(
 			EchoStream->new(
-				handle => $args->{socket},
+				handle => $event->socket(),
 				rd     => 1,
 			)
 		);
 	}
 
 	sub on_error {
-		my ($self, $args) = @_;
-		warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
+		my ($self, $event) = @_;
+		warn(
+			$event->error_function(),
+			" error ", $event->error_number(),
+			": ", $event->error_string(),
+			"\n"
+		);
 		$self->stop();
 	}
 

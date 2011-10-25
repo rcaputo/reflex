@@ -11,9 +11,9 @@ has method_name => (
 );
 
 sub deliver {
-	my ($self, $event, $arg) = @_;
+	my ($self, $event) = @_;
 	my $method_name = $self->method_name();
-	$self->object()->$method_name($arg);
+	$self->object()->$method_name($event);
 }
 
 1;

@@ -10,8 +10,8 @@ use Reflex;
 	extends 'Reflex::Base';
 
 	sub foo {
-		my ($self, $args) = @_;
-		$self->emit(event => 'foo_event', args => $args);
+		my ($self, %args) = @_;
+		$self->emit( -name => 'foo_event', %args );
 	}
 }
 
@@ -36,9 +36,9 @@ use Reflex;
 	}
 
 	sub foo_event {
-		my ($self, $args) = @_;
-		$self->emit(event => 'foo_event', args => $args);
-		$self->remove($args->{_sender}->get_last_emitter());
+		my ($self, $event) = @_;
+		$self->re_emit( $event, -name => 'foo_event' );
+		$self->remove($event->get_last_emitter());
 	}
 }
 
@@ -70,20 +70,15 @@ use Reflex;
 	my $baz = 0;
 
 	sub foo_handler {
-		my ($self, $args) = @_;
-		my $sender = $args->{_sender};
-		Test::More::isa_ok(
-			$sender, 'Reflex::Sender',
-			'got the Reflex::Sender object'
-		);
-		my $source = $sender->get_first_emitter();
+		my ($self, $event) = @_;
+		my $source = $event->get_first_emitter();
 		Test::More::isa_ok($source, 'Contained', 'got the source of the event');
-		my $last = $sender->get_last_emitter();
+		my $last = $event->get_last_emitter();
 		Test::More::isa_ok(
 			$last, 'Container',
 			'got the final emitter in the stack'
 		);
-		my @all = $sender->get_all_emitters();
+		my @all = $event->get_all_emitters();
 		Test::More::is(scalar(@all), 2, 'got the right number of emitters');
 
 		if ($baz++ == 9) {

@@ -15,23 +15,28 @@ use lib qw(../lib);
 	extends 'Reflex::UdpPeer';
 
 	sub on_datagram {
-		my ($self, $args) = @_;
-		my $data = $args->{datagram};
+		my ($self, $datagram) = @_;
 
-		if ($data =~ /^\s*shutdown\s*$/) {
+		my $octets = $datagram->octets();
+
+		if ($octets =~ /^\s*shutdown\s*$/) {
 			$self->stop();
 			return;
 		}
 
 		$self->send(
-			datagram    => $data,
-			remote_addr => $args->{remote_addr},
+			octets => $octets,
+			peer   => $datagram->peer(),
 		);
 	}
 
 	sub on_error {
-		my ($self, $args) = @_;
-		warn "$args->{op} error $args->{errnum}: $args->{errstr}";
+		my ($self, $error) = @_;
+		warn(
+			$error->function(),
+			" error ", $error->number(),
+			": ", $error->string(),
+		);
 		$self->destruct();
 	}
 }

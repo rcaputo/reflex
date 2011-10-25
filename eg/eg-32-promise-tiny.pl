@@ -19,5 +19,5 @@ my $t = Reflex::Interval->new(
 );
 
 while (my $event = $t->next()) {
-	eg_say("next() returned an event ($event->{name})");
+	eg_say("next() returned an event (", $event->_name(), ")");
 }

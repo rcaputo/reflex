@@ -22,8 +22,8 @@ my $connector = Reflex::Connector->new(port => 12345);
 my $event = $connector->next();
 
 # Failure?  Ok, bye.
-if ($event->{name} eq "failure") {
-	eg_say("connection error $event->{arg}{errnum}: $event->{arg}{errstr}");
+if ($event->_name() eq "failure") {
+	eg_say($event->formatted());
 	exit;
 }
 
@@ -32,7 +32,7 @@ eg_say("Connected.");
 
 # Start a stream to work with it.
 my $stream = Reflex::Stream->new(
-	handle => $event->{arg}{socket},
+	handle => $event->handle(),
 	rd     => 1,
 );
 
@@ -41,11 +41,11 @@ $stream->put("Hello, world!\n");
 
 # Handle a response.
 $event = $stream->next();
-if ($event->{name} eq "data") {
-	eg_say("Got echo response: $event->{arg}{data}");
+if ($event->_name() eq "data") {
+	eg_say("Got echo response: ", $event->octets());
 }
 else {
-	eg_say("Unexpected event: $event->{name}");
+	eg_say("Unexpected event: ", $event->_name());
 }
 
 # Bored now.

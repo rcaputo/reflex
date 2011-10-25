@@ -36,19 +36,19 @@ use lib qw(../lib);
 	}
 
 	sub on_child_stdout {
-		my ($self, $args) = @_;
-		print "stdout: $args->{output}\n";
+		my ($self, $stdout) = @_;
+		print "stdout: ", $stdout->octets(), "\n";
 	}
 
 	sub on_child_stderr {
-		my ($self, $args) = @_;
-		print "stderr: $args->{output}\n";
+		my ($self, $stderr) = @_;
+		print "stderr: ", $stderr->octets(), "\n";
 	}
 
 	sub on_child_error {
-		my ($self, $args) = @_;
-		return if $args->{operation} eq "read";
-		print "$args->{operation} error $args->{errnum}: $args->{errstr}\n";
+		my ($self, $error) = @_;
+		return if $error->function() eq "read";
+		print $error->formatted(), "\n";
 	}
 
 	sub on_child_close {

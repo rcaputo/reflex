@@ -18,18 +18,18 @@ use lib qw(../lib);
 	has_many clients => ( handles => { remember_client => "remember" } );
 
 	sub on_accept {
-		my ($self, $args) = @_;
+		my ($self, $socket) = @_;
 		$self->remember_client(
 			EchoStream->new(
-				handle => $args->{socket},
+				handle => $socket->handle(),
 				rd     => 1,
 			)
 		);
 	}
 
 	sub on_error {
-		my ($self, $args) = @_;
-		warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
+		my ($self, $error) = @_;
+		warn $error->formatted(), "\n";
 		$self->stop();
 	}
 }

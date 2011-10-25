@@ -53,6 +53,16 @@
 my $collectible_id = 1;
 
 {
+	package EvCount;
+	use Moose;
+	extends 'Reflex::Event';
+
+	has value => ( is => 'ro', isa => 'Int', required => 1 );
+
+	1;
+}
+
+{
 	package TestCollectible;
 	use Moose;
 	with 'Reflex::Role::Collectible';
@@ -86,7 +96,7 @@ my $collectible_id = 1;
 		my $self = shift;
 
 		my $count = $self->count() + 1;
-		$self->result({ value => $count });
+		$self->result( -type => 'EvCount', value => $count );
 		if ($count < 9) {
 			$self->count($count);
 			return;
@@ -119,10 +129,10 @@ my $collectible_id = 1;
 	}
 
 	sub on_result {
-		my ($self, $args) = @_;
+		my ($self, $event) = @_;
 
-		my $foo      = $args->{_sender}->get_first_emitter();
-		my $value    = $args->{value};
+		my $foo      = $event->get_first_emitter();
+		my $value    = $event->value();
 		my $foo_type = ref $foo;
 		printf(
 			"test collection got a result from %s! id => %s, value => %s\n",
@@ -138,7 +148,7 @@ my $collectible_id = 1;
 	use Reflex::Collection;
 
 	has_many foos => (
-		handles   => { remember_foo => "remember" },
+		handles => { remember_foo => "remember" },
 	);
 
 	sub BUILD {
@@ -155,8 +165,8 @@ my $collectible_id = 1;
 	# _sender.
 
 	sub on_result {
-		my ($self, $args) = @_;
-		$self->emit( event => "result", args => $args );
+		my ($self, $event) = @_;
+		$self->re_emit( $event, -name => "result" );
 	}
 }
 
@@ -167,16 +177,19 @@ my $tc = TestCollection->new();
 my $tcp = PromiseCollection->new();
 
 while (my $e = $tcp->next) {
-	my $sender = $e->{arg}{_sender}->get_first_emitter();
+	my $emitter = $e->get_first_emitter();
 
-	unless ($sender) {
-		warn "--- Why is the sender undefined";
+	unless ($emitter) {
+		warn(
+			"--- Why is the emitter undefined for this event:\n",
+			$e->dump()
+		);
 		next;
 	}
 
 	printf(
-		"promise collection got a result of %s! id => %s, value => %s\n",
-		ref($sender), $sender->id, $e->{arg}{value}
+		"promise collection got a %s from %s! id => %s, value => %s\n",
+		$e->_name(), ref($emitter), $emitter->id, $e->value
 	);
 }
 

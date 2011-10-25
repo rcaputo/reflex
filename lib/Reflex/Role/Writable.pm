@@ -2,6 +2,7 @@ package Reflex::Role::Writable;
 # vim: ts=2 sw=2 noexpandtab
 
 use Reflex::Role;
+use Reflex::Event::FileHandle;
 
 # TODO - Reflex::Role::Readable and Writable are nearly identical.
 # Can they be abstracted further?  Possibly composed as parameterized
@@ -37,8 +38,9 @@ role {
 		# Must be run in the right POE session.
 		return unless $self->call_gate($method_start, $arg);
 
-		my $envelope = [ $self, $cb_name ];
+		my $envelope = [ $self, $cb_name, 'Reflex::Event::FileHandle' ];
 		weaken $envelope->[0];
+
 		$POE::Kernel::poe_kernel->select_write(
 			$self->$att_handle(), 'select_ready', $envelope,
 		);

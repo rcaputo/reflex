@@ -7,6 +7,8 @@ use Scalar::Util qw(weaken);
 use Moose::Exporter;
 Moose::Exporter->setup_import_methods( with_caller => [ qw( emits ) ]);
 
+use Reflex::Event::ValueChange;
+
 has setup => (
 	isa     => 'CodeRef|HashRef',
 	is      => 'ro',
@@ -21,10 +23,10 @@ has trigger => (
 		# Weaken $meta_self so that the closure isn't permanent.
 
 		my $event;
-		#my $last_value;
+		my $old_value;
 
 		sub {
-			my ($self, $value) = @_;
+			my ($self, $new_value) = @_;
 
 			# Edge-detection.  Only emit when a value has changed.
 			# TODO - Make this logic optional.  Sometimes an application
@@ -35,19 +37,19 @@ has trigger => (
 			#		or
 			#	(defined($value) and defined($last_value) and $value eq $last_value)
 			#);
-			#
-			#$last_value = $value;
-			#weaken $last_value if defined($last_value) and ref($last_value);
 
 			$self->emit(
-				args => {
-					value => $value,
-				},
-				event => (
+				-type => 'Reflex::Event::ValueChange',
+				-name => (
 					$event ||=
 					$self->meta->find_attribute_by_name($meta_self->name())->event()
 				),
+				old_value => $old_value,
+				new_value => $new_value,
 			);
+
+			$old_value = $new_value;
+			weaken $old_value if defined($old_value) and ref($old_value);
 		}
 	}
 );
@@ -60,13 +62,11 @@ has initializer => (
 			my ($self, $value, $callback, $attr) = @_;
 			my $event;
 			$self->emit(
-				args => {
-					value => $value,
-				},
-				event => (
+				-name => (
 					$event ||=
 					$self->meta->find_attribute_by_name($attr->name())->event()
 				),
+				value => $value,
 			);
 
 			$callback->($value);

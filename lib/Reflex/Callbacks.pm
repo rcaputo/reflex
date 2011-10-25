@@ -185,12 +185,12 @@ sub gather_cb {
 }
 
 sub deliver {
-	my ($self, $event, $arg) = @_;
-	$arg ||= {};
+	my ($self, $event) = @_;
 
-	$event =~ s/^(on_)?/on_/;
+	my $event_name = $event->_name();
+	$event_name =~ s/^(on_)?/on_/;
 
-	$self->callback_map()->{$event}->deliver($event, $arg);
+	$self->callback_map()->{$event_name}->deliver($event);
 }
 
 sub make_emitter {
@@ -204,8 +204,8 @@ sub make_emitter {
 		package_name => $caller,
 		name         => $method_name,
 		body         => sub {
-			my ($self, $args) = @_;
-			$self->emit(event => $event_name, args => $args);
+			my ($self, $event) = @_;
+			$self->re_emit( $event, -name => $event_name );
 		},
 	);
 
@@ -225,8 +225,8 @@ sub make_terminal_emitter {
 		package_name => $caller,
 		name         => $method_name,
 		body         => sub {
-			my ($self, $args) = @_;
-			$self->emit(event => $event_name, args => $args);
+			my ($self, $event) = @_;
+			$self->re_emit( $event, -name => $event_name );
 			$self->stopped();
 		},
 	);

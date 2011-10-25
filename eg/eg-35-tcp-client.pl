@@ -10,15 +10,15 @@ use lib qw(../lib);
 	extends 'Reflex::Client';
 
 	sub on_client_connected {
-		my ($self, $args) = @_;
+		my ($self, $socket) = @_;
 		$self->connection()->put("Hello, world!\n");
 	};
 
 	sub on_connection_data {
-		my ($self, $args) = @_;
-
+		my ($self, $data) = @_;
+warn $self;
 		# Not chomped.
-		warn "got from server: $args->{data}";
+		warn "got from server: ", $data->octets();
 
 		# Disconnect after we receive the echo.
 		$self->stop();

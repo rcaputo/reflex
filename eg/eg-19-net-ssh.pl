@@ -41,12 +41,12 @@ my $runner_1;
 
 		on_stdout_closed  => sub { print "runner_1 stdout closed\n" },
 		on_stderr_closed  => sub { print "runner_1 stderr closed\n" },
-		on_stdout_data    => sub { print "runner_1 stdout: $_[1]{data}" },
-		on_stderr_data    => sub { print "runner_1 stderr: $_[1]{data}" },
+		on_stdout_data    => sub { print "runner_1 stdout: ", $_[1]->octets() },
+		on_stderr_data    => sub { print "runner_1 stderr: ", $_[1]->octets() },
 
 		on_exit   => sub {
-			my ($self, $args) = @_;
-			warn "runner_1 child $args->{pid} exited: $args->{exit}\n";
+			my ($self, $child) = @_;
+			warn "runner_1 child ", $child->pid(), " exited: ", $child->exit(), "\n";
 			$runner_1 = undef;
 		},
 	);
@@ -64,12 +64,12 @@ my $runner_2;
 
 		on_stdout_closed  => sub { print "runner_2 stdout closed\n" },
 		on_stderr_closed  => sub { print "runner_2 stderr closed\n" },
-		on_stdout_data    => sub { print "runner_2 stdout: $_[1]{data}" },
-		on_stderr_data    => sub { print "runner_2 stderr: $_[1]{data}" },
+		on_stdout_data    => sub { print "runner_2 stdout: ", $_[1]->octets() },
+		on_stderr_data    => sub { print "runner_2 stderr: ", $_[1]->octets() },
 
 		on_exit   => sub {
-			my ($self, $args) = @_;
-			warn "runner_2 child $args->{pid} exited: $args->{exit}\n";
+			my ($self, $child) = @_;
+			warn "runner_2 child ", $child->pid(), " exited: ", $child->exit(), "\n";
 			$runner_2 = undef;
 		},
 	);

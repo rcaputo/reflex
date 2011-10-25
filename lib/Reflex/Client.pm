@@ -29,50 +29,56 @@ watches connection => (
 );
 
 sub on_connection {
-	my ($self, $args) = @_;
+	my ($self, $socket) = @_;
 
 	$self->connection(
 		$self->protocol()->new(
-			handle => $args->{socket},
+			handle => $socket->handle(),
 			rd     => 1,
 		)
 	);
 
-	$self->emit(event => "connected", args => {});
+	$self->emit( -name => "connected" );
+	#$self->re_emit( $socket, -name => "connected" );
 }
 
 sub on_error {
-	my ($self, $args) = @_;
+	my ($self, $error) = @_;
 	# TODO - Emit rather than warn.
-	warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
+	warn $error->formatted(), "\n";
 }
 
 sub on_connection_closed {
-	my ($self, $args) = @_;
+	my ($self, $eof) = @_;
 	$self->connection()->stop();
 	# TODO - Emit rather than warn.
 	warn "server closed connection.\n";
 }
 
 sub on_connection_failure {
-	my ($self, $args) = @_;
+	my ($self, $error) = @_;
 	$self->connection()->stop();
 	# TODO - Emit rather than warn.
-	warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
+	warn $error->formatted(), "\n";
 }
 
 # This odd construct lets us rethrow a low-level event as a
 # higher-level event.  It's similar to the way Moose "handles" works,
 # although in the other (outbound) direction.
+#
 # TODO - It's rather inefficient to rethrow like this at runtime.
 # Some compile- or init-time remapping construct would be better.
+#
+# TODO - While we're rethrowing, we should consider a generic facility
+# for passing -type through.
+
 sub on_connection_data {
-	my ($self, $args) = @_;
-	$self->emit( event => "data", args => $args );
+	my ($self, $data) = @_;
+	$self->re_emit( $data, -name => "data" );
 }
 
 sub stop {
-	my $self = shift;
+	my $self = shift();
 	$self->connection(undef);
 	$self->stopped();
 };
@@ -98,15 +104,15 @@ eg/eg-35-tcp-client.pl available at the time of this writing.
 		extends 'Reflex::Client';
 
 		sub on_client_connected {
-			my ($self, $args) = @_;
+			my ($self, $event) = @_;
 			$self->connection()->put("Hello, world!\n");
 		};
 
 		sub on_client_data {
-			my ($self, $args) = @_;
+			my ($self, $event) = @_;
 
 			# Not chomped.
-			warn "got from server: $args->{data}";
+			warn "got from server: ", $event->data();
 
 			# Disconnect after we receive the echo.
 			$self->stop();

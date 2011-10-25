@@ -2,6 +2,7 @@ package Reflex::Role::Writing;
 # vim: ts=2 sw=2 noexpandtab
 
 use Reflex::Role;
+use Reflex::Event::Error;
 
 attribute_parameter att_handle    => "handle";
 callback_parameter  cb_error      => qw( on att_handle error );
@@ -33,11 +34,12 @@ role {
 		# Hard error.
 		unless (defined $octet_count) {
 			$self->$cb_error(
-				{
-					errnum => ($! + 0),
-					errstr => "$!",
-					errfun => "syswrite",
-				}
+				Reflex::Event::Error->new(
+					_emitters => [ $self ],
+					number    => ($! + 0),
+					string    => "$!",
+					function  => "syswrite",
+				)
 			);
 			return;
 		}
@@ -74,11 +76,12 @@ role {
 			# Hard error.
 			unless (defined $octet_count) {
 				$self->$cb_error(
-					{
-						errnum => ($! + 0),
-						errstr => "$!",
-						errfun => "syswrite",
-					}
+					Reflex::Event::Error->new(
+						_emitters => [ $self ],
+						number    => ($! + 0),
+						string    => "$!",
+						function  => "syswrite",
+					)
 				);
 				return;
 			}

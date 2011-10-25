@@ -5,10 +5,10 @@ use Moose;
 extends 'Reflex::Base';
 use Reflex::Callbacks qw(make_emitter);
 
-has active => ( is => 'ro', isa => 'Bool', default => 1 );
-has address => ( is => 'ro', isa => 'Str', default => '127.0.0.1',);
-has port => ( is => 'ro', isa => 'Int',);
-has socket => ( is => 'rw', isa => 'FileHandle' );
+has active  => ( is => 'ro', isa => 'Bool', default => 1 );
+has address => ( is => 'ro', isa => 'Str', default  => '127.0.0.1' );
+has port    => ( is => 'ro', isa => 'Int' );
+has socket  => ( is => 'rw', isa => 'FileHandle' );
 
 with 'Reflex::Role::Connecting' => {
 	att_connector => 'socket',      # Default!

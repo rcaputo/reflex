@@ -66,8 +66,8 @@ sub forget {
 }
 
 sub cb_forget {
-	my ($self, $args) = @_;
-	$self->forget($args->{_sender}->get_last_emitter());
+	my ($self, $event) = @_;
+	$self->forget($event->get_last_emitter());
 }
 
 sub has_many {
@@ -112,10 +112,10 @@ Reflex::Collection - Autmatically manage a collection of collectible objects
 	);
 
 	sub on_listener_accepted {
-		my ($self, $args) = @_;
+		my ($self, $event) = @_;
 		$self->remember_client(
 			EchoStream->new(
-				handle => $args->{socket},
+				handle => $event->socket(),
 				rd     => 1,
 			)
 		);

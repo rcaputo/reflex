@@ -31,7 +31,7 @@ use Test::More tests => 3;
 
 	watches ticker => (
 		isa     => 'Reflex::Interval',
-		setup   => { interval => 1, auto_repeat => 1 },
+		setup   => { interval => 0.25, auto_repeat => 1 },
 	);
 
 	has cb => ( is => 'rw', isa => 'Reflex::Callbacks' );
@@ -43,7 +43,12 @@ use Test::More tests => 3;
 
 	sub on_ticker_tick {
 		my $self = shift;
-		$self->cb()->deliver( event => {} );
+		$self->cb()->deliver(
+			Reflex::Event->new(
+				_name     => "event",
+				_emitters => [ $self ],
+			)
+		);
 	}
 }
 
@@ -55,5 +60,5 @@ my $pt = PromiseThing->new( cb_promise(\$promise) );
 for (1..3) {
 	my $event = $promise->next();
 	last unless $event;
-	pass("next($_) returned an event ($event->{name})");
+	pass("next($_) returned an event (" . $event->_name() . ")");
 }

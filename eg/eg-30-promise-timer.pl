@@ -20,5 +20,5 @@ my $watcher = Reflex::Base->new();
 $watcher->watch($timer, cb_promise(\$promise));
 
 while (my $event = $promise->next()) {
-	eg_say("next() returned an event ($event->{name})");
+	eg_say("next() returned an event (", $event->_name(), ")");
 }

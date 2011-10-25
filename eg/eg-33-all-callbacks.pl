@@ -131,5 +131,5 @@ my $pt = Reflex::Interval->new(
 );
 
 while (my $event = $pt->next()) {
-	eg_say("promise timer returned an event ($event->{name})");
+	eg_say("promise timer returned an event (", $event->_name(), ")");
 }
