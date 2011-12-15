@@ -52,7 +52,7 @@ role {
 		# Quelle erreur!
 		$self->$cb_error(
 			Reflex::Event::Error->new(
-				_emitters => $self,
+				_emitters => [ $self ],
 				number    => ($! + 0),
 				string    => "$!",
 				function  => "sysread",
