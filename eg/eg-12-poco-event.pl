@@ -7,6 +7,9 @@ use lib qw(../lib);
 
 # Exercise Reflex::POE::Event, for passing events into POE space.
 
+# For a more practical application, see eg-21-poco-client-http.pl.
+# That example wraps POE::Component::Client::HTTP in a similar way.
+
 {
 	package App;
 
