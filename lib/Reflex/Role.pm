@@ -17,6 +17,16 @@ Moose::Exporter->setup_import_methods(
 	also => 'MooseX::Role::Parameterized',
 );
 
+
+# TODO - Work around a known issue in Moose::Exporter, which may be
+# https://rt.cpan.org/Public/Bug/Display.html?id=51561
+
+sub init_meta {
+	my $self = shift;
+	return MooseX::Role::Parameterized->init_meta(@_);
+}
+
+
 sub attribute_parameter {
 	my $caller = shift();
 
