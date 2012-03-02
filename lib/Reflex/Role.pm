@@ -15,6 +15,7 @@ Moose::Exporter->setup_import_methods(
 		attribute_parameter method_parameter callback_parameter
 	) ],
 	also => 'MooseX::Role::Parameterized',
+	meta_lookup => sub { MooseX::Role::Parameterized::current_metaclass || Class::MOP::class_of(shift) },
 );
 
 
