@@ -17,5 +17,5 @@ my $s = ZmqSocket->new(
 
 while (my $msg = $s->next()) {
 	# TODO - I don't like this, but what's better?
-	warn $msg->{arg}->{msg}->data();
+	warn $msg->message()->data();
 }

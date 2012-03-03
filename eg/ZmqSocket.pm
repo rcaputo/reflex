@@ -10,6 +10,9 @@ use ZeroMQ::Raw::Constants qw(
 	ZMQ_EVENTS
 );
 
+# ZeroMQ message event.  See ZmqMessage.pm in the eg directory.
+use ZmqMessage;
+
 # ZeroMQ::Raw::Context
 
 has thread_count => (
@@ -128,8 +131,9 @@ sub _on_zmq_readable {
 
 		unless ($self->_zmq_socket()->recv($msg, ZMQ_NOBLOCK)) {
 			$self->emit(
-				event => "message",
-				args => { msg => $msg },
+				-name => "message",
+				-type => 'ZmqMessage',
+				message => $msg,
 			);
 			next MESSAGE;
 		}
