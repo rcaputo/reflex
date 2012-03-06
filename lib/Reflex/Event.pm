@@ -74,8 +74,8 @@ sub _clone {
 	my @override_keys = keys %override_args;
 	@clone_args{ map { s/^-/_/; $_ } @override_keys } = values %override_args;
 
-	my $new_type = delete($clone_args{_type}) // ref($self);
-	my $emitters = delete($clone_args{_emitters}) // confess "no -emitters";
+	my $new_type = delete($clone_args{_type}) || ref($self);
+	my $emitters = delete($clone_args{_emitters}) || confess "no -emitters";
 
 	my $new_event = $new_type->new(%clone_args, _emitters => [ @$emitters ]);
 
