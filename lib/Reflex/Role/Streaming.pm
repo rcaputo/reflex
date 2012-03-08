@@ -64,6 +64,7 @@ role {
 	};
 
 	with 'Reflex::Role::Writable' => {
+		att_active   => $att_active,
 		att_handle   => $att_handle,
 		cb_ready     => $method_writable,
 		method_pause => $pause_writable,
