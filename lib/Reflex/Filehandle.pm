@@ -6,7 +6,7 @@ extends 'Reflex::Base';
 use Reflex::Callbacks qw(make_emitter);
 use Carp qw(croak);
 
-has descriptor => ( is => 'rw', isa => 'Int', default => undef );
+has descriptor => ( is => 'rw', isa => 'Maybe[Int]', default => undef );
 
 has handle => (
   is      => 'rw',
