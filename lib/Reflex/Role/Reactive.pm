@@ -610,6 +610,9 @@ sub ignore {
 sub call_gate {
 	my ($self, $method) = @_;
 
+	# POE::Kernel has already gone away.
+	return 0 unless $POE::Kernel::poe_kernel;
+
 	return 1 if (
 		$self->session_id() eq $POE::Kernel::poe_kernel->get_active_session()->ID()
 	);
