@@ -811,6 +811,18 @@
 			[_] 0% Explore IO::Lambda's cheat.
 		[_] 0% Consolidate POE-specific code out into a single role.
 			Allows other event loops to be supported directly rather than through POE.
+				me> Let's say I have a class Mumble that's a generic API for something with platform-specific implementations.  I have Mumble::Yay and Mumble::Boo with the bits that the Yay! and Boo! platforms need.
+				me> I want to use Mumble, and Mumble->putty() to do the putty() thing regardless how the platform needs to putty mumbles.
+				ether> you want a Mumble factory, that will construct a Yay or a Boo for you depending on your platform
+				doy> yeah
+				rafl> for example using Module::Implementation
+				ether> $obj->isa_ok('Mumble'); $obj->can_ok('putty');
+				doy> Mumble->new->putty is a lot easier to deal with, generally
+				PerlJam> sounds like the DBI/DBD dichotomy
+				doy> well, probably something other than ->new, but you know
+				ether> new_for_my_platform
+				ether> but shorter
+				me> Thank you.
 			[_] 0% POE::Session singleton
 			[_] 0% has session_id
 			[_] 0% sub run_all
