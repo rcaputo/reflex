@@ -247,8 +247,8 @@ sub make_error_handler {
 		package_name => $caller,
 		name         => $method_name,
 		body         => sub {
-			my ($self, $args) = @_;
-			warn "$args->{errfun} error $args->{errnum}: $args->{errstr}\n";
+			my ($self, $event) = @_;
+			warn $event->formatted(), "\n";
 			$self->stopped();
 		},
 	);

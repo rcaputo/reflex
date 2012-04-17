@@ -93,7 +93,7 @@ role {
 		$! = unpack('i', getsockopt($socket->handle(), SOL_SOCKET, SO_ERROR));
 		if ($!) {
 			$self->$cb_error(
-				Reflex::Event::Error->(
+				Reflex::Event::Error->new(
 					_emitters => [ $self ],
 					number    => ($!+0),
 					string    => "$!",
