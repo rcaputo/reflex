@@ -25,7 +25,7 @@ __END__
 
 Reflex::Trait::Observed - Automaticall watch Reflex objects.
 
-=head1 SYMOPSIS
+=head1 SYNOPSIS
 
 See L<Reflex::Trait::Watched>.
 
