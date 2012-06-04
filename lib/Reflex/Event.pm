@@ -3,6 +3,11 @@ package Reflex::Event;
 use Moose;
 use Scalar::Util qw(weaken);
 
+# Class scoped storage.
+# Each event class has a set of attribute names.
+# There's no reason to calculate them every _clone() call.
+my %attribute_names;
+
 has _name => (
 	is      => 'ro',
 	isa     => 'Str',
@@ -21,13 +26,23 @@ has _emitters => (
 	}
 );
 
-sub BUILD {
+sub _get_attribute_names {
 	my $self = shift();
-
-	# After build, weaken any emitters passed in.
-	#my $emitters = $self->_emitters();
-	#weaken($_) foreach @$emitters;
+	return(
+		$attribute_names{ ref $self } ||= [
+			map { $_->name() }
+			$self->meta()->get_all_attributes()
+		]
+	);
 }
+
+#sub BUILD {
+#	my $self = shift();
+#
+#	# After build, weaken any emitters passed in.
+#	#my $emitters = $self->_emitters();
+#	#weaken($_) foreach @$emitters;
+#}
 
 sub push_emitter {
 	my ($self, $item) = @_;
@@ -43,9 +58,8 @@ sub _headers {
 	my $self = shift();
 	return (
 		map  { "-" . substr($_,1), $self->$_() }
-		grep { /^_/            }
-		map  { $_->name()      }
-		Class::MOP::Class->initialize(ref($self))->get_all_attributes()
+		grep /^_/,
+		@{ $self->_get_attribute_names() },
 	);
 }
 
@@ -53,9 +67,8 @@ sub _body {
 	my $self = shift();
 	return (
 		map  { $_, $self->$_() }
-		grep { !/^_/           }
-		map  { $_->name()      }
-		Class::MOP::Class->initialize(ref($self))->get_all_attributes()
+		grep /^[^_]/,
+		@{ $self->_get_attribute_names() },
 	);
 }
 
@@ -64,10 +77,7 @@ sub _clone {
 
 	my %clone_args;
 
-	my @attribute_names = (
-		map { $_->name() }
-		Class::MOP::Class->initialize(ref($self))->get_all_attributes()
-	);
+	my @attribute_names = @{ $self->_get_attribute_names() };
 
 	@clone_args{@attribute_names} = map { $self->$_() } @attribute_names;
 
