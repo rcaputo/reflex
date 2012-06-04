@@ -99,6 +99,8 @@ sub kill {
 	$self->wheel()->kill(@_);
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__

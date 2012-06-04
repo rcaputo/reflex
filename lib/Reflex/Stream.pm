@@ -18,6 +18,8 @@ with 'Reflex::Role::Streaming' => {
 	cb_closed   => make_terminal_emitter(on_closed => "closed"),
 };
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__

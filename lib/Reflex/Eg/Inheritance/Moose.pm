@@ -8,6 +8,8 @@ sub on_done {
   print scalar(localtime()), " - Subclass got timeout.\n";
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__

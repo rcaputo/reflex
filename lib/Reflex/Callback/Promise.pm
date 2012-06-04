@@ -50,6 +50,8 @@ sub merge_into {
 	undef;
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__

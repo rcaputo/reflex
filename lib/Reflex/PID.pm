@@ -27,6 +27,8 @@ with 'Reflex::Role::PidCatcher' => {
 	method_resume => 'resume',
 };
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__

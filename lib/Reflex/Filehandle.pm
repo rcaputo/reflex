@@ -46,4 +46,6 @@ with 'Reflex::Role::Writable' => {
   method_stop   => 'stop_wr',
 };
 
+__PACKAGE__->meta->make_immutable;
+
 1;

@@ -38,4 +38,6 @@ sub shift {
 	return Reflex::Codec::Message::Datagram->new(octets => $matches[0]);
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;

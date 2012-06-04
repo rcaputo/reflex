@@ -1,5 +1,7 @@
 package Reflex::Eg;
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 =pod

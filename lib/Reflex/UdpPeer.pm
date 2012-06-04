@@ -26,6 +26,8 @@ with 'Reflex::Role::Recving' => {
 	cb_error    => make_terminal_emitter(on_error => "error"),
 };
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__

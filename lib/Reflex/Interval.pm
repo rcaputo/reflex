@@ -19,6 +19,8 @@ with 'Reflex::Role::Interval' => {
 	method_stop     => "stop",
 };
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__

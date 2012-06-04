@@ -7,6 +7,8 @@ with 'Reflex::Role::Reactive';
 # Composes the Reflex::Role::Reactive into a class.
 # Does nothing of its own.
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__

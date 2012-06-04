@@ -17,6 +17,8 @@ with 'Reflex::Role::Timeout' => {
 	method_stop    => "stop",
 };
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__

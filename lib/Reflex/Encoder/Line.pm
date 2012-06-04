@@ -44,4 +44,6 @@ sub shift {
 	return $next;
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;

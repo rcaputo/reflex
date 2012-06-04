@@ -276,6 +276,8 @@ sub make_null_handler {
 	return $method_name;
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__

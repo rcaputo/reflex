@@ -89,6 +89,8 @@ sub has_many {
 	$meta->add_attribute($name, %etc);
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__

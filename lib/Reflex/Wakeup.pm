@@ -14,6 +14,8 @@ with 'Reflex::Role::Wakeup' => {
 	method_reset  => "reset",
 };
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__

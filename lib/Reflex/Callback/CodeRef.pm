@@ -15,6 +15,8 @@ sub deliver {
 	$self->code_ref()->($self->object(), $event);
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__

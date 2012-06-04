@@ -27,6 +27,8 @@ with 'Reflex::Role::SigCatcher' => {
 	method_resume => 'resume',
 };
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__

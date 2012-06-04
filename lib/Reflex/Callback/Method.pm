@@ -16,6 +16,8 @@ sub deliver {
 	$self->object()->$method_name($event);
 }
 
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__
