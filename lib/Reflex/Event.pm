@@ -72,24 +72,52 @@ sub _body {
 	);
 }
 
-sub _clone {
-	my ($self, %override_args) = @_;
+sub make_event_cloner {
+	my $class = shift();
 
-	my %clone_args;
+	my $class_meta = $class->meta();
 
-	my @attribute_names = @{ $self->_get_attribute_names() };
+	my @fetchers;
+	foreach my $attribute_name (
+		map { $_->name } $class_meta->get_all_attributes
+	) {
+		my $override_name = $attribute_name;
+		$override_name =~ s/^_/-/;
 
-	@clone_args{@attribute_names} = map { $self->$_() } @attribute_names;
+		next if $attribute_name eq '_emitters';
 
-	my @override_keys = keys %override_args;
-	@clone_args{ map { s/^-/_/; $_ } @override_keys } = values %override_args;
+		push @fetchers, (
+			join ' ', (
+				"\"$attribute_name\" => (",
+				"(exists \$override_args{\"$override_name\"})",
+				"? \$override_args{\"$override_name\"}",
+				": \$self->$attribute_name()",
+				")",
+			)
+		);
+	}
 
-	my $new_type = delete($clone_args{_type}) || ref($self);
-	my $emitters = delete($clone_args{_emitters}) || confess "no -emitters";
+	my $cloner_code = join ' ', (
+		'sub {',
+		'my ($self, %override_args) = @_;',
+		'my %clone_args = ( ',
+		join(',', @fetchers),
+		');',
+		'my $type = $override_args{"-type"} || ref($self);',
+		'my $emitters = $self->_emitters() || [];',
+		'$type->new(%clone_args, _emitters => [ @$emitters ]);',
+		'}'
+	);
 
-	my $new_event = $new_type->new(%clone_args, _emitters => [ @$emitters ]);
+	my $cloner = eval $cloner_code;
+	if ($@) {
+		die(
+			"cloner compile error: $@\n",
+			"cloner: $cloner_code\n"
+		);
+	}
 
-	return $new_event;
+	$class_meta->add_method( _clone => $cloner );
 }
 
 # Override Moose's dump().
@@ -114,6 +142,7 @@ sub dump {
 	return $dump;
 }
 
-__PACKAGE__->meta()->make_immutable();
+__PACKAGE__->make_event_cloner;
+__PACKAGE__->meta->make_immutable;
 
 1;

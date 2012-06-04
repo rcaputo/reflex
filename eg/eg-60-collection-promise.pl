@@ -59,6 +59,9 @@ my $collectible_id = 1;
 
 	has value => ( is => 'ro', isa => 'Int', required => 1 );
 
+	__PACKAGE__->make_event_cloner;
+	__PAKCAGE__->meta->make_immutable;
+
 	1;
 }
 
