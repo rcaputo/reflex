@@ -127,7 +127,7 @@ sub dump {
 	my $dump = "=== $self ===\n";
 	my %clone = ($self->_headers(), $self->_body());
 	foreach my $k (sort keys %clone) {
-		$dump .= "$k: $clone{$k}\n";
+		$dump .= "  $k: " . ($clone{$k} // '(undef)') . "\n";
 		if ($k eq '-emitters') {
 			my @emitters = $self->get_all_emitters();
 			for my $i (0..$#emitters) {
