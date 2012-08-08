@@ -1,0 +1,24 @@
+Know Moose.
+	It helps to know Moose basics.
+	If you can't get around in Moose, getting round in things that use Moose will be harder.
+	It's probably quicker to spend some time in Moose first, rather than learn two things at once.
+Does it need to be a role or a class?
+	You're going to write a thing.
+	That thing is either going to be a role or a class.
+	It might be a class that's made up of roles you write.
+		A lot of Reflex is like this.
+		Because the quanta of Reflex code are reusable patterns too.
+	When to make it a role.
+		Is it a low-level quantum of reusable patterny goodness?
+		Should users be able to combine it with more than one other reusable pattern?
+			Multiple inheritance can be messy.
+			Consuming roles is a common way to avoid inheriting from multiple classes.
+	When to make it a class.
+		It's a high-level entity?
+		Will people tend to subclass it rather than want to compose it?
+		Will it not be inherited along with other things?
+			Remember, it's cool to inherit a single class and consume some roles.
+	Will it be a class and a role?
+		Create the role first.
+		Consume it in a very basic class.
+		The class glues a dynamic API onto the role.
