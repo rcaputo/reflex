@@ -103,7 +103,7 @@ my $oh = ObjectHandler->new();
 		is      => 'rw',
 	);
 
-	sub BUIILD {
+	sub BUILD {
 		my $self = shift;
 		$self->ticker(
 			Reflex::Interval->new(
