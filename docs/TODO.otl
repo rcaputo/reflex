@@ -810,6 +810,14 @@
 		[_] 0% Do we need call() at all?
 			[_] 0% Explore IO::Lambda's cheat.
 		[_] 0% Consolidate POE-specific code out into a single role.
+			From Sartak's slides on roles:
+				| package Database;
+				|
+				| has backend => (
+				|   is      => 'ro',
+				|   does    => 'Backend::Transactional',
+				|   handles => 'Backend::Transactional',
+				| );
 			Allows other event loops to be supported directly rather than through POE.
 				me> Let's say I have a class Mumble that's a generic API for something with platform-specific implementations.  I have Mumble::Yay and Mumble::Boo with the bits that the Yay! and Boo! platforms need.
 				me> I want to use Mumble, and Mumble->putty() to do the putty() thing regardless how the platform needs to putty mumbles.
