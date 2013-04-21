@@ -33,7 +33,7 @@ role {
 			$message->is_combinable() and
 			$self->messages()->[-1]->is_combinable()
 		) {
-			$self->messages()->[-1]->absorb($message);
+			$self->messages()->[-1]->append($message);
 			return;
 		}
 
