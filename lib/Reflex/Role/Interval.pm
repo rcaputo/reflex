@@ -27,6 +27,7 @@ role {
 	has $att_auto_repeat => ( is => 'ro', isa => 'Bool', default => 1 );
 	has $att_auto_start  => ( is => 'ro', isa => 'Bool', default => 1 );
 
+	my $method_start    = $p->method_start();
 	my $method_repeat   = $p->method_repeat();
 	my $method_stop     = $p->method_stop();
 
@@ -55,6 +56,35 @@ role {
 
 		# Stop a previous alarm.
 		$self->$method_stop() if defined $self->$timer_id_name();
+
+		# Put a weak $self in an envelope that can be passed around
+		# without strenghtening the object.
+
+		my $envelope = [ $self, $cb_tick, 'Reflex::Event::Interval' ];
+		weaken $envelope->[0];
+
+		$self->$timer_id_name(
+			$POE::Kernel::poe_kernel->delay_set(
+				'timer_due',
+				$self->$att_interval(),
+				$envelope,
+			)
+		);
+	};
+
+	method $method_start => sub {
+		my ($self, $args) = @_;
+
+		# Nothing to start if the timer is already going.
+		if ($self->$timer_id_name()) {
+			carp($method_start . "() called on a running timer");
+			return;
+		}
+
+		# Switch to the proper session.
+		return unless (
+			defined $self->$att_interval() and $self->call_gate($method_repeat)
+		);
 
 		# Put a weak $self in an envelope that can be passed around
 		# without strenghtening the object.
