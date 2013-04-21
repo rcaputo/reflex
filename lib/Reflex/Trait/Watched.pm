@@ -82,6 +82,7 @@ has initializer => (
 has role => (
 	isa     => 'Str',
 	is      => 'ro',
+	lazy    => 1,
 	default => sub {
 		my $self = shift;
 		return $self->name();
