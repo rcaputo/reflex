@@ -62,7 +62,7 @@ are named after this key by default.
 That's a bit of work, but roles are generally the biggest Reflex
 modules.  The classes that use it are much smaller.
 
-=TODO - Changed.
+=for author TODO - Changed.
 
 	package AfterAwhileRole;
 	use Reflex::Role;
@@ -101,7 +101,8 @@ All Reflex classes should be based on Reflex::Base.  The class exposes
 "name" and "awhile" attributes so they may be set during object
 construction.
 
-TODO - Changed.
+=for author TODO - Changed.
+
 	package AfterAwhileClass;
 	use Moose;
 	extends 'Reflex::Base';
@@ -121,6 +122,7 @@ Reflex classes are plain Moose classes, which are generally plain Perl
 classes.  Here's a subclass of AfterAwhileClass that internally
 consumes its on_done() callback.  Even though Moose would makethis a
 bit shorter, we deliberately avoid it because we can.
+
 
 	package AfterAwhileSubclass;
 
@@ -215,7 +217,8 @@ returns the next asynchrnous event they emit.
 
 First, here's how it's done:
 
-TODO - Changed.
+=for authorTODO - Changed.
+
 	#!/usr/bin/env perl
 
 	use warnings;
@@ -231,7 +234,8 @@ TODO - Changed.
 We need to define AsyncAwhileClass before that will run.  It's just a
 renamed AfterAwhileClass, with the new asynchronous role.
 
-TODO - Changed.
+=for author TODO - Changed.
+
 	package AsyncAwhileClass;
 	use Moose;
 	extends 'Reflex::Base';
@@ -248,7 +252,8 @@ This AsyncAwhileRole replaces the blocking sleep() with a non-blocking
 Reflex::Interval object.  Later we'll introduce magic to make it more
 concise.
 
-TODO - Changed.
+=for author TODO - Changed.
+
 	package AsyncAwhileRole;
 	use Reflex::Role;
 	use Reflex::Interval;
