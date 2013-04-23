@@ -62,7 +62,8 @@ are named after this key by default.
 That's a bit of work, but roles are generally the biggest Reflex
 modules.  The classes that use it are much smaller.
 
-TODO - Changed.
+=TODO - Changed.
+
 	package AfterAwhileRole;
 	use Reflex::Role;
 
