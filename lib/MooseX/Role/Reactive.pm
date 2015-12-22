@@ -1,4 +1,4 @@
-pacakage MooseX::Role::Reactive;
+package MooseX::Role::Reactive;
 
 use Moose::Role;
 
