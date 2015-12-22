@@ -89,6 +89,8 @@ role {
 
 __END__
 
+=for Pod::Coverage BUILD DEMOLISH
+
 =head1 NAME
 
 Reflex::Role::Readable - add readable-watching behavior to a class

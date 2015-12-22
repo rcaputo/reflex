@@ -125,6 +125,8 @@ BEGIN { *callback_parameter = *method_parameter; }
 
 __END__
 
+=for Pod::Coverage init_meta
+
 =head1 NAME
 
 Reflex::Role - define a Reflex paramaterized role

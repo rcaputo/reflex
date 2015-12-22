@@ -126,6 +126,8 @@ role {
 
 __END__
 
+=for Pod::Coverage BUILD
+
 =head1 NAME
 
 Reflex::Role::Interval - set a periodic, recurring timer

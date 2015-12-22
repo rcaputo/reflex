@@ -95,6 +95,8 @@ __PACKAGE__->meta->make_immutable;
 
 __END__
 
+=for Pod::Coverage cb_forget
+
 =head1 NAME
 
 Reflex::Collection - Autmatically manage a collection of collectible objects

@@ -101,6 +101,8 @@ sub register_implementation { 'Reflex::Trait::EmitsOnChange' }
 
 __END__
 
+=for Pod::Coverage emits
+
 =head1 NAME
 
 Reflex::Trait::EmitsOnChange - Emit an event when an attribute's value changes.

@@ -90,6 +90,8 @@ role {
 
 __END__
 
+=for Pod::Coverage BUILD
+
 =head1 NAME
 
 Reflex::Role::Wakeup - set a wakeup callback for a particular UNIX time

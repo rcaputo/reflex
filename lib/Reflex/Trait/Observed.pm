@@ -21,6 +21,8 @@ sub register_implementation { 'Reflex::Trait::Observed' }
 
 __END__
 
+=for Pod::Coverage observes
+
 =head1 NAME
 
 Reflex::Trait::Observed - Automaticall watch Reflex objects.

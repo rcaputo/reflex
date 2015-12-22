@@ -51,6 +51,8 @@ __PACKAGE__->meta->make_immutable;
 
 __END__
 
+=for Pod::Coverage BUILD DEMOLISH deliver
+
 =head1 NAME
 
 Reflex::POE::Session - Watch events from a POE::Session object.

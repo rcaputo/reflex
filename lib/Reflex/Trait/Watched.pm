@@ -127,6 +127,8 @@ sub register_implementation { 'Reflex::Trait::Watched' }
 
 __END__
 
+=for Pod::Coverage watches
+
 =head1 NAME
 
 Reflex::Trait::Watched - Automatically watch Reflex objects.

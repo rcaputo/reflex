@@ -95,6 +95,8 @@ role {
 
 __END__
 
+=for Pod::Coverage BUILD
+
 =head1 NAME
 
 Reflex::Role::Timeout - set a wakeup callback for a relative delay

@@ -365,9 +365,9 @@ lengthy and sometimes irrelevant design discussion for oh so long.
 
 L<Moose>, L<POE>, the Reflex and Reflexive namespaces on CPAN.
 
-Ohlo - https://www.ohloh.net/p/reflex-perl
+Ohlo - L<https://www.ohloh.net/p/reflex-perl>
 
-CIA - http://cia.vc/stats/project/reflex
+CIA - L<http://cia.vc/stats/project/reflex>
 
 =head1 BUGS
 

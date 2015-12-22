@@ -282,6 +282,8 @@ __PACKAGE__->meta->make_immutable;
 
 __END__
 
+=for Pod::Coverage deliver make_emitter make_error_handler make_null_handler make_terminal_emitter
+
 =head1 NAME
 
 Reflex::Callbacks - Convenience functions for creating and using callbacks

@@ -89,6 +89,8 @@ __PACKAGE__->meta->make_immutable;
 
 __END__
 
+=for Pod::Coverage on_connection_closed on_connection_data on_connection_failure stop
+
 =head1 NAME
 
 Reflex::Client - A non-blocking socket client.

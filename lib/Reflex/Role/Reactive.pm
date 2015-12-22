@@ -677,6 +677,8 @@ sub next {
 
 __END__
 
+=for Pod::Coverage BUILD DEMOLISH deliver get_id re_emit
+
 =head1 NAME
 
 Reflex::Role::Reactive - Make an object reactive (aka, event driven).

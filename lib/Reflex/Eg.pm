@@ -1,4 +1,5 @@
 package Reflex::Eg;
+use Moose;
 
 __PACKAGE__->meta->make_immutable;
 
@@ -6,13 +7,23 @@ __PACKAGE__->meta->make_immutable;
 
 =pod
 
-=abstract Index of Reflex Examples
+=head1 NAME
+
+Reflex::Eg - Reflex examples namespace
 
 =head1 EXAMPLES
 
+Index of examples using this namespace:
+
 =over 4
 
-=index ^Reflex::Eg::
+=item *
+
+L<Reflex::Eg::Inheritance::Moose>
+
+=item *
+
+L<Reflex::Eg::Inheritance::Plain>
 
 =back
 

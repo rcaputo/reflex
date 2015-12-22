@@ -47,3 +47,7 @@ sub shift {
 __PACKAGE__->meta->make_immutable;
 
 1;
+
+__END__
+
+=for Pod::Coverage shift push_data

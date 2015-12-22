@@ -121,6 +121,8 @@ role {
 
 __END__
 
+=for Pod::Coverage BUILD EINPROGRESS EWOULDBLOCK SOL_SOCKET SO_ERROR
+
 =head1 NAME
 
 Reflex::Role::Connecting - add non-blocking client connecting to a class

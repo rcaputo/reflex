@@ -146,3 +146,7 @@ __PACKAGE__->make_event_cloner;
 __PACKAGE__->meta->make_immutable;
 
 1;
+
+__END__
+
+=for Pod::Coverage make_event_cloner push_emitter

@@ -56,6 +56,8 @@ __PACKAGE__->meta->make_immutable;
 
 __END__
 
+=for Pod::Coverage BUILD deliver
+
 =head1 NAME
 
 Reflex::POE::Event - Communicate with POE components expecting events.

@@ -148,6 +148,8 @@ role {
 
 __END__
 
+=for Pod::Coverage BUILD DEMOLISH deliver
+
 =head1 NAME
 
 Reflex::Role::PidCatcher - add async process reaping behavior to a class

@@ -86,6 +86,8 @@ role {
 
 __END__
 
+=for Pod::Coverage BUILD DEMOLISH
+
 =head1 NAME
 
 Reflex::Role::Writable - add writable-watching behavior to a class

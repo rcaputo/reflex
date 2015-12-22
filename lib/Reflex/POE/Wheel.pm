@@ -101,6 +101,8 @@ __PACKAGE__->meta->make_immutable;
 
 __END__
 
+=for Pod::Coverage BUILD DEMOLISH create_wheel deliver
+
 =head1 NAME
 
 Reflex::POE::Wheel - Base class for POE::Wheel wrappers.

@@ -16,11 +16,11 @@ __END__
 
 =pod
 
-=abstract Inheriting a Reflex timer using Moose.
+=head1 NAME
+
+Reflex::Eg::Inheritance::Moose - Inheriting a Reflex timer using Moose.
 
 =head1 SYNOPSIS
-
-=example Reflex::Eg::Inheritance::Moose
 
 Usage:
 

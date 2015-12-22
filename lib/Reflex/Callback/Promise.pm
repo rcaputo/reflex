@@ -56,6 +56,8 @@ __PACKAGE__->meta->make_immutable;
 
 __END__
 
+=for Pod::Coverage merge_into
+
 =head1 NAME
 
 Reflex::Callback::Promise - Non-callback, inline Promise adapter

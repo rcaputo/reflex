@@ -153,6 +153,8 @@ role {
 
 __END__
 
+=for Pod::Coverage BUILD DEMOLISH deliver
+
 =head1 NAME
 
 Reflex::Role::SigCatcher - add signal catching behavior to a class

@@ -105,6 +105,8 @@ __PACKAGE__->meta->make_immutable;
 
 __END__
 
+=for Pod::Coverage BUILD events_to_indices index_to_event on_sigchld_exit
+
 =head1 NAME
 
 Reflex::POE::Wheel::Run - Represent POE::Wheel::Run as a Reflex class.

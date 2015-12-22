@@ -22,6 +22,8 @@ sub result {
 
 __END__
 
+=for Pod::Coverage result stopped
+
 =head1 NAME
 
 Reflex::Role::Collectible - add manageability by Reflex::Collection
