@@ -1,4 +1,5 @@
 package Reflex::Trait::Watched;
+
 # vim: ts=2 sw=2 noexpandtab
 
 use Moose::Role;
@@ -121,6 +122,7 @@ sub watches {
 }
 
 package Moose::Meta::Attribute::Custom::Trait::Reflex::Trait::Watched;
+
 sub register_implementation { 'Reflex::Trait::Watched' }
 
 1;

@@ -1,4 +1,5 @@
 package Reflex::Trait::EmitsOnChange;
+
 # vim: ts=2 sw=2 noexpandtab
 
 use Moose::Role;
@@ -95,6 +96,7 @@ sub emits {
 }
 
 package Moose::Meta::Attribute::Custom::Trait::Reflex::Trait::EmitsOnChange;
+
 sub register_implementation { 'Reflex::Trait::EmitsOnChange' }
 
 1;
